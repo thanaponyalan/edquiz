@@ -51,10 +51,12 @@ export default function editObjectiveForm(props) {
     },[recordForEdit])
 
     const bloom=[
-        {id: 1, title: 'test1'},
-        {id: 2, title: 'test2'},
-        {id: 3, title: 'test3'},
-        {id: 4, title: 'test4'}
+        {id: 1, title: 'Remember'},
+        {id: 2, title: 'Understand'},
+        {id: 3, title: 'Apply'},
+        {id: 4, title: 'Analyze'},
+        {id: 5, title: 'Evaluate'},
+        {id: 6, title: 'Create'}
     ]
 
     return (

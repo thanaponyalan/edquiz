@@ -27,6 +27,15 @@ const headCells=[
     {id:'actions', label: 'Actions', disableSorting:true}
 ]
 
+const bloom=[
+    {id: 1, title: 'Remember'},
+    {id: 2, title: 'Understand'},
+    {id: 3, title: 'Apply'},
+    {id: 4, title: 'Analyze'},
+    {id: 5, title: 'Evaluate'},
+    {id: 6, title: 'Create'}
+]
+
 export default function ObjectiveTable(props) {
     const {initRecord, courseId}=props;
     const classes=useStyles();
@@ -93,7 +102,7 @@ export default function ObjectiveTable(props) {
                             <TableRow key={item._id}>
                                 <TableCell>{item._id}</TableCell>
                                 <TableCell>{item.objective}</TableCell>
-                                <TableCell>{item.bloomLevel}</TableCell>
+                                <TableCell>{bloom[item.bloomLevel-1].title}</TableCell>
                                 <TableCell>
                                     <Controls.ActionButton
                                         color="primary"
