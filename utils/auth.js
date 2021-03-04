@@ -64,23 +64,17 @@ export const withAuthSync = WrappedComponent => class extends Component {
             const uRes = await fetch(url);
             const user = await uRes.json();
             ctx.store.dispatch(setProfile(user));
-            // if(pathname=='/course'){
-            //     url=`http://localhost:3000/api/course`
-            //     const coursesRes=await fetch(url,{
-            //         method: 'GET',
-            //         headers:{
-            //             authorization: uid
-            //         }
-            //     });
-            //     courses=await coursesRes.json();
-            //     console.log(courses.data.payload);
-            //     // store.dispatch(setCourse(courses));
-            // }
-            // ret={
-            //     uid: uid,
-            //     courses: courses.data.payload
-            // }
-            // console.log(ret);
+            if(pathname=='/course'){
+                url=`${server}/api/course`
+                const coursesRes=await fetch(url,{
+                    method: 'GET',
+                    headers:{
+                        authorization: uid
+                    }
+                });
+                courses=await coursesRes.json();
+                store.dispatch(setCourse(courses));
+            }
         } catch (err) {
             console.log(err);
         }

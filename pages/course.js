@@ -13,44 +13,14 @@ import { fetchCourse } from '../redux/actions/courseAction';
 import { connect } from 'react-redux';
 import { bindActionCreators } from "redux";
 import { withToastManager } from 'react-toast-notifications';
-import { wrapper } from "../redux/store";
-import { withInitialCourses } from '../utils/initialProps';
-
-const courseDetails=[
-    {
-        _id: "1111",
-        courseName: "Course 1",
-        courseNo: "03300000",
-        courseDescription: "",
-        objectives:[
-            { _id:1, objective: "Can ...", bloomLevel: "1" },
-            { _id:2, objective: "Explain ...", bloomLevel: "2"},
-            { _id:3, objective: "Can ...", bloomLevel: "1" },
-            { _id:4, objective: "Explain ...", bloomLevel: "2"},
-            { _id:5, objective: "Can ...", bloomLevel: "1" },
-            { _id:6, objective: "Explain ...", bloomLevel: "2"},
-            { _id:7, objective: "Can ...", bloomLevel: "1" },
-            { _id:8, objective: "Explain ...", bloomLevel: "2"}
-        ]
-    },{
-        _id: "2222",
-        courseName: "Course 2",
-        courseNo: "03300001",
-        objectives:[
-            { _id:1, objective: "Can ...", bloomLevel: "1" },
-            { _id:2, objective: "Explain ...", bloomLevel: "2"}
-        ]
-    }
-]
 
 
 const Course=(props)=>{
-    const {courses}=props;
     const [openModal,setOpenModal]=useState(false);
     const addOrEdit=(course)=>{
         // console.log(course);
     }
-    // props.fetchCourse(props.uid,null);
+    // console.log(props);
     const addCourse=
         <li className="nav-item">
             <Controls.Fab
@@ -65,7 +35,7 @@ const Course=(props)=>{
             <MainLayout title="Courses and Objectives" pageActions={addCourse}>
                 <Row>
                     {
-                        courses.length>0&&courses.map((item,i)=>(
+                        props.courses.length>0&&props.courses.map((item,i)=>(
                             <CourseWidget key={i} courseDetail={item} isCollapse={i} />
                         ))
                     }
@@ -92,15 +62,14 @@ const mapDispatchToProps=dispatch=>{
 const mapStateToProps=state=>{
     return{
         uid: state.authReducer.uid,
-        courses: state.courseReducer
+        courses: state.courseReducer.courses
     }
 }
 
 export default compose(
-    // connect(mapStateToProps,mapDispatchToProps),
+    connect(mapStateToProps,null),
     withAuthSync,
     roleSelected,
-    withInitialCourses,
     withRouter,
     withToastManager,
 )(Course);
