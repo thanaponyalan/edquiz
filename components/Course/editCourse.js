@@ -3,6 +3,12 @@ import { Button, Modal, ModalBody, ModalFooter, ModalHeader, FormGroup, Input, L
 import { Grid, TextField,  } from "@material-ui/core";
 import {useForm, Form} from "../MaterialUI/useForm";
 import Controls from "../MaterialUI/controls/Controls";
+import { connect } from 'react-redux';
+import { compose } from 'redux';
+import { withToastManager } from 'react-toast-notifications';
+import { bindActionCreators } from 'redux';
+import { _error_handler } from '../../utils/errorHandler';
+import { fetchCourse } from '../../redux/actions/courseAction';
 
 const initialValues = {
     _id: '',
@@ -11,9 +17,8 @@ const initialValues = {
     courseDescription: ''
 }
 
-
-export default function courseForm(props) {
-    const {addOrEdit, recordForEdit, toggle}=props;
+const courseForm=(props)=>{
+    const {updateOrInsertCourse, recordForEdit, toggle}=props;
 
     const validate=(fieldValues=values)=>{
         let temp={...errors}
@@ -40,9 +45,13 @@ export default function courseForm(props) {
 
     const handleSubmit=e=>{
         e.preventDefault();
-        if(validate())
-            console.log(values);
+        if(validate()){
+            updateOrInsertCourse(values)
+            // props.updateCourse(values);
+        }
     }
+
+    
 
     useEffect(()=>{
         if(recordForEdit!=null)
@@ -87,3 +96,9 @@ export default function courseForm(props) {
         </Form>
     )
 }
+
+
+
+export default compose(
+
+)(courseForm)
