@@ -1,7 +1,7 @@
 import MainLayout from "../containers/app/mainLayout";
 import { Component } from 'react';
 import { compose } from "recompose";
-import { roleSelected, withAuthSync } from "../utils/auth";
+import { withAuthSync } from "../utils/auth";
 import { withRouter } from "next/router";
 import { Table } from 'reactstrap';
 import AssignmentWidget from "../components/Assignment";
@@ -40,6 +40,5 @@ class Assignment extends Component{
 }
 
 export default compose(
-    withAuthSync,
-    roleSelected
+    withAuthSync
 )(Assignment);

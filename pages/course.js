@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import MainLayout from '../containers/app/mainLayout'
 import { withRouter } from 'next/router';
-import { roleSelected, withAuthSync } from '../utils/auth';
+import { withAuthSync } from '../utils/auth';
 import { compose } from 'recompose';
 import { Row } from 'reactstrap';
 import CourseWidget from '../components/Course';
@@ -69,7 +69,6 @@ const mapStateToProps=state=>{
 export default compose(
     connect(mapStateToProps,null),
     withAuthSync,
-    roleSelected,
     withRouter,
     withToastManager,
 )(Course);

@@ -4,7 +4,7 @@ export const authActionTypes={
 }
 
 export const login=(uid)=>dispatch=>{
-    console.log("logged in");
+    // console.log("logged in");
     return dispatch({
         type: authActionTypes.LOGIN,
         payload: uid
@@ -12,7 +12,7 @@ export const login=(uid)=>dispatch=>{
 }
 
 export const logout=()=>dispatch=>{
-    console.log("logged out");
+    // console.log("logged out");
     return dispatch({
         type: authActionTypes.LOGOUT
     })

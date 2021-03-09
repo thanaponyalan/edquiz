@@ -1,7 +1,7 @@
 import MainLayout from "../containers/app/mainLayout";
 import { Component } from 'react';
 import { compose } from "recompose";
-import { roleSelected, withAuthSync } from "../utils/auth";
+import { withAuthSync } from "../utils/auth";
 import { withRouter } from "next/router";
 import { Card, CardImg, CardBody, CardTitle, CardText, Row, Col, CardFooter } from "reactstrap";
 import ExamSet from "../components/Test";
@@ -25,6 +25,5 @@ class Test extends Component{
 
 export default compose(
     withAuthSync,
-    roleSelected,
     withRouter
 )(Test);

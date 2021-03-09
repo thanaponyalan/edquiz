@@ -56,14 +56,16 @@ export const withAuthSync = WrappedComponent => class extends Component {
 
     static async getInitialProps(ctx) {
         const uid = auth(ctx);
+        const role=getRole(ctx);
         const {pathname, store}=ctx;
+        store.dispatch(setRole(role))
         let courses=[], ret;
         try {
             var url = new URL(`${server}/api/user`), params = { uid: uid }
             Object.keys(params).forEach(key => url.searchParams.append(key, params[key]));
             const uRes = await fetch(url);
             const user = await uRes.json();
-            ctx.store.dispatch(setProfile(user));
+            store.dispatch(setProfile(user));
             if(pathname=='/course'){
                 url=`${server}/api/course`
                 const coursesRes=await fetch(url,{
@@ -79,7 +81,7 @@ export const withAuthSync = WrappedComponent => class extends Component {
             console.log(err);
         }
         const componentProps = WrappedComponent.getInitialProps && (await WrappedComponent.getInitialProps(ctx));
-        return { ...componentProps, uid }
+        return { ...componentProps, uid, role }
     }
     render() {
         return <WrappedComponent {...this.props} />
@@ -112,21 +114,6 @@ export const logout = (ctx = null) => {
         window.localStorage.setItem('logout', Date.now());
         Router.push('/login');
         window.location.reload();
-    }
-}
-
-export const roleSelected=WrappedComponent=>class extends Component{
-    constructor(props){
-        super(props);
-    }
-    static async getInitialProps(ctx) {
-        const role=getRole(ctx);
-        ctx.store.dispatch(setRole(role))
-        const componentProps = WrappedComponent.getInitialProps && (await WrappedComponent.getInitialProps(ctx));
-        return { ...componentProps, role }
-    }
-    render() {
-        return <WrappedComponent {...this.props} />
     }
 }
 

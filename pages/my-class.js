@@ -3,7 +3,7 @@ import { compose } from "recompose";
 import { connect } from "react-redux";
 import { setProfile } from "../redux/actions/profileAction";
 import { bindActionCreators } from 'redux'
-import { withAuthSync, roleSelected } from '../utils/auth'
+import { withAuthSync } from '../utils/auth'
 import MainLayout from "../containers/app/mainLayout";
 import Class from "../components/Class";
 import ImportGC from "../components/Class/importGC";
@@ -39,7 +39,7 @@ class MyClass extends Component{
     }
 
     render(){
-        console.log(this.props);
+        // console.log(this.props);
         return(
             <MainLayout title="My Classes" pageActions={addClass}>
                 <Row>
@@ -70,5 +70,4 @@ const mapStateToProps=(state)=>{
 export default compose(
     // connect(mapStateToProps,mapDispatchToProps),
     withAuthSync,
-    roleSelected
 )(MyClass)
