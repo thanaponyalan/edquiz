@@ -10,12 +10,15 @@ class LoginLayout extends Component{
     }
     render(){
         return(
+            <>
+                <title>EDQuizzes</title>
                 <div className="login-box">
                     <div className="login-logo">
                         <a href="/"><b>ED</b>Quizzes</a>
                     </div>
                     {this.props.children}
                 </div>
+            </>
         )
     }
 }
