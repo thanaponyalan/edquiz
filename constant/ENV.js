@@ -1,1 +1,1 @@
-export const API=`http://localhost:${process.env.PORT}/api`;
+export const API=process.env.API;
