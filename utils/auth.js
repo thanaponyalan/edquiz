@@ -55,8 +55,8 @@ export const withAuthSync = WrappedComponent => class extends Component {
     }
 
     static async getInitialProps(ctx) {
-        const uid = auth(ctx);
-        const role=getRole(ctx);
+        const authen=auth(ctx);
+        const {uid, role} = authen||{};
         const {pathname, store}=ctx;
         store.dispatch(setRole(role))
         let courses=[], ret;
@@ -89,17 +89,27 @@ export const withAuthSync = WrappedComponent => class extends Component {
 }
 
 export const auth = ctx => {
-    const { uid } = nextCookie(ctx);
-    if (ctx.req && !uid) {
-        ctx.res.writeHead(302, { Location: '/login' });
-        ctx.res.end();
-        return;
+    const { uid, role } = nextCookie(ctx);
+    if (ctx.req) {
+        if(!uid){
+            ctx.res.writeHead(302, { Location: '/login' });
+            ctx.res.end();
+            return;
+        }
+        if(!role){
+            ctx.res.writeHead(302,{Location:'/choose-role'});
+            ctx.res.end();
+            return;
+        }
     }
     if (!uid) {
         Router.push('/login');
     }
+    if(!role){
+        Router.push('/choose-role')
+    }
 
-    return uid;
+    return {uid: uid, role: role};
 }
 
 export const logout = (ctx = null) => {
