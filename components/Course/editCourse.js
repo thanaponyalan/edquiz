@@ -26,8 +26,8 @@ const courseForm=(props)=>{
             temp.courseName=fieldValues.courseName?"":"This field is required"        
         if('courseNo' in fieldValues)
             temp.courseNo=fieldValues.courseNo?"":"This field is required"
-        if('courseDescription' in fieldValues)
-            temp.courseDescription=fieldValues.courseDescription?"":"This field is required"
+        // if('courseDescription' in fieldValues)
+            // temp.courseDescription=fieldValues.courseDescription?"":"This field is required"
         setErrors({
             ...temp
         })
