@@ -4,8 +4,7 @@ import { Router } from "next/router";
 import Layout from "../containers/app/loginLayout";
 import { compose } from "recompose";
 import LoginBox from "../components/Login/index"
-const port=process.env.PORT||3000;
-const server=`http://localhost:${port}`
+import { API } from "../constant/ENV";
 
 class Login extends Component{
     static async getInitialProps(ctx){
@@ -18,7 +17,7 @@ class Login extends Component{
 
         if(uid)Router.push('/my-class');
 
-        const res=await fetch(`${server}/api/googleUrl`);
+        const res=await fetch(`${API}/googleUrl`);
         const loginUrl=await res.json();
         return{
             loginUrl: loginUrl.url

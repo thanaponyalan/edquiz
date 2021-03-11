@@ -1,4 +1,4 @@
-import axios from 'axios';
+import { API } from "../../constant/ENV";
 import {_error_handler} from '../../utils/errorHandler';
 
 export const classroomActionTypes={
@@ -7,7 +7,7 @@ export const classroomActionTypes={
 
 export const fetchClassroom=(uid,toast)=>async dispatch=>{
     try{
-        const url=`http://localhost:3000/api/class`
+        const url=`${API}/class`
         fetch(url,{
             method: 'GET',
             headers:{

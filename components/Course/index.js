@@ -11,6 +11,7 @@ import { fetchCourse } from "../../redux/actions/courseAction";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import { _error_handler } from "../../utils/errorHandler";
+import { API } from "../../constant/ENV";
 
 const CourseWidget = (props) => {
     // console.log("CourseWidget");
@@ -24,7 +25,7 @@ const CourseWidget = (props) => {
     const updateOrInsertCourse=async(course)=>{
         props.toastManager.add("Updating...",{appearance: 'info', autoDismiss: true})
         try{
-            const url=`http://localhost:3000/api/course`
+            const url=`${API}/course`
             const result=await fetch(url,{
                 method: 'PUT',
                 headers:{
