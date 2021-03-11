@@ -54,12 +54,11 @@ export const withAuthSync = WrappedComponent => class extends Component {
     }
 
     static async getInitialProps(ctx) {
-        const authen=auth(ctx);
-        const {uid, role} = authen||{};
+        const {uid, role} = auth(ctx)||{};
         const {pathname, store}=ctx;
-        store.dispatch(setRole(role))
-        let courses=[], ret;
+        let courses=[];
         try {
+            store.dispatch(setRole(role))
             var url = new URL(`${API}/user`), params = { uid: uid }
             Object.keys(params).forEach(key => url.searchParams.append(key, params[key]));
             const uRes = await fetch(url);

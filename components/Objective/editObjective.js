@@ -12,7 +12,7 @@ const initialValues = {
 
 
 export default function editObjectiveForm(props) {
-    const {addOrEdit, recordForEdit, toggle, courseId}=props;
+    const {updateOrInsertObj, recordForEdit, toggle, courseId}=props;
 
     const validate=(fieldValues=values)=>{
         let temp={...errors}
@@ -38,7 +38,8 @@ export default function editObjectiveForm(props) {
     const handleSubmit=e=>{
         e.preventDefault();
         if(validate()){
-            console.log({...values, courseId: courseId});
+            updateOrInsertObj({...values, courseId: courseId})
+            // console.log({...values, courseId: courseId});
             // console.log(courseId);
         }
     }
@@ -63,11 +64,11 @@ export default function editObjectiveForm(props) {
         <Form onSubmit={handleSubmit}>
             <Grid container>
                 <Grid item md={12}>
-                    {values._id!=''?
+                    {values.id!=''?
                     <Controls.Input
                         label="#"
                         name="_id"
-                        value={values._id}
+                        value={values.id}
                         onChange={handleInputChange}
                         error={errors.objective}
                         disabled={true}

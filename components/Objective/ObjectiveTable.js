@@ -1,4 +1,4 @@
-import React,{useState} from 'react'
+import React,{useEffect, useState} from 'react'
 import { Paper, makeStyles, TableBody, TableRow, TableCell, Toolbar, InputAdornment } from "@material-ui/core";
 import CourseForm from '../Course/editCourse';
 import useTable from "../MaterialUI/useTable";
@@ -8,6 +8,13 @@ import Modal from "../ReactStrap/Modal";
 import Popup from "../MaterialUI/Popup"
 import EditObjectiveForm from "../Objective/editObjective"
 import courseForm from '../Course/editCourse';
+import { compose, bindActionCreators } from 'redux';
+import { withAuthSync } from '../../utils/auth';
+import { withToastManager } from 'react-toast-notifications';
+import { connect } from 'react-redux';
+import { fetchCourse } from '../../redux/actions/courseAction';
+import { _error_handler } from '../../utils/errorHandler';
+import { API } from "../../constant/ENV";
 
 
 const useStyles=makeStyles(theme=>({
@@ -36,7 +43,7 @@ const bloom=[
     {id: 6, title: 'Create'}
 ]
 
-export default function ObjectiveTable(props) {
+function ObjectiveTable(props) {
     const {initRecord, courseId}=props;
     const classes=useStyles();
     const [records,setRecords]=useState(initRecord);
@@ -62,10 +69,30 @@ export default function ObjectiveTable(props) {
         })
     }
 
-    const addOrEdit=(course)=>{
-        // insert
-        console.log("addOrEdit");
-        console.log(course);
+    const updateObjective=async(objective)=>{
+        // update
+        // console.log("updateObjective");
+        // console.log(props);
+
+        props.toastManager.add("Updating...",{appearance: 'info', autoDismiss: true})
+        try{
+            const url=`${API}/objective`
+            const result=await fetch(url,{
+                method: 'PUT',
+                // headers:{
+                //     authorization: course.owner
+                // },
+                body: JSON.stringify(objective)
+            });
+            const res=await result.json();
+            if(res.statusCode==200||res.statusCode==204){
+                props.fetchCourse(props.uid)
+                props.toastManager.add("Updated",{appearance:'success', autoDismiss:true}, ()=>setOpenModal(false));
+            }
+        }catch(err){
+            _error_handler(null,err,null);
+            console.log(err);
+        }
 
     }
 
@@ -73,6 +100,11 @@ export default function ObjectiveTable(props) {
         setRecordForEdit(item);
         setOpenModal(true);
     }
+
+    useEffect(()=>{
+        if(props.courses)
+            setRecords(props.courses.find(({_id})=>_id==props.courseId).objectives)
+    },[props.courses])
     
     return (
         <>
@@ -98,9 +130,11 @@ export default function ObjectiveTable(props) {
                 <TblHead/>
                 <TableBody>
                     {
-                        recordsAfterPaginatingAndSorting().map(item=>(
+                        recordsAfterPaginatingAndSorting().map((item,i)=>{
+                            item={...item,id: i+1}
+                            return(
                             <TableRow key={item._id}>
-                                <TableCell>{item._id}</TableCell>
+                                <TableCell>{item.id}</TableCell>
                                 <TableCell>{item.objective}</TableCell>
                                 <TableCell>{bloom[item.bloomLevel-1].title}</TableCell>
                                 <TableCell>
@@ -115,7 +149,7 @@ export default function ObjectiveTable(props) {
                                     </Controls.ActionButton> */}
                                 </TableCell>
                             </TableRow>
-                        ))
+                        )})
                     }
                 </TableBody>
             </TblContainer>
@@ -127,9 +161,28 @@ export default function ObjectiveTable(props) {
                 <EditObjectiveForm
                     courseId={courseId}
                     recordForEdit={recordForEdit}
-                    addOrEdit={addOrEdit}
+                    updateOrInsertObj={updateObjective}
                     toggle={()=>setOpenModal(false)}/>
             </Modal>
         </>
     )
 }
+
+const mapDispatchToProps=dispatch=>{
+    return{
+        fetchCourse: bindActionCreators(fetchCourse, dispatch),
+    }
+}
+
+const mapStateToProps=state=>{
+    // console.log(state);
+    return{
+        uid: state.authReducer.uid,
+        courses: state.courseReducer.courses
+    }
+}
+
+export default compose(
+    withToastManager,
+    connect(mapStateToProps,mapDispatchToProps)
+)(ObjectiveTable)

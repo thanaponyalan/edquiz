@@ -22,7 +22,7 @@ const CourseWidget = (props) => {
     const [openAddModal,setOpenAddModal]=useState(false);
 
 
-    const updateOrInsertCourse=async(course)=>{
+    const updateCourse=async(course)=>{
         props.toastManager.add("Updating...",{appearance: 'info', autoDismiss: true})
         try{
             const url=`${API}/course`
@@ -49,8 +49,26 @@ const CourseWidget = (props) => {
         setOpenModal(true);
     }
 
-    const addOrEditObj=()=>{
-        console.log(`Add or Edit Obj`);
+    const insertObj=async(objective)=>{
+        // console.log(`InsertObj`);
+        // console.log(objective);
+        delete objective._id;
+        props.toastManager.add("Creating...",{appearance: 'info', autoDismiss: true})
+        try{
+            const url=`${API}/objective`
+            const result=await fetch(url,{
+                method: 'POST',
+                body: JSON.stringify(objective)
+            });
+            const res=await result.json();
+            if(res.statusCode==200||res.statusCode==204){
+                props.toastManager.add("Created",{appearance:'success', autoDismiss:true},()=>setOpenAddModal(false))
+                props.fetchCourse(props.uid)
+            }
+        }catch(err){
+            _error_handler(props.toastManager,err,null);
+            console.log(err);
+        }
     }
 
     const addObjective=()=>{
@@ -74,7 +92,7 @@ const CourseWidget = (props) => {
                 title="Edit Course">
                 <CourseForm
                     recordForEdit={recordForEdit}
-                    updateOrInsertCourse={updateOrInsertCourse}
+                    updateOrInsertCourse={updateCourse}
                     toggle={()=>setOpenModal(false)}/>
             </Modal>
             <Modal
@@ -82,8 +100,9 @@ const CourseWidget = (props) => {
                 setOpenModal={setOpenAddModal}
                 title="Add Objective">
                 <AddObjectiveForm
-                    addOrEdit={addOrEditObj}
-                    toggle={()=>setOpenAddModal(false)}/>
+                    updateOrInsertObj={insertObj}
+                    toggle={()=>setOpenAddModal(false)}
+                    courseId={props.courseDetail._id}/>
             </Modal>
         </>
     );
@@ -95,7 +114,13 @@ const mapDispatchToProps=dispatch=>{
     }
 }
 
+const mapStateToProps=state=>{
+    return{
+        uid: state.authReducer.uid,
+    }
+}
+
 export default compose(
     withToastManager,
-    connect(null,mapDispatchToProps)
+    connect(mapStateToProps,mapDispatchToProps)
 )(CourseWidget);
