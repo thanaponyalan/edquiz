@@ -8,6 +8,12 @@ import { wrapper } from '../redux/store';
 import nextCookie from 'next-cookies';
 import {login} from '../redux/actions/authAction';
 import { ToastProvider } from 'react-toast-notifications';
+import dynamic from 'next/dynamic'
+
+const TopProgressBar=dynamic(
+    ()=>import("../components/TopProgressBar"),
+    {ssr: false}
+)
 
 function MyApp(props) {
   const { Component, pageProps } = props;
@@ -23,6 +29,7 @@ function MyApp(props) {
   return (
       <ThemeProvider theme={theme}>
         {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
+        <TopProgressBar/>
         <CssBaseline />
         <ToastProvider placement={'bottom-center'} autoDismissTimeout={3000} components={{ Toast: Snack}}>
             <Component {...pageProps} />
