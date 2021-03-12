@@ -4,8 +4,6 @@ import cookie from 'js-cookie';
 import Router from 'next/router';
 import { destroyCookie } from 'nookies';
 import { setProfile } from "../redux/actions/profileAction";
-import roleReducer from "../redux/reducers/roleReducer";
-import { setRole } from "../redux/actions/roleAction";
 import { setCourse } from "../redux/actions/courseAction";
 import { API } from "../constant/ENV";
 
@@ -58,7 +56,6 @@ export const withAuthSync = WrappedComponent => class extends Component {
         const {pathname, store}=ctx;
         let courses=[];
         try {
-            store.dispatch(setRole(role))
             var url = new URL(`${API}/user`), params = { uid: uid }
             Object.keys(params).forEach(key => url.searchParams.append(key, params[key]));
             const uRes = await fetch(url);
