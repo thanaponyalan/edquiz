@@ -40,8 +40,8 @@ function MyApp(props) {
 
 MyApp.getInitialProps=async ({Component, ctx})=>{
     const nCookie=nextCookie(ctx);
-    if(nCookie['uid']){
-        ctx.store.dispatch(login(nCookie['uid']))
+    if(nCookie['uid']&&nCookie['role']){
+        ctx.store.dispatch(login({uid: nCookie['uid'], role: nCookie['role']}))
     }
     return{
         pageProps:{
