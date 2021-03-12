@@ -51,7 +51,7 @@ const Sidebar = (props) => {
                         </li>
                         <li className="nav-header">GOOGLE CLASSROOM</li>
                         <li className="nav-item">
-                            <Link href='/my-class'>
+                            <Link href={isTeacher?'/my-class':'studentClass'}>
                                 <a href="#" className={pathname==="/my-class"?"nav-link active":"nav-link"}>
                                     <i className="nav-icon fas fa-tachometer-alt" />
                                     <p>
@@ -61,7 +61,7 @@ const Sidebar = (props) => {
                             </Link>
                         </li>
                         <li className="nav-item">
-                            <Link href='/assignment'>
+                            <Link href={isTeacher?'assignment':'studentAssignment'}>
                                 <a href="#" className={pathname==="/assignment"?"nav-link active":"nav-link"}>
                                     <i className="nav-icon fas fa-th" />
                                     <p>
