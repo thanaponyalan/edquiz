@@ -4,7 +4,6 @@ import thunkMiddleware from 'redux-thunk'
 import profileReducer from './reducers/profileReducer'
 import authReducer from './reducers/authReducer'
 import classroomReducer from './reducers/classroomReducer'
-import roleReducer from './reducers/roleReducer'
 import courseReducer from './reducers/courseReducer'
 
 const bindMiddleware = (middleware) => {
@@ -19,7 +18,6 @@ const combinedReducer = combineReducers({
   profileReducer,
   authReducer,
   classroomReducer,
-  roleReducer,
   courseReducer
 })
 

@@ -1,4 +1,5 @@
 import {_error_handler} from '../../utils/errorHandler';
+import { API } from "../../constant/ENV";
 
 export const courseActionTypes={
     FETCH_COURSE: "FETCH_COURSE",
@@ -7,7 +8,7 @@ export const courseActionTypes={
 
 export const fetchCourse=(uid,toast)=>async(dispatch)=>{
     try{
-        const url=`http://localhost:3000/api/course`
+        const url=`${API}/course`
         const coursesRes=await fetch(url,{
             method: 'GET',
             headers:{

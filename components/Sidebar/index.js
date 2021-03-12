@@ -11,8 +11,8 @@ const Sidebar = (props) => {
     // console.log(props);
     const {profile, router}=props;
     const {pathname}=router;
-    const {currentRole}=props.role;
-    const isTeacher=currentRole=='teacher';
+    const {role}=props.auth;
+    const isTeacher=role=='teacher';
     return (
         <aside className="main-sidebar sidebar-dark-primary elevation-4">
             {/* <script>$(`#pushMenu`).PushMenu();console.log(`TEST`);</script> */}
@@ -125,7 +125,7 @@ const Sidebar = (props) => {
 const mapStateToProps=state=>{
     return{
         profile: state.profileReducer,
-        role: state.roleReducer
+        auth: state.authReducer
     }
 }
 

@@ -1,8 +1,8 @@
-const port=process.env.PORT||3000;
+import { GOOGLE_REDIRECT_URI, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET } from "../constant/ENV";
 export default{
     google:{
-        client_id: '316027740377-35ebs88ek2nto6ke48kv8hqngn3dmobn.apps.googleusercontent.com',
-        client_secret: 'iUuBE-j84zIMX8UV_ztD_DlV',
-        redirect_uri: `http://localhost:${port}/api/accessToken`
+        client_id: GOOGLE_CLIENT_ID,
+        client_secret: GOOGLE_CLIENT_SECRET,
+        redirect_uri: GOOGLE_REDIRECT_URI
     }
 }

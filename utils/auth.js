@@ -4,11 +4,8 @@ import cookie from 'js-cookie';
 import Router from 'next/router';
 import { destroyCookie } from 'nookies';
 import { setProfile } from "../redux/actions/profileAction";
-import roleReducer from "../redux/reducers/roleReducer";
-import { setRole } from "../redux/actions/roleAction";
 import { setCourse } from "../redux/actions/courseAction";
-
-let server = 'http://localhost:3000'
+import { API } from "../constant/ENV";
 
 export const withAuthSync = WrappedComponent => class extends Component {
     constructor(props) {
@@ -55,19 +52,17 @@ export const withAuthSync = WrappedComponent => class extends Component {
     }
 
     static async getInitialProps(ctx) {
-        const authen=auth(ctx);
-        const {uid, role} = authen||{};
+        const {uid, role} = auth(ctx)||{};
         const {pathname, store}=ctx;
-        store.dispatch(setRole(role))
-        let courses=[], ret;
+        let courses=[];
         try {
-            var url = new URL(`${server}/api/user`), params = { uid: uid }
+            var url = new URL(`${API}/user`), params = { uid: uid }
             Object.keys(params).forEach(key => url.searchParams.append(key, params[key]));
             const uRes = await fetch(url);
             const user = await uRes.json();
             store.dispatch(setProfile(user));
             if(pathname=='/course'){
-                url=`${server}/api/course`
+                url=`${API}/course`
                 const coursesRes=await fetch(url,{
                     method: 'GET',
                     headers:{

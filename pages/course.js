@@ -14,6 +14,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from "redux";
 import { withToastManager } from 'react-toast-notifications';
 import { _error_handler } from '../utils/errorHandler';
+import {API} from '../constant/ENV'
 
 const Course=(props)=>{
     const [openModal,setOpenModal]=useState(false);
@@ -23,7 +24,7 @@ const Course=(props)=>{
         delete course._id;
         props.toastManager.add("Creating...",{appearance: 'info', autoDismiss: true})
         try{
-            const url=`http://localhost:3000/api/course`
+            const url=`${API}/course`
             const result=await fetch(url,{
                 method: 'POST',
                 headers:{

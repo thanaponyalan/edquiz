@@ -3,11 +3,11 @@ export const authActionTypes={
     LOGOUT: "LOGOUT",
 }
 
-export const login=(uid)=>dispatch=>{
+export const login=(data)=>dispatch=>{
     // console.log("logged in");
     return dispatch({
         type: authActionTypes.LOGIN,
-        payload: uid
+        payload: data
     })
 }
 

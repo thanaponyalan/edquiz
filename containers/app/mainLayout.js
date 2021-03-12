@@ -10,6 +10,8 @@ class MainLayout extends Component{
     }
     render(){
         return(
+            <>
+            <title>{this.props.title}</title>
             <div>
                 <div className="wrapper">
                     <Navbar title={this.props.title} components={this.props.pageActions}/>
@@ -21,6 +23,7 @@ class MainLayout extends Component{
                 </div>
                 <div id="sidebar-overlay" onClick={()=>$(`#pushMenu`).click()}></div>
             </div>
+            </>
         )
     }
 }
