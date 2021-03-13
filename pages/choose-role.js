@@ -2,15 +2,29 @@ import { Component } from "react";
 import MainLayout from "../containers/app/loginLayout";
 import { Button } from "reactstrap";
 import cookie from "js-cookie";
+import nextCookie from "next-cookies";
+import { Router } from "next/router";
 
 class ChooseRole extends Component{
     constructor(props){
         super(props);
     }
+
+    static getInitialProps=(ctx)=>{
+        const {role}=nextCookie(ctx);
+        if(role){
+            if(ctx.res){
+                ctx.res.writeHead(301,{Location: '/'})
+                ctx.res.end()
+            }else{
+                Router.replace('/')
+            }
+        }
+    }
     
     setRole=(role)=>{
         cookie.set('role',role,'/');
-        window.location="/my-class"
+        window.location="/"
     }
     
     render(){

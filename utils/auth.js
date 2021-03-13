@@ -6,6 +6,7 @@ import { destroyCookie } from 'nookies';
 import { setProfile } from "../redux/actions/profileAction";
 import { setCourse } from "../redux/actions/courseAction";
 import { API } from "../constant/ENV";
+import { setQuestion } from "../redux/actions/questionAction";
 
 export const withAuthSync = WrappedComponent => class extends Component {
     constructor(props) {
@@ -54,7 +55,7 @@ export const withAuthSync = WrappedComponent => class extends Component {
     static async getInitialProps(ctx) {
         const {uid, role} = auth(ctx)||{};
         const {pathname, store}=ctx;
-        let courses=[];
+        let courses=[],questions;
         try {
             var url = new URL(`${API}/user`), params = { uid: uid }
             Object.keys(params).forEach(key => url.searchParams.append(key, params[key]));
@@ -71,6 +72,17 @@ export const withAuthSync = WrappedComponent => class extends Component {
                 });
                 courses=await coursesRes.json();
                 store.dispatch(setCourse(courses));
+            }
+            if(pathname=='/item'){
+                url=`${API}/item`
+                const questionRes=await fetch(url,{
+                    method: 'GET',
+                    headers:{
+                        authorization: uid
+                    }
+                })
+                questions=await questionRes.json();
+                store.dispatch(setQuestion(questions));
             }
         } catch (err) {
             console.log(err);

@@ -1,10 +1,11 @@
-const dbConfig=require('./dbConfig');
+const mongoose=require('./dbConfig');
 const dbSchema=require('./dbSchema');
 
 module.exports={
-    usersModel: dbConfig.mongoose.models.users || dbConfig.mongoose.model('users',dbSchema.usersSchema),
-    coursesModel: dbConfig.mongoose.models.courses || dbConfig.mongoose.model('courses',dbSchema.coursesSchema),
-    objectivesModel: dbConfig.mongoose.models.objectives || dbConfig.mongoose.model('objectives',dbSchema.objectivesSchema)
+    usersModel: mongoose.models.users || mongoose.model('users',dbSchema.usersSchema),
+    coursesModel: mongoose.models.courses || mongoose.model('courses',dbSchema.coursesSchema),
+    objectivesModel: mongoose.models.objectives || mongoose.model('objectives',dbSchema.objectivesSchema),
+    questionsModel: mongoose.models.questions || mongoose.model('questions',dbSchema.questionSchema)
 }
 
 // module.exports={

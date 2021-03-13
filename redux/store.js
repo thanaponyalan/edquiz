@@ -5,6 +5,7 @@ import profileReducer from './reducers/profileReducer'
 import authReducer from './reducers/authReducer'
 import classroomReducer from './reducers/classroomReducer'
 import courseReducer from './reducers/courseReducer'
+import questionReducer from './reducers/questionReducer'
 
 const bindMiddleware = (middleware) => {
   if (process.env.NODE_ENV !== 'production') {
@@ -18,7 +19,8 @@ const combinedReducer = combineReducers({
   profileReducer,
   authReducer,
   classroomReducer,
-  courseReducer
+  courseReducer,
+  questionReducer
 })
 
 const reducer = (state, action) => {

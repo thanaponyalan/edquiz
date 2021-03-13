@@ -70,7 +70,7 @@ export default function editObjectiveForm(props) {
                         name="_id"
                         value={values.id}
                         onChange={handleInputChange}
-                        error={errors.objective}
+                        error={errors.id}
                         disabled={true}
                     />
                     :""}

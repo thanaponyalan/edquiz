@@ -4,7 +4,7 @@ const dbModel=require('../../database/dbModel');
 
 const getDetail=(req,res)=>{
     return new Promise((resolve,reject)=>{
-        dbModel.usersModel.count({_id: req.query.uid},(err,count)=>{
+        dbModel.usersModel.countDocuments({_id: req.query.uid},(err,count)=>{
             if(count>0){
                 const usr=dbModel.usersModel.findById(req.query.uid,(err,user)=>{
                     if(!err){

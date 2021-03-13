@@ -2,13 +2,14 @@ import withMiddleware from "../../middlewares";
 import {serialize} from 'cookie';
 const dbModel=require('../../database/dbModel');
 
-const getCourses=async(req,res)=>{
-    let response={
-        statusCode: 200,
-        data:{
-            payload: {}
-        }
+let response={
+    statusCode: 200,
+    data:{
+        payload: {}
     }
+}
+
+const getCourses=async(req,res)=>{
     return new Promise((resolve, reject)=>{
         if(req.headers.authorization===undefined){
             response.statusCode=403;
@@ -28,12 +29,6 @@ const getCourses=async(req,res)=>{
 }
 
 const updateCourse=async(req,res)=>{
-    let response={
-        statusCode: 200,
-        data:{
-            payload: {}
-        }
-    }
     return new Promise((resolve,reject)=>{
         if(req.headers.authorization===undefined){
             response.statusCode=403;
@@ -62,12 +57,6 @@ const updateCourse=async(req,res)=>{
 }
 
 const insertCourse=async(req,res)=>{
-    let response={
-        statusCode: 200,
-        data:{
-            payload: {}
-        }
-    }
     return new Promise((resolve,reject)=>{
         if(req.headers.authorization===undefined){
             response.statusCode=403;

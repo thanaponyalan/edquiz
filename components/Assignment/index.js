@@ -12,7 +12,7 @@ const AssignmentWidget = (props) => {
                 <Card className="card-primary card-outline collapsed-card">
                     <CardHeader>
                         <CardTitle>{props.courseDetail.courseName} ({props.courseDetail.courseNo})</CardTitle>
-                        <div class="card-tools">
+                        <div className="card-tools">
                             <NewAssignment/>
                             <Insight/>
                             <button type="button" className="btn btn-tool" data-card-widget="collapse"><i className="fas fa-plus"></i></button>
@@ -30,7 +30,7 @@ const AssignmentWidget = (props) => {
                 <Card className="card-primary card-outline">
                     <CardHeader>
                         <CardTitle>{props.courseDetail.courseName} ({props.courseDetail.courseNo})</CardTitle>
-                        <div class="card-tools">
+                        <div className="card-tools">
                             <NewAssignment/>
                             <Insight/>
                             <button type="button" className="btn btn-tool" data-card-widget="collapse"><i className="fas fa-minus"></i></button>

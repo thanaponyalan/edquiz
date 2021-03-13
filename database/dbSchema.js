@@ -1,8 +1,7 @@
 const { Schema } = require('mongoose');
-const dbConfig=require('./dbConfig');
+const mongoose=require('./dbConfig');
 
-
-const usersSchema=new dbConfig.Schema({
+const usersSchema=new mongoose.Schema({
     email: {type: String, lowercase: true, unique: true, required: [true, "can't be blank"], match: [/\S+@\S+\.\S+/, 'is invalid'], index: true},
     tokens: {
         access_token: String,
@@ -14,7 +13,7 @@ const usersSchema=new dbConfig.Schema({
     photoUrl: String
 });
 
-const classesSchema=new dbConfig.Schema({
+const classesSchema=new mongoose.Schema({
     classId: {type: String, unique: true},
     className: String,
     subjectId: Schema.Types.ObjectId,
@@ -22,7 +21,7 @@ const classesSchema=new dbConfig.Schema({
     teacherId: [Schema.Types.ObjectId]
 });
 
-const coursesSchema=new dbConfig.Schema({
+const coursesSchema=new mongoose.Schema({
     courseName: String,
     courseNo: String,
     courseDescription: String,
@@ -30,15 +29,33 @@ const coursesSchema=new dbConfig.Schema({
     owner: Schema.Types.ObjectId
 });
 
-const objectivesSchema=new dbConfig.Schema({
+const objectivesSchema=new mongoose.Schema({
     bloomLevel: Number,
     courseId: {type:Schema.Types.ObjectId, ref: 'courses'},
     objective: String
+})
+
+const questionSchema=new mongoose.Schema({
+    question:{
+        title: String,
+        pict: String,
+        type: Number
+    },
+    choices:[{isTrue: Boolean, choice:String, pict: String}],
+    params:{
+        a: Number,
+        b: Number,
+        c: Number
+    },
+    courseId:[{type: Schema.Types.ObjectId}],
+    objectiveId:[{type: Schema.Types.ObjectId}],
+    owner: Schema.Types.ObjectId
 })
 
 module.exports={
     usersSchema,
     classesSchema,
     coursesSchema,
-    objectivesSchema
+    objectivesSchema,
+    questionSchema
 }
