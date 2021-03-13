@@ -40,13 +40,13 @@ import QuestionDetail from "./questionDetail";
 
 const QuestionWidget=(props)=>{
     const [openModal,setOpenModal]=useState(false);
-    const {isCollapse, questionDetail}=props;
+    const {isCollapse, question}=props;
     
     return(
         <>
             <Card 
                 isCollapse={isCollapse}
-                title={questionDetail.title}
+                title={question.title}
                 viewable
                 viewInModal={()=>setOpenModal(true)}
                 >
@@ -55,7 +55,7 @@ const QuestionWidget=(props)=>{
                 openModal={openModal}
                 setOpenModal={setOpenModal}
                 title="Preview">
-                    <QuestionDetail {...props} toggle={()=>setOpenModal(false)} recordForEdit={{question: questionDetail.title, choice: ""}}/>
+                    <QuestionDetail {...props} toggle={()=>setOpenModal(false)} recordForEdit={{question: question.title, choice: ""}}/>
             </Modal>
         </>
     )

@@ -36,7 +36,7 @@ const objectivesSchema=new mongoose.Schema({
 })
 
 const questionSchema=new mongoose.Schema({
-    questionDetail:{
+    question:{
         title: String,
         pict: String,
         type: Number

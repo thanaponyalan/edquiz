@@ -11,7 +11,7 @@ const initialValues = {
 
 
 export default function questionDetail(props) {
-    const {recordForEdit, toggle, choices, questionDetail}=props;
+    const {recordForEdit, toggle, choices, question}=props;
 
     const validate=(fieldValues=values)=>{
         let temp={...errors}
@@ -60,7 +60,7 @@ export default function questionDetail(props) {
                         error={errors.question}
                         inputProps={{readOnly: true}}
                     />
-                    <img src={questionDetail.pict} width="100%"/>
+                    <img src={question.pict} width="100%"/>
                     <Controls.Radio
                         name="choice"
                         label="Choices"

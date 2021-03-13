@@ -22,7 +22,7 @@ console.log(props);
             <Row>
                 {
                     props.questions.length&&props.questions.map((item,i)=>
-                        <Question isCollapse={i} key={i} type={questionType[item.questionDetail.type-1]} {...item}/>
+                        <Question isCollapse={i} key={i} type={questionType[item.question.type-1]} {...item}/>
                     )
                 }
             </Row>
