@@ -1,17 +1,41 @@
 import React, { useState, useEffect } from 'react'
-import { Button, Modal, ModalBody, ModalFooter, ModalHeader, FormGroup, Input, Label, Row, Col } from "reactstrap";
-import { Grid, TextField,  } from "@material-ui/core";
+import { Button, Modal, ModalBody, ModalFooter, ModalHeader, FormGroup, Label, Row, Col } from "reactstrap";
+import { Grid, TextField, Input, Chip, makeStyles  } from "@material-ui/core";
 import {useForm, Form} from "../MaterialUI/useForm";
 import Controls from "../MaterialUI/controls/Controls";
 
+const useStyles = makeStyles((theme) => ({
+    formControl: {
+      margin: theme.spacing(1),
+      minWidth: 120,
+      maxWidth: 300,
+    },
+    chips: {
+      display: 'flex',
+      flexWrap: 'wrap',
+    },
+    chip: {
+      margin: 2,
+    },
+    noLabel: {
+      marginTop: theme.spacing(3),
+    },
+  }));
+
 const initialValues = {
     question:"",
-    choice:""
+    choice:"",
+    courses:['a','b'],
+    objectives:['a','b'],
+    params: ""
 }
-
+const opts=[
+    {id: 1, title: ''}
+]
 
 export default function questionDetail(props) {
     const {recordForEdit, toggle, choices, question}=props;
+    const classes=useStyles();
 
     const validate=(fieldValues=values)=>{
         let temp={...errors}
@@ -48,6 +72,7 @@ export default function questionDetail(props) {
             })
     },[recordForEdit])
 
+    // console.log(values);
     return (
         <Form onSubmit={handleSubmit}>
             <Grid container>
@@ -72,9 +97,59 @@ export default function questionDetail(props) {
                 </Grid>
             </Grid>
             <div>
-                <Controls.Button text="Submit" type="submit"/>
-                <Controls.Button text="Cancel" color="default" onClick={toggle}/>
+                <Controls.Button text="Check Answer" type="submit"/>
+                {/* <Controls.Button text="Cancel" color="default" onClick={toggle}/> */}
             </div>
+            <hr/>
+            <Grid container>
+                <Grid item md={12}>
+                    <Controls.Select
+                        name="courses"
+                        label="Courses"
+                        value={values.courses}
+                        onChange={handleInputChange}
+                        options={opts}
+                        error={errors.courses}
+                        multiple
+                        input={<Input/>}
+                        renderValue={(selected) => (
+                            <div className={classes.chips}>
+                                {selected.map((value) => (
+                                    <Chip key={value} label={value} className={classes.chip} />
+                                ))}
+                            </div>
+                        )}
+                        inputProps={{readOnly: true}}
+                    />
+                    <Controls.Select
+                        name="objectives"
+                        label="Objectives"
+                        value={values.objectives}
+                        onChange={handleInputChange}
+                        options={opts}
+                        error={errors.objectives}
+                        multiple
+                        input={<Input/>}
+                        renderValue={(selected) => (
+                            <div className={classes.chips}>
+                                {selected.map((value) => (
+                                    <Chip key={value} label={value} className={classes.chip} />
+                                ))}
+                            </div>
+                        )}
+                        inputProps={{readOnly: true}}
+                    />
+                    {/* <Controls.Input
+                        name="params"
+                        label="Parameters"
+                        value={values.params}
+                        onChange={handleInputChange}
+                        error={errors.params}
+                        inputProps={{readOnly: true}}
+                    /> */}
+                </Grid>
+
+            </Grid>
         </Form>
     )
 }

@@ -47,8 +47,8 @@ const questionSchema=new mongoose.Schema({
         b: Number,
         c: Number
     },
-    courseId:[{type: Schema.Types.ObjectId}],
-    objectiveId:[{type: Schema.Types.ObjectId}],
+    courseId:[{type: Schema.Types.ObjectId, ref: 'courses'}],
+    objectiveId:[{type: Schema.Types.ObjectId, ref: 'objectives'}],
     owner: Schema.Types.ObjectId
 })
 
