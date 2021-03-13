@@ -46,7 +46,7 @@ const QuestionWidget=(props)=>{
         <>
             <Card 
                 isCollapse={isCollapse}
-                title={questionDetail}
+                title={questionDetail.title}
                 viewable
                 viewInModal={()=>setOpenModal(true)}
                 >
@@ -55,7 +55,7 @@ const QuestionWidget=(props)=>{
                 openModal={openModal}
                 setOpenModal={setOpenModal}
                 title="Preview">
-                    <QuestionDetail {...props} toggle={()=>setOpenModal(false)} recordForEdit={{question: questionDetail, choice: ""}}/>
+                    <QuestionDetail {...props} toggle={()=>setOpenModal(false)} recordForEdit={{question: questionDetail.title, choice: ""}}/>
             </Modal>
         </>
     )

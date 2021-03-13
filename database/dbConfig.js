@@ -10,7 +10,4 @@ mongoose.connect(MONGO_URI,{useNewUrlParser: true, useUnifiedTopology: true, use
     console.log("[failed] task 2 : "+error);
 })
 
-module.exports={
-    mongoose,
-    Schema
-}
+module.exports=mongoose;

@@ -11,14 +11,14 @@ const initialValues = {
 
 
 export default function questionDetail(props) {
-    const {recordForEdit, toggle, choices}=props;
+    const {recordForEdit, toggle, choices, questionDetail}=props;
 
     const validate=(fieldValues=values)=>{
         let temp={...errors}
-        // if('objective' in fieldValues)
-        //     temp.objective=fieldValues.objective?"":"This field is required"        
-        // if('bloomLevel' in fieldValues)
-        //     temp.bloomLevel=fieldValues.bloomLevel?"":"This field is required"
+        if('question' in fieldValues)
+            temp.question=fieldValues.question?"":"This field is required"        
+        if('choice' in fieldValues)
+            temp.choice=fieldValues.choice?"":"This field is required"
         setErrors({
             ...temp
         })
@@ -60,7 +60,7 @@ export default function questionDetail(props) {
                         error={errors.question}
                         inputProps={{readOnly: true}}
                     />
-                    <img src="/upload/5fafa7393e953fa2512c3db7/questions.png" width="100%"/>
+                    <img src={questionDetail.pict} width="100%"/>
                     <Controls.Radio
                         name="choice"
                         label="Choices"

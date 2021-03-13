@@ -16,13 +16,13 @@ const questionType=[
 ]
 
 const Item=(props)=>{
-
+console.log(props);
     return(
         <MainLayout title="Items">
             <Row>
                 {
                     props.questions.length&&props.questions.map((item,i)=>
-                        <Question isCollapse={i} key={i} type={questionType[item.questionType-1]} {...item}/>
+                        <Question isCollapse={i} key={i} type={questionType[item.questionDetail.type-1]} {...item}/>
                     )
                 }
             </Row>
