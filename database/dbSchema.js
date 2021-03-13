@@ -39,7 +39,7 @@ const questionSchema=new mongoose.Schema({
     question:{
         title: String,
         pict: String,
-        type: Number
+        type: {type: Number}
     },
     choices:[{isTrue: Boolean, choice:String, pict: String}],
     params:{
