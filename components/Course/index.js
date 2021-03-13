@@ -83,6 +83,7 @@ const CourseWidget = (props) => {
                 editable
                 editInModal={()=>openInPopup(props.courseDetail)}
                 addable
+                collapsable
                 addObjective={addObjective}>
                 <ObjectiveTable initRecord={props.courseDetail.objectives} courseId={props.courseDetail._id}/>
             </Card>
