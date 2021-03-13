@@ -36,9 +36,25 @@ const objectivesSchema=new dbConfig.Schema({
     objective: String
 })
 
+const questionSchema=new dbConfig.Schema({
+    questionType: Number,
+    questionDetail: String,
+    questionPict: String,
+    choices:[{isTrue: Boolean, choice:String, choicePict: String}],
+    params:{
+        a: Number,
+        b: Number,
+        c: Number
+    },
+    courseId:[{type: Schema.Types.ObjectId}],
+    objectiveId:[{type: Schema.Types.ObjectId}],
+    owner: Schema.Types.ObjectId
+})
+
 module.exports={
     usersSchema,
     classesSchema,
     coursesSchema,
-    objectivesSchema
+    objectivesSchema,
+    questionSchema
 }
