@@ -108,7 +108,7 @@ export default function questionDetail(props) {
                         label="Courses"
                         value={values.courses}
                         onChange={handleInputChange}
-                        options={opts}
+                        options={[{id: 'Course 1', title:'Course 1'},{id: 'Course 2', title: 'Course 2'}]}
                         error={errors.courses}
                         multiple
                         input={<Input/>}
@@ -119,14 +119,14 @@ export default function questionDetail(props) {
                                 ))}
                             </div>
                         )}
-                        inputProps={{readOnly: true}}
+                        // inputProps={{readOnly: true}}
                     />
                     <Controls.Select
                         name="objectives"
                         label="Objectives"
                         value={values.objectives}
                         onChange={handleInputChange}
-                        options={opts}
+                        options={[{id: 'Obj 1', title:'Obj 1'},{id: 'Obj 2', title: 'Obj 2'}]}
                         error={errors.objectives}
                         multiple
                         input={<Input/>}
@@ -137,7 +137,7 @@ export default function questionDetail(props) {
                                 ))}
                             </div>
                         )}
-                        inputProps={{readOnly: true}}
+                        // inputProps={{readOnly: true}}
                     />
                     {/* <Controls.Input
                         name="params"
