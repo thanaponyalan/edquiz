@@ -16,7 +16,7 @@ const getQuestion=async(req,res)=>{
             res.status(response.statusCode).json(response);
             return reject(response);
         }
-        dbModel.questionsModel.find({owner: req.headers.authorization},(err,questions)=>{
+        dbModel.questionsModel.find({owner: req.headers.authorization}).populate('courseId').populate('objectiveId').exec((err,questions)=>{
             if(!err){
                 response.data.payload=questions
                 res.status(response.statusCode).json(response);
