@@ -14,6 +14,9 @@ export default next=>async(req,res)=>{
         },[]);
 
         await Promise.all(promises);
+        process.on('unhandledRejection',(reason,promise)=>{
+            console.log('Unhandle Rejection at:',reason.stack||reason);
+        })
         return next(req,res);
     }catch(err){
         return res.status(400).send(err);

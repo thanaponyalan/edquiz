@@ -10,7 +10,7 @@ let response={
 
 const getQuestion=async(req,res)=>{
     return new Promise((resolve, reject)=>{
-        if(req.headers.authorization===undefined){
+        if(req.headers.authorization===undefined||!req.headers.authorization.match(/^[0-9a-fA-F]{24}$/)){
             response.statusCode=403;
             response.data.message="Permission Denied!";
             res.status(response.statusCode).json(response);

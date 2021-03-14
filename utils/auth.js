@@ -130,7 +130,6 @@ export const logout = (ctx = null) => {
         cookie.remove('role')
         window.localStorage.setItem('logout', Date.now());
         Router.push('/login');
-        window.location.reload();
     }
 }
 
