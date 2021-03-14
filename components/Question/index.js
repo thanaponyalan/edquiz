@@ -38,6 +38,8 @@ import QuestionDetail from "./questionDetail";
 //     )
 // }
 
+const questionType=['Multiple Choice','Match',['True or False']]
+
 const QuestionWidget=(props)=>{
     const [openModal,setOpenModal]=useState(false);
     const {isCollapse, question, courseId, objectiveId}=props;
@@ -46,6 +48,7 @@ const QuestionWidget=(props)=>{
             <Card 
                 isCollapse={isCollapse}
                 title={question.title}
+                type={questionType[question.type-1]}
                 viewable
                 viewInModal={()=>setOpenModal(true)}
                 >

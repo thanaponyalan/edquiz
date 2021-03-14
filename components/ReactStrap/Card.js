@@ -1,14 +1,15 @@
 import React from 'react'
 import { Card as ReactStrapCard, Col, CardHeader, CardTitle, CardBody } from "reactstrap";
 import { PlaylistAdd, Visibility } from "@material-ui/icons";
+import { Badge, Chip } from '@material-ui/core';
 
 export default function Card(props) {
-    const {isCollapse,title,children,editable,editInModal,addable,addObjective,collapsable,viewable,viewInModal} = props;
+    const {isCollapse,title,children,editable,editInModal,addable,addObjective,collapsable,viewable,viewInModal,type} = props;
     return (
         <Col md="12">
             <ReactStrapCard className={`card-primary card-outline ${isCollapse||!collapsable?'collapsed-card':''}`}>
                 <CardHeader>
-                    <CardTitle>{title}</CardTitle>
+                    <CardTitle>{title}{' '}{type&&<Chip label={type}/>}</CardTitle>
                     <div className="card-tools">
                         {viewable?<button type="button" className="btn btn-tool" onClick={viewInModal}><Visibility/></button>:""}
                         {addable?<button type="button" className="btn btn-tool" onClick={addObjective}><PlaylistAdd/></button>:""}
