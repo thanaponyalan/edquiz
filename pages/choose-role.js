@@ -11,7 +11,15 @@ class ChooseRole extends Component{
     }
 
     static getInitialProps=(ctx)=>{
-        const {role}=nextCookie(ctx);
+        const {role, uid}=nextCookie(ctx);
+        if(!uid){
+            if(ctx.res){
+                ctx.res.writeHead(301,{Location: '/'})
+                ctx.res.end()
+            }else{
+                Router.replace('/')
+            }
+        }
         if(role){
             if(ctx.res){
                 ctx.res.writeHead(301,{Location: '/'})

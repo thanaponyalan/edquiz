@@ -11,13 +11,8 @@ import { setQuestion } from "../redux/actions/questionAction";
 export const withAuthSync = WrappedComponent => class extends Component {
     constructor(props) {
         super(props);
-        // this.syncLogout=this.syncLogout.bind(this)
     }
-    // syncLogout(event){
-    //     if(event.key==='logout'){
-    //         Router.push('/login')
-    //     }
-    // }
+    
     componentDidMount() {
         this.layoutHeight();
     }
@@ -129,17 +124,6 @@ export const logout = (ctx = null) => {
         cookie.remove('uid');
         cookie.remove('role')
         window.localStorage.setItem('logout', Date.now());
-        Router.push('/login');
+        window.location.href="/login";
     }
-}
-
-const getRole=ctx=>{
-    const { role }=nextCookie(ctx);
-    if(!role&&ctx.req){
-        ctx.res.writeHead(302,{Location:'/choose-role'});
-        ctx.res.end();
-        return;
-    }
-    if(!role)Router.push('/choose-role');
-    return role;
 }
