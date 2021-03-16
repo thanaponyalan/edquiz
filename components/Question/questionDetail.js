@@ -75,8 +75,8 @@ export default function questionDetail(props) {
     // console.log(values);
     return (
         <Form onSubmit={handleSubmit}>
-            <Grid container>
-                <Grid item md={12}>
+            <Grid container spacing={3}>
+                <Grid item md={8}>
                     <Controls.Input
                         label="Question"
                         name="question"
@@ -94,15 +94,12 @@ export default function questionDetail(props) {
                         options={choices}
                         error={errors.choice}
                     />
+                <div>
+                    <Controls.Button text="Check Answer" type="submit"/>
+                    {/* <Controls.Button text="Cancel" color="default" onClick={toggle}/> */}
+                </div>
                 </Grid>
-            </Grid>
-            <div>
-                <Controls.Button text="Check Answer" type="submit"/>
-                {/* <Controls.Button text="Cancel" color="default" onClick={toggle}/> */}
-            </div>
-            <hr/>
-            <Grid container>
-                <Grid item md={12}>
+                <Grid item md={4}>
                     <Controls.Select
                         name="courses"
                         label="Courses"
@@ -148,7 +145,6 @@ export default function questionDetail(props) {
                         inputProps={{readOnly: true}}
                     /> */}
                 </Grid>
-
             </Grid>
         </Form>
     )

@@ -3,6 +3,7 @@
 import { FormControlLabel, FormControl, FormLabel, Radio, RadioGroup } from "@material-ui/core";
 import { Label } from "@material-ui/icons";
 import { useState } from "react";
+import Popup from "../MaterialUI/Popup";
 import Card from "../ReactStrap/Card";
 import Modal from "../ReactStrap/Modal";
 import QuestionDetail from "./questionDetail";
@@ -53,12 +54,13 @@ const QuestionWidget=(props)=>{
                 viewInModal={()=>setOpenModal(true)}
                 >
             </Card>
-            <Modal
-                openModal={openModal}
-                setOpenModal={setOpenModal}
+            <Popup
+                open={openModal}
+                handleClose={()=>setOpenModal(false)}
+                fullScreen
                 title="Preview">
                     <QuestionDetail {...props} toggle={()=>setOpenModal(false)} recordForEdit={{question: question.title, choice: "", courses: courseId.map(item=>{return item.courseName}), objectives: objectiveId.map(item=>{return item.objective}), params: "a=1, b=1, c=0"}}/>
-            </Modal>
+            </Popup>
         </>
     )
 }

@@ -4,6 +4,7 @@ import ActionButton from "../controls/ActionButton";
 import Fab from "../controls/Fab";
 import Select from "../controls/Select";
 import Radio from "../controls/Radio";
+import AutoComplete from "./AutoComplete";
 
 export default{
     Button,
@@ -11,5 +12,6 @@ export default{
     ActionButton,
     Fab,
     Select,
-    Radio
+    Radio,
+    AutoComplete
 }

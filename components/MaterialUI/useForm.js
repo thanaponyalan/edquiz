@@ -7,10 +7,22 @@ export function useForm(initialValues,validateOnChange=false,validate) {
 
     const handleInputChange=e=>{
         const {name,value}=e.target;
-        setValues({
-            ...values,
-            [name]:value
-        })
+        
+        if(typeof name==='string'&&name.includes(".")){
+            let names=name.split('.');
+            setValues({
+                ...values,
+                [names[0]]:{
+                    ...values[names[0]],
+                    [names[1]]: value
+                }
+            })
+        }else{
+            setValues({
+                ...values,
+                [name]:value
+            })
+        }
         if(validateOnChange)
             validate({[name]:value})
     }

@@ -1,5 +1,5 @@
 import React from 'react'
-import { Dialog, DialogTitle, DialogContent, makeStyles, Typography } from "@material-ui/core";
+import { Dialog, DialogTitle, DialogContent, makeStyles, Typography, AppBar, IconButton, Button, Toolbar } from "@material-ui/core";
 import Controls from "../MaterialUI/controls/Controls";
 import { Close as CloseIcon } from '@material-ui/icons';
 
@@ -12,28 +12,40 @@ const useStyles=makeStyles(theme=>({
     },
     dialogTitle:{
         paddingRight: '0px'
-    }
+    },
+    appBar: {
+        position: 'relative',
+    },
+    title: {
+        marginLeft: theme.spacing(2),
+        flex: 1,
+    },
 }))
 
 export default function Popup(props) {
-    const {title,children,openPopup,setOpenPopup}=props;
+    const {title, children, open, handleClose, fullScreen, handleSave}=props;
     const classes=useStyles();
     return (
-        <Dialog open={openPopup} maxWidth="md" classes={{ paper: classes.dialogWrapper}}>
-            <DialogTitle className={classes.dialogTitle}>
-                <div style={{display: 'flex'}}>
-                    <Typography variant="h6" component="div" style={{flexGrow:1}}>
-                    {title}
+        <Dialog fullScreen={fullScreen} open={open} onClose={handleClose}>
+            <AppBar className={classes.appBar}>
+                <Toolbar>
+                    <IconButton edge="start" color="inherit" onClick={handleClose} aria-label="close">
+                        <CloseIcon />
+                    </IconButton>
+                    <Typography variant="h6" className={classes.title}>
+                        {title}
                     </Typography>
-                    <Controls.ActionButton
-                        color="secondary"
-                        onClick={()=>setOpenPopup(false)}>
-                        <CloseIcon/>
-                    </Controls.ActionButton>
-                </div>
-            </DialogTitle>
-            <DialogContent dividers>
-                {props.children}
+                    {
+                        handleSave&&
+                        <Button color="inherit" onClick={handleSave}>
+                            save
+                        </Button>
+
+                    }
+                </Toolbar>
+            </AppBar>
+            <DialogContent>
+                {children}
             </DialogContent>
         </Dialog>
     )
