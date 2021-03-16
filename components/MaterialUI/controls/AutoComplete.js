@@ -5,7 +5,7 @@ import { TextField } from "@material-ui/core";
 const filter=createFilterOptions();
 
 export default function AutoComplete(props) {
-    const {value, setValue, options, label, handleInputChange, ...others}=props
+    const {value, setValue, options, label, handleInputChange, createAble, ...others}=props
     return (
         <Autocomplete
             {...others}
@@ -26,7 +26,7 @@ export default function AutoComplete(props) {
             onChange={handleInputChange}
             filterOptions={(options, params)=>{
                 const filtered=filter(options,params);
-                if(params.inputValue!==''){
+                if(createAble&&params.inputValue!==''){
                     filtered.push({
                         inputValue: params.inputValue,
                         title: `Add "${params.inputValue}"`

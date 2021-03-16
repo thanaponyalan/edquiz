@@ -157,10 +157,10 @@ const AddQuestion = (props) => {
                             <TypeSelection values={values} handleChangeType={handleChangeType} />
                         </Grid>
                     </Grid>
-                    <Grid item xs={9} style={{/*borderRight: "solid #f00000 1px"*/ }}>
+                    <Grid item xs={12} sm={9}>
                         {getForm(values.question.type)}
                     </Grid>
-                    <Grid item xs={3}>
+                    <Grid item xs={12} sm={3}>
                         <Controls.AutoComplete
                             name="test"
                             label="Test"
@@ -185,6 +185,7 @@ const AddQuestion = (props) => {
                             }}
                             options={[{id: -1, title: 'Not In Test'},{id: 'test', title:'Test for Wk1'}, {id: '12', title: 'Test for Wk2'}]}
                             freeSolo
+                            createAble
                         />
                         <Controls.AutoComplete
                             name="course"
@@ -197,11 +198,6 @@ const AddQuestion = (props) => {
                                         id: -1,
                                         title: 'No Course Selected'
                                     })
-                                }else if(newValue.inputValue){
-                                    setCourse({
-                                        ...newValue.inputValue,
-                                        id: -1
-                                    })
                                 }else{
                                     setCourse({
                                         ...newValue
@@ -209,7 +205,7 @@ const AddQuestion = (props) => {
                                 }
                             }}
                             options={[{id: -1, title: 'No Course Selected'},{id: 'test', title:'Test for Wk1'}, {id: '12', title: 'Test for Wk2'}]}
-                            freeSolo
+                            freeSolo={false}
                         />
                         <Controls.AutoComplete
                             multiple
@@ -222,8 +218,9 @@ const AddQuestion = (props) => {
                                     ...newValue
                                 ])                          
                             }}
-                            options={[{id: 'test', title:'Test for Wk1'}, {id: '12', title: 'Test for Wk2'}]}
+                            options={[{id: -1, title: 'Obj1'},{id:0, title: 'Obj2'},{id: 'test', title:'Test for Wk1'}, {id: '12', title: 'Test for Wk2'}]}
                             freeSolo={false}
+
                         />
                     </Grid>
                 </Grid>
