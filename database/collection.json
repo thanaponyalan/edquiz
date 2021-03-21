@@ -9,9 +9,26 @@
             "email":"String",
             "firstName":"String",
             "familyName":"String",
-            "pict_url":"String",
+            "photoUrl":"String",
             "_id":"ObjectId"
         },
+        "courses":{
+            "_id":"ObjectId",
+            "courseName":"String",
+            "courseNo":"String",
+            "courseDescription":"String",
+            "objectives":[
+                "ObjectId","ObjectId"
+            ],
+            "owner":"ObjectId"
+        },
+        "objectives":{
+            "_id":"ObjectId",
+            "objective":"String",
+            "bloomLevel":"int",
+            "courseId":"ObjectId"
+        },
+
         "classes":{
             "classId":"String",
             "className":"String",
@@ -24,42 +41,43 @@
             ],
             "_id":"ObjectId"
         },
-        "courses":{
-            "courseName":"String",
-            "courseNo":"String",
-            "courseDescription":"String",
-            "_id":"ObjectId"
-        },
-        "objectives":{
-            "bloomLevel":"int",
-            "courseId":"ObjectId",
-            "objective":"String",
-            "_id":"ObjectId"
-        },
+
+
         "quizzes":{
             "_id":"ObjectId",
-            "subjectId":"ObjectId",
-            "teacherId":"ObjectId"
+            "courseId":"ObjectId",
+            "questionId":["ObjectId"],
+            "testName":"String",
+            "owner":"ObjectId"
         },
         "questions":{
             "_id":"ObjectId",
-            "quizzId":"ObjectId",
-            "questionType":"int",
-            "p_score":"float",
-            "r_score":"float",
-            "objectiveId":[
-                "objectiveId1","objectiveId2","objectiveId3","...","objectiveIdn"
-            ],
-            "questionDetail":"String",
-            "questionPict":"String",
+            "question":{
+                "type":"int",
+                "pict":"String",
+                "title":"String"
+
+            },
             "choices":[
                 {
                     "isTrue":"boolean",
                     "choice":"String",
-                    "choicePict":"String"
+                    "pict":"String"
                 }
-            ]
+            ],
+            "params":{
+                "a":"float",
+                "b":"float",
+                "c":"float"
+            },
+            "testId":"ObjectId",
+            "courseId":"ObjectId",
+            "objectiveId":[
+                "objectiveId1","objectiveId2","objectiveId3","...","objectiveIdn"
+            ],
+            "owner":"ObjectId"
         },
+
         "assign":{
             "_id":"ObjectId",
             "classId":"ObjectId",

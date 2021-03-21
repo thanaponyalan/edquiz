@@ -17,14 +17,17 @@ export function useForm(initialValues,validateOnChange=false,validate) {
                     [names[1]]: value
                 }
             })
+            if(validateOnChange){
+                validate({[names[0]]:{[names[1]]:value}});
+            }
         }else{
             setValues({
                 ...values,
                 [name]:value
             })
+            if(validateOnChange)
+                validate({[name]:value})
         }
-        if(validateOnChange)
-            validate({[name]:value})
     }
 
     return ({

@@ -5,7 +5,7 @@ import { TextField } from "@material-ui/core";
 const filter=createFilterOptions();
 
 export default function AutoComplete(props) {
-    const {value, setValue, options, label, handleInputChange, createAble, ...others}=props
+    const {value, setValue, options, label, handleInputChange, createAble, error=null, ...others}=props
     return (
         <Autocomplete
             {...others}
@@ -46,7 +46,7 @@ export default function AutoComplete(props) {
             getOptionSelected={(option,value)=>option.id===value.id}
             renderOption={(option)=>option.title}
             renderInput={(params)=>(
-                <TextField {...params} label={label} variant="outlined"/>
+                <TextField {...params} {...(error&&{error:true,helperText:error})} label={label} variant="outlined"/>
             )}
         />
     )

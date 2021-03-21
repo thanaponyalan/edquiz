@@ -12,6 +12,9 @@ import Controls from "../components/MaterialUI/controls/Controls";
 import { Add } from "@material-ui/icons";
 import Popup from "../components/MaterialUI/Popup";
 import AddQuestion from "../components/Question/AddQuestion";
+import { withToastManager } from "react-toast-notifications";
+import { _error_handler } from "../utils/errorHandler";
+import {API} from '../constant/ENV'
 
 const questionType = [
     "Multiple Choice",
@@ -24,6 +27,38 @@ const questionType = [
 const Item = (props) => {
     const [openDialog, setOpenDialog] = useState(false);
     console.log(props);
+
+    const insertQuestion=async(question)=>{
+        question={
+            choices: question.choices.filter(choice=>choice.choice!=''),
+            courseId: question.course.id,
+            objectiveId: question.objectives.map(objective=>objective.id),
+            params: question.params,
+            question: question.question,
+            quizId: question.quiz.id,
+            quiz: question.quiz,
+            owner: props.uid
+        }
+        props.toastManager.add("Creating...",{appearance: 'info', autoDismiss: true})
+        try{
+            const url=`${API}/item`
+            const result=await fetch(url,{
+                method: 'POST',
+                headers:{
+                    authorization: question.owner
+                },
+                body: JSON.stringify(question)
+            });
+            const res=await result.json();
+            if(res.statusCode==200||res.statusCode==204){
+                props.toastManager.add("Created",{appearance:'success', autoDismiss:true}, ()=>setOpenDialog(false));
+                props.fetchQuestion(question.owner, props.toastManager)
+            }
+        }catch(err){
+            _error_handler(null,err,null);
+            console.log(err);
+        }
+    }
 
     const addItem =
         <li className="nav-item">
@@ -40,13 +75,13 @@ const Item = (props) => {
                 <Row>
                     {
                         props.questions.length && props.questions.map((item, i) =>
-                            <Question isCollapse={i} key={i} type={questionType[item.question.type - 1]} {...item} />
+                            <Question key={i} question={{...item}} courses={props.courses} quizzes={props.quizzes} />
                         )
                     }
                 </Row>
             </MainLayout>
 
-                <AddQuestion openDialog={openDialog} setOpenDialog={setOpenDialog} title="Add Item" />
+                <AddQuestion openDialog={openDialog} setOpenDialog={setOpenDialog} title="Add Item" courses={props.courses} quizzes={props.quizzes} handleSave={insertQuestion} />
         </>
     )
 }
@@ -75,11 +110,14 @@ const mapDispatchToProps = dispatch => {
 
 const mapStateToProps = state => {
     return {
-        questions: state.questionReducer.questions
+        questions: state.questionReducer.questions,
+        courses: state.courseReducer.courses,
+        quizzes: state.quizReducer.quizzes
     }
 }
 
 export default compose(
     connect(mapStateToProps, mapDispatchToProps),
-    withAuthSync
+    withAuthSync,
+    withToastManager
 )(Item);

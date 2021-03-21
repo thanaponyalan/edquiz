@@ -47,8 +47,16 @@ const questionSchema=new mongoose.Schema({
         b: Number,
         c: Number
     },
-    courseId:[{type: Schema.Types.ObjectId, ref: 'courses'}],
+    quizId:{type: Schema.Types.ObjectId, ref: 'quizzes'},
+    courseId:{type: Schema.Types.ObjectId, ref: 'courses'},
     objectiveId:[{type: Schema.Types.ObjectId, ref: 'objectives'}],
+    owner: Schema.Types.ObjectId
+})
+
+const quizSchema=new mongoose.Schema({
+    courseId: {type: Schema.Types.ObjectId, ref: 'courses'},
+    questionId: [{type: Schema.Types.ObjectId, ref: 'questions'}],
+    quizName: String,
     owner: Schema.Types.ObjectId
 })
 
@@ -57,5 +65,6 @@ module.exports={
     classesSchema,
     coursesSchema,
     objectivesSchema,
-    questionSchema
+    questionSchema,
+    quizSchema
 }
