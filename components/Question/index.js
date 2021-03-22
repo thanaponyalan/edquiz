@@ -13,6 +13,7 @@ const questionType = ['Multiple Choice', 'Match', 'True or False']
 
 const QuestionWidget = (props) => {
     const [openDialog, setOpenDialog] = useState(false);
+    const [previewMode, setPreviewMode]=useState(true);
     const { question } = props;
     const updateQuestion=async(question)=>{
         question={
@@ -61,6 +62,8 @@ const QuestionWidget = (props) => {
                 setOpenDialog={setOpenDialog} 
                 {...props} 
                 title="Preview Item" 
+                previewMode={previewMode}
+                setPreviewMode={setPreviewMode}
                 handleSave={updateQuestion}
                 recordForEdit={{
                     id: question._id, 

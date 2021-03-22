@@ -17,11 +17,13 @@ export default function QuestionParameters(props) {
         objectiveOptions,
         setObjectiveOptions,
         errors,
-        validate
+        validate,
+        previewMode
     } = props;
     return (
         <>
             <Controls.AutoComplete
+                disabled={previewMode}
                 name="test"
                 label="Test"
                 id="testSelector-quiz.title"
@@ -73,7 +75,7 @@ export default function QuestionParameters(props) {
             />
             <Controls.AutoComplete
                 error={errors.course}
-                disabled={disabledCourse}
+                disabled={disabledCourse||previewMode}
                 name="course"
                 label="Course"
                 id="courseSelector-course.title"
@@ -105,6 +107,7 @@ export default function QuestionParameters(props) {
                 freeSolo={false}
             />
             <Controls.AutoComplete
+                disabled={previewMode}
                 error={errors.objectives}
                 multiple
                 name="objectives"

@@ -1,7 +1,7 @@
 import React from 'react'
 import { Dialog, DialogTitle, DialogContent, makeStyles, Typography, AppBar, IconButton, Button, Toolbar } from "@material-ui/core";
 import Controls from "../MaterialUI/controls/Controls";
-import { Close as CloseIcon } from '@material-ui/icons';
+import { Close as CloseIcon, Edit as EditIcon } from '@material-ui/icons';
 
 
 const useStyles=makeStyles(theme=>({
@@ -23,7 +23,7 @@ const useStyles=makeStyles(theme=>({
 }))
 
 export default function Popup(props) {
-    const {title, children, open, handleClose, fullScreen, handleSave}=props;
+    const {title, children, open, handleClose, fullScreen, handleSave, checkAnswer, toggleEdit}=props;
     const classes=useStyles();
     return (
         <Dialog fullScreen={fullScreen} open={open} onClose={handleClose}>
@@ -40,7 +40,17 @@ export default function Popup(props) {
                         <Button color="inherit" onClick={handleSave}>
                             save
                         </Button>
-
+                    }
+                    {
+                        checkAnswer&&
+                        <>
+                            <Button color="inherit" onClick={checkAnswer}>
+                                Check Answer
+                            </Button>
+                            <IconButton color="inherit" aria-label="edit" onClick={toggleEdit}>
+                                <EditIcon/>
+                            </IconButton>
+                        </>
                     }
                 </Toolbar>
             </AppBar>

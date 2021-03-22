@@ -44,7 +44,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function MultipleChoice(props) {
-    const { values, handleInputChange, imageHandler, clearImage, choices, setChoices, errors, validate } = props;
+    const { values, handleInputChange, imageHandler, clearImage, choices, setChoices, errors, validate, previewMode, selectedChoices, setSelectedChoices } = props;
     const classes = useStyles();
     return (
         <>
@@ -56,9 +56,12 @@ export default function MultipleChoice(props) {
                 multiline
                 rows={4}
                 error={errors.question}
+                InputProps={{
+                    readOnly: previewMode
+                }}
             />
             <Card className={classes.card}>
-                <CardActionArea component="label" htmlFor="uploadQuestionImage">
+                <CardActionArea disabled={previewMode} component="label" htmlFor="uploadQuestionImage">
                     <CardMedia
                         className={classes.media}
                         image={values.question.pict||'/static/dist/img/boxed-bg.png'}
@@ -68,7 +71,7 @@ export default function MultipleChoice(props) {
                     {!values.question.pict && <AddPhotoAlternate className={classes.addImg} />}
                 </CardActionArea>
                 <CardActions>
-                    <Button onClick={clearImage} size="small" color="primary" style={{ marginLeft: 'auto' }}>Clear Image</Button>
+                    <Button disabled={previewMode} onClick={clearImage} size="small" color="primary" style={{ marginLeft: 'auto' }}>Clear Image</Button>
                 </CardActions>
             </Card>
             <FormControl variant="outlined" {...errors.choices && { error: true }}>
@@ -76,22 +79,28 @@ export default function MultipleChoice(props) {
                 {errors.choices && <FormHelperText>{errors.choices}</FormHelperText>}
                 <RadioGroup
                     onChange={(e) => {
-                        setChoices(choices.map((item, i) => {
-                            return { ...item, isTrue: i == e.target.value }
-                        }))
+                        if(previewMode){
+                            setSelectedChoices(choices.map((item,i)=>{
+                                return {...item, isTrue: i==e.target.value}
+                            }))
+                        }else{
+                            setChoices(choices.map((item, i) => {
+                                return { ...item, isTrue: i == e.target.value }
+                            }))
+                        }
                     }}
                 >
                     <Grid container spacing={3}>
                         {
                             choices.map((item, i) =>
                                 <Grid item xs={12} sm={6} key={i}>
-                                    <FormControlLabel className={classes.formControlLabel} value={i} control={<Radio />} label={<Controls.Input label={`Choice ${i + 1}`} name={`choice_${i}`} value={item.choice} onChange={(e) => {
+                                    <FormControlLabel className={classes.formControlLabel} value={i} control={<Radio />} label={<Controls.Input inputProps={{readOnly: previewMode}} label={`Choice ${i + 1}`} name={`choice_${i}`} value={item.choice} onChange={(e) => {
                                         setChoices(choices.map((item, i) => {
                                             return { ...item, choice: i == e.target.name.split('_')[1] ? e.target.value : item.choice }
                                         }))
-                                    }} />} checked={item.isTrue} />
+                                    }} />} checked={!previewMode?item.isTrue:selectedChoices[i].isTrue} />
                                     <Card className={classes.card}>
-                                        <CardActionArea component="label" htmlFor={`choiceImg_${i}`}>
+                                        <CardActionArea disabled={previewMode} component="label" htmlFor={`choiceImg_${i}`}>
                                             <CardMedia
                                                 className={classes.media}
                                                 image={item.pict||'/static/dist/img/boxed-bg.png'}
@@ -101,7 +110,7 @@ export default function MultipleChoice(props) {
                                             {!item.pict && <AddPhotoAlternate className={classes.addImg} />}
                                         </CardActionArea>
                                         <CardActions>
-                                            <Button onClick={() => clearImage(i)} size="small" color="primary" style={{ marginLeft: 'auto' }}>Clear Image</Button>
+                                            <Button disabled={previewMode} onClick={() => clearImage(i)} size="small" color="primary" style={{ marginLeft: 'auto' }}>Clear Image</Button>
                                         </CardActions>
                                     </Card>
                                 </Grid>

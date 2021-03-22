@@ -79,7 +79,7 @@ const Sidebar = (props) => {
                                     <i className="nav-icon fas fa-calendar-alt" />
                                     <p>
                                         Items
-                                        <span className="badge badge-info right">2</span>
+                                        {/* <span className="badge badge-info right">2</span> */}
                                     </p>
                                 </a>
                             </Link>

@@ -126,10 +126,11 @@ const AddQuestion = (props) => {
     const [course, setCourse] = useState(values.course)
     const [objectives, setObjectives] = useState(values.objectives)
     const [choices, setChoices] = useState(values.choices)
+    const [selectedChoices, setSelectedChoices]=useState(choices)
     const [disabledCourse, setDisabledCourse] = useState(false);
     const [objectiveOptions, setObjectiveOptions] = useState([]);
 
-    const { openDialog, title, setOpenDialog, courses, quizzes, handleSave, recordForEdit } = props;
+    const { openDialog, title, setOpenDialog, courses, quizzes, handleSave, recordForEdit, previewMode=false, setPreviewMode=null } = props;
     const courseOptions = courses.map((item, i) => {
         return { id: item._id, title: item.courseName }
     })
@@ -195,6 +196,9 @@ const AddQuestion = (props) => {
         setObjectiveOptions([])
         setDisabledCourse(false)
         setErrors({})
+        if(setPreviewMode!=null){
+            setPreviewMode(true)
+        }
     }
 
     const imageHandler = (event) => {
@@ -267,6 +271,9 @@ const AddQuestion = (props) => {
                 handleInputChange={handleInputChange}
                 imageHandler={imageHandler}
                 clearImage={clearImage}
+                previewMode={previewMode}
+                selectedChoices={selectedChoices}
+                setSelectedChoices={setSelectedChoices}
             />,
             <Match
                 values={values}
@@ -306,13 +313,26 @@ const AddQuestion = (props) => {
         }
     }
 
+    const checkAnswer=()=>{
+        if(values.question.type!=1){
+            const trueIdx=choices.findIndex((choice)=>choice.isTrue);
+            const selectedIdx=selectedChoices.findIndex((choice)=>choice.isTrue);
+            if(trueIdx===selectedIdx){
+                alert('Correct')
+            }else{
+                console.log(`Correct Answer is Choice ${trueIdx+1}`);
+            }
+        }
+        // console.log(selectedChoices);
+    }
+
     return (
-        <Popup open={openDialog} handleClose={handleClose} fullScreen handleSave={handleQuestionSave} title={title}>
+        <Popup open={openDialog} handleClose={handleClose} fullScreen handleSave={!previewMode?handleQuestionSave:null} checkAnswer={previewMode?checkAnswer:null} toggleEdit={previewMode?()=>{setPreviewMode(!previewMode)}:null} title={title}>
             <Form>
                 <Grid container spacing={3}>
                     <Grid item xs={12}>
                         <Grid container spacing={3}>
-                            <TypeSelection values={values} handleChangeType={handleChangeType} />
+                            <TypeSelection values={values} handleChangeType={handleChangeType} previewMode={previewMode} />
                         </Grid>
                     </Grid>
                     <Grid item xs={12} sm={8}>
@@ -320,6 +340,7 @@ const AddQuestion = (props) => {
                     </Grid>
                     <Grid item xs={12} sm={4}>
                         <QuestionParameters
+                            previewMode={previewMode}
                             values={values}
                             setQuiz={setQuiz}
                             quizzes={quizzes}
@@ -345,13 +366,13 @@ const AddQuestion = (props) => {
 }
 
 const TypeSelection = (props) => {
-    const { handleChangeType, values } = props;
+    const { handleChangeType, values, previewMode } = props;
     const classes = useStyles();
     return (
         questionType.map((item, idx) =>
             <Grid item xs={12} sm={12 / questionType.length} key={idx}>
                 <Card className={classes.fullHeightCard} variant="outlined" style={values.question.type == idx ? { backgroundColor: '#3f51b5', color: 'white' } : {}}>
-                    <CardActionArea onClick={() => handleChangeType(idx)}>
+                    <CardActionArea disabled={previewMode} onClick={() => handleChangeType(idx)}>
                         <CardContent>
                             <Typography variant="h6" component="h6">
                                 {item}
