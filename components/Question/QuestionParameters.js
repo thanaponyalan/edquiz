@@ -5,6 +5,7 @@ export default function QuestionParameters(props) {
     const {
         values,
         setQuiz,
+        quizzes,
         quizOptions,
         setCourse,
         courses,

@@ -264,6 +264,7 @@ const AddQuestion = (props) => {
                         <QuestionParameters
                             values={values}
                             setQuiz={setQuiz}
+                            quizzes={quizzes}
                             quizOptions={quizOptions}
                             setCourse={setCourse}
                             courses={courses}
