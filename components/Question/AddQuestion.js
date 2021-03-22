@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react'
 import Controls from "../MaterialUI/controls/Controls";
-import { Add, AddPhotoAlternate, Close as CloseIcon } from "@material-ui/icons";
-import { Dialog, AppBar, Toolbar, IconButton, Button, Grid, Input, Chip, makeStyles, Divider, Card, CardActionArea, Typography, CardContent, CardMedia, CardActions, FormLabel, FormControl, Radio, RadioGroup, FormControlLabel, FormHelperText } from "@material-ui/core";
+import { Grid, makeStyles, Card, CardActionArea, Typography, CardContent } from "@material-ui/core";
 import { Form, useForm } from "../MaterialUI/useForm";
 import Popup from "../MaterialUI/Popup";
-import Fab from '../MaterialUI/controls/Fab';
+import QuestionParameters from './QuestionParameters';
+import MultipleChoice from './MultipleChoice';
+
 const questionType = [
     "Multiple Choice",
     "Match",
@@ -112,8 +113,7 @@ const AddQuestion = (props) => {
         setValues,
         errors,
         setErrors,
-        handleInputChange,
-        handleInputOptionChange
+        handleInputChange
     } = useForm(initialValues,true,validate)
     
     const [quiz, setQuiz] = useState(values.quiz);
@@ -156,9 +156,6 @@ const AddQuestion = (props) => {
         })
         if(choices.filter(item=>item.choice!='').length>0)validate({choices:choices});
     }, [quiz,course,objectives,choices]);
-
-    const classes = useStyles();
-
 
     const handleChangeType = (qType) => {
         setValues({
@@ -220,7 +217,19 @@ const AddQuestion = (props) => {
     }
 
     const getForm = (questionType) => {
-        const Forms = [<MultipleChoice validate={validate} errors={errors} values={values} choices={choices} setChoices={setChoices} handleInputChange={handleInputChange} imageHandler={imageHandler} clearImage={clearImage} />, <Match />, <TrueOrFalse />]
+        const Forms = [
+            <MultipleChoice 
+                validate={validate} 
+                errors={errors} 
+                values={values} 
+                choices={choices} 
+                setChoices={setChoices} 
+                handleInputChange={handleInputChange} 
+                imageHandler={imageHandler} 
+                clearImage={clearImage} 
+            />, 
+            <Match />, 
+            <TrueOrFalse />]
         return Forms[questionType];
     }
 
@@ -252,105 +261,21 @@ const AddQuestion = (props) => {
                         {getForm(values.question.type)}
                     </Grid>
                     <Grid item xs={12} sm={3}>
-                        <Controls.AutoComplete
-                            name="test"
-                            label="Test"
-                            id="testSelector-quiz.title"
-                            value={values.quiz}
-                            handleInputChange={(event, newValue) => {
-                                if (!newValue) {
-                                    setQuiz({
-                                        title: 'Not In Test',
-                                        id: -1
-                                    })
-                                    setDisabledCourse(false);
-                                    setCourse({
-                                        id: -1,
-                                        title: 'No Course Selected'
-                                    })
-                                    setObjectives([])
-                                    setObjectiveOptions([])
-                                } else if (newValue.inputValue) {
-                                    setQuiz({
-                                        title: newValue.inputValue,
-                                        id: 0
-                                    })
-                                } else {
-                                    setQuiz({
-                                        ...newValue
-                                    })
-                                    if(newValue.id==-1){
-                                        setDisabledCourse(false);
-                                        setCourse({
-                                            id: -1,
-                                            title: 'No Course Selected'
-                                        })
-                                        setObjectives([])
-                                        setObjectiveOptions([])
-                                    }else{
-                                        const {_id, courseName}=quizzes.filter(quiz=>quiz._id==newValue.id)[0].courseId;
-                                        setCourse({id: _id, title: courseName})
-                                        setDisabledCourse(true)
-                                        setObjectives([])
-                                        setObjectiveOptions(courses.filter(course=>course._id==_id)[0].objectives.map((item,idx)=>{
-                                            return {id: item._id, title: item.objective}
-                                        }));
-                                    }
-                                }
-                            }}
-                            options={[{ id: -1, title: 'Not In Test' }, ...quizOptions]}
-                            freeSolo
-                            createAble
-                        />
-                        <Controls.AutoComplete
-                            error={errors.course}
-                            disabled={disabledCourse}
-                            name="course"
-                            label="Course"
-                            id="courseSelector-course.title"
-                            value={values.course}
-                            handleInputChange={(event, newValue) => {
-                                if (!newValue) {
-                                    setCourse({
-                                        id: -1,
-                                        title: 'No Course Selected'
-                                    })
-                                    setObjectives([])
-                                    setObjectiveOptions([])
-                                } else {
-                                    setCourse({
-                                        ...newValue
-                                    })
-                                    validate({course: newValue})
-                                    setObjectives([])
-                                    if(newValue.id==-1){
-                                        setObjectiveOptions([])
-                                    }else{
-                                        setObjectiveOptions(courses.filter(course=>course._id==newValue.id)[0].objectives.map((item,idx)=>{
-                                            return {id: item._id, title: item.objective}
-                                        }));
-                                    }
-                                }
-                            }}
-                            options={[{id: -1, title: 'No Course Selected'}, ...courseOptions]}
-                            freeSolo={false}
-                        />
-                        <Controls.AutoComplete
-                            error={errors.objectives}
-                            multiple
-                            name="objectives"
-                            label="Objectives"
-                            id="objectivesSelector-objectives.title"
-                            value={objectives}
-                            handleInputChange={(event, newValue) => {
-                                setObjectives([
-                                    ...newValue
-                                ])
-                                validate({objectives:[...newValue]})
-                            }}
-                            options={objectiveOptions}
-                            freeSolo={false}
-
+                        <QuestionParameters
+                            values={values}
+                            setQuiz={setQuiz}
+                            quizOptions={quizOptions}
+                            setCourse={setCourse}
+                            courses={courses}
+                            courseOptions={courseOptions}
+                            disabledCourse={disabledCourse}
+                            setDisabledCourse={setDisabledCourse}
+                            objectives={objectives}
+                            setObjectives={setObjectives}
+                            objectiveOptions={objectiveOptions}
+                            setObjectiveOptions={setObjectiveOptions}
+                            errors={errors}
+                            validate={validate}
                         />
                     </Grid>
                 </Grid>
@@ -377,107 +302,6 @@ const TypeSelection = (props) => {
                 </Card>
             </Grid>
         )
-    )
-}
-
-const MultipleChoice = (props) => {
-    const { values, handleInputChange, imageHandler, clearImage, choices, setChoices, errors, validate } = props;
-    const classes = useStyles();
-    return (
-        <>
-            <Controls.Input
-                label="Question : MultipleChoice"
-                name="question.title"
-                value={values.question.title}
-                onChange={handleInputChange}
-                multiline
-                rows={4}
-                error={errors.question}
-            />
-            <Card className={classes.card}>
-                <CardActionArea component="label" htmlFor="uploadQuestionImage">
-                    <CardMedia
-                        className={classes.media}
-                        image={values.question.pict}
-                        style={{ backgroundSize: 'contain' }}
-                    >
-                    </CardMedia>
-                    {!values.question.pict && <AddPhotoAlternate className={classes.addImg} />}
-                </CardActionArea>
-                <CardActions>
-                    <Button onClick={clearImage} size="small" color="primary" style={{ marginLeft: 'auto' }}>Clear Image</Button>
-                </CardActions>
-            </Card>
-            <FormControl variant="outlined" {...errors.choices&&{error:true}}>
-                <FormLabel>Choices</FormLabel>
-                {errors.choices&&<FormHelperText>{errors.choices}</FormHelperText>}
-                <RadioGroup
-                    onChange={(e) => {
-                        setChoices(choices.map((item, i) => {
-                            return { ...item, isTrue: i == e.target.value }
-                        }))
-                    }}
-                >
-                    <Grid container spacing={3}>
-                        {
-                            choices.map((item, i) =>
-                                <Grid item xs={12} sm={6} key={i}>
-                                    <FormControlLabel className={classes.formControlLabel} value={i} control={<Radio />} label={<Controls.Input label={`Choice ${i+1}`} name={`choice_${i}`} value={item.choice} onChange={(e) => {
-                                        setChoices(choices.map((item, i) => {
-                                            return { ...item, choice: i == e.target.name.split('_')[1] ? e.target.value : item.choice }
-                                        }))
-                                    }} />} checked={item.isTrue} />
-                                    <Card className={classes.card}>
-                                        <CardActionArea component="label" htmlFor={`choiceImg_${i}`}>
-                                            <CardMedia
-                                                className={classes.media}
-                                                image={item.pict}
-                                                style={{ backgroundSize: 'contain' }}
-                                            >
-                                            </CardMedia>
-                                            {!item.pict && <AddPhotoAlternate className={classes.addImg} />}
-                                        </CardActionArea>
-                                        <CardActions>
-                                            <Button onClick={() => clearImage(i)} size="small" color="primary" style={{ marginLeft: 'auto' }}>Clear Image</Button>
-                                        </CardActions>
-                                    </Card>
-                                </Grid>
-                            )
-                        }
-                    </Grid>
-                </RadioGroup>
-            </FormControl>
-            <input
-                type="file"
-                id="uploadQuestionImage"
-                style={{ display: 'none' }}
-                onChange={imageHandler}
-            />
-            <input
-                type="file"
-                id="choiceImg_0"
-                style={{ display: 'none' }}
-                onChange={imageHandler}
-            />
-            <input
-                type="file"
-                id="choiceImg_1"
-                style={{ display: 'none' }}
-                onChange={imageHandler}
-            />
-            <input
-                type="file"
-                id="choiceImg_2"
-                style={{ display: 'none' }}
-                onChange={imageHandler}
-            />
-            <input
-                type="file"
-                id="choiceImg_3"
-                style={{ display: 'none' }}
-                onChange={imageHandler}
-            />
-        </>
     )
 }
 
