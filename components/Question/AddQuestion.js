@@ -52,6 +52,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const initialValues = {
+    id: 0,
     question: {
         type: 0,
         title: '',
@@ -90,48 +91,6 @@ const initialValues = {
 }
 
 const AddQuestion = (props) => {
-    const { openDialog, title, setOpenDialog, courses, quizzes, handleSave, insertNew, recordForEdit } = props;
-    const [disabledCourse,setDisabledCourse]=useState(false);
-    
-    const courseOptions=courses.map((item,i)=>{
-        return {id: item._id, title: item.courseName}
-    })
-    const quizOptions=quizzes.map(item=>{
-        return {id: item._id, title: item.quizName}
-    })
-    const [objectiveOptions, setObjectiveOptions]=useState([]);
-    const classes = useStyles();
-    const handleChangeType = (qType) => {
-        setValues({
-            ...values,
-            question: {
-                ...values.question, type: qType
-            }
-        })
-    }
-
-    const handleClose = () => {
-        setOpenDialog(false)
-        // setValues(initialValues)
-        setObjectiveOptions([])
-        setDisabledCourse(false)
-    }
-
-    const clearImage = (idx = null) => {
-        if (idx != null) {
-            setChoices(choices.map((item, i) => {
-                return { ...item, pict: idx == i ? '' : item.pict }
-            }))
-        } else {
-            setValues({
-                ...values,
-                question: {
-                    ...values.question, pict: ''
-                }
-            })
-        }
-    }
-
     const validate=(fieldValues=values)=>{
         let temp={...errors}
         if('question' in fieldValues)
@@ -148,7 +107,6 @@ const AddQuestion = (props) => {
         if(fieldValues==values)
             return Object.values(temp).every(x=>x=="");
     }
-
     const {
         values,
         setValues,
@@ -157,18 +115,31 @@ const AddQuestion = (props) => {
         handleInputChange,
         handleInputOptionChange
     } = useForm(initialValues,true,validate)
-
+    
     const [quiz, setQuiz] = useState(values.quiz);
     const [course, setCourse] = useState(values.course)
     const [objectives, setObjectives] = useState(values.objectives)
     const [choices, setChoices] = useState(values.choices)
+    const [disabledCourse,setDisabledCourse]=useState(false);
+    const [objectiveOptions, setObjectiveOptions]=useState([]);
+
+    const { openDialog, title, setOpenDialog, courses, quizzes, handleSave, recordForEdit } = props;
+    const courseOptions=courses.map((item,i)=>{
+        return {id: item._id, title: item.courseName}
+    })
+    const quizOptions=quizzes.map(item=>{
+        return {id: item._id, title: item.quizName}
+    })
 
     useEffect(() => {
-        console.log(recordForEdit);
         if(recordForEdit!=null&&recordForEdit!=undefined){
             setValues({
                 ...recordForEdit
             })
+            setQuiz(recordForEdit.quiz)
+            setCourse(recordForEdit.course)
+            setObjectives(recordForEdit.objectives)
+            setChoices(recordForEdit.choices)
             setObjectiveOptions(courses.filter(course=>course._id==recordForEdit.course.id)[0].objectives.map((item,idx)=>{
                 return {id: item._id, title: item.objective}
             }));
@@ -180,39 +151,37 @@ const AddQuestion = (props) => {
             ...values,
             quiz,
             course,
-            objectives
+            objectives,
+            choices
         })
-    }, [quiz,course,objectives]);
+        if(choices.filter(item=>item.choice!='').length>0)validate({choices:choices});
+    }, [quiz,course,objectives,choices]);
 
-    useEffect(() => {
+    const classes = useStyles();
+
+
+    const handleChangeType = (qType) => {
         setValues({
             ...values,
-            choices
-        });
-        validate({choices:choices});
-    }, [choices])
-
-    useEffect(() => {
-        if (values.quiz != quiz) setQuiz(values.quiz)
-        if (values.course != course) setCourse(values.course);
-        if (values.objectives != objectives) setObjectives(values.objectives);
-        if (values.choices != choices) setChoices(values.choices);
-    }, [values])
-
-    const getForm = (questionType) => {
-        const Forms = [<MultipleChoice validate={validate} errors={errors} values={values} choices={choices} setChoices={setChoices} handleInputChange={handleInputChange} imageHandler={imageHandler} clearImage={clearImage} />, <Match />, <TrueOrFalse />]
-        return Forms[questionType];
+            question: {
+                ...values.question, type: qType
+            }
+        })
     }
 
-    const handle = () => {
-        if(validate()){
-            handleSave(values)
-            setValues(initialValues);
-        }
+    const handleClose = () => {
+        setOpenDialog(false)
+        setValues(initialValues)
+        setQuiz(initialValues.quiz)
+        setCourse(initialValues.course)
+        setObjectives(initialValues.objectives)
+        setChoices(initialValues.choices)
+        setObjectiveOptions([])
+        setDisabledCourse(false)
+        setErrors({})
     }
 
     const imageHandler = (event) => {
-        console.log(event.target.id);
         const imageInput = event.target.id.split('_')
         const reader = new FileReader();
         reader.onload = () => {
@@ -235,8 +204,43 @@ const AddQuestion = (props) => {
         reader.readAsDataURL(event.target.files[0])
     }
 
+    const clearImage = (idx = null) => {
+        if (idx != null) {
+            setChoices(choices.map((item, i) => {
+                return { ...item, pict: idx == i ? '' : item.pict }
+            }))
+        } else {
+            setValues({
+                ...values,
+                question: {
+                    ...values.question, pict: ''
+                }
+            })
+        }
+    }
+
+    const getForm = (questionType) => {
+        const Forms = [<MultipleChoice validate={validate} errors={errors} values={values} choices={choices} setChoices={setChoices} handleInputChange={handleInputChange} imageHandler={imageHandler} clearImage={clearImage} />, <Match />, <TrueOrFalse />]
+        return Forms[questionType];
+    }
+
+    const handleQuestionSave = () => {
+        if(validate()){
+            handleSave(values)
+            setOpenDialog(false)
+            setValues(initialValues)
+            setQuiz(initialValues.quiz)
+            setCourse(initialValues.course)
+            setObjectives(initialValues.objectives)
+            setChoices(initialValues.choices)
+            setObjectiveOptions([])
+            setDisabledCourse(false)
+            setErrors({})
+        }
+    }
+
     return (
-        <Popup open={openDialog} handleClose={handleClose} fullScreen handleSave={handle} title={title}>
+        <Popup open={openDialog} handleClose={handleClose} fullScreen handleSave={handleQuestionSave} title={title}>
             <Form>
                 <Grid container spacing={3}>
                     <Grid item xs={12}>
@@ -287,6 +291,7 @@ const AddQuestion = (props) => {
                                         const {_id, courseName}=quizzes.filter(quiz=>quiz._id==newValue.id)[0].courseId;
                                         setCourse({id: _id, title: courseName})
                                         setDisabledCourse(true)
+                                        setObjectives([])
                                         setObjectiveOptions(courses.filter(course=>course._id==_id)[0].objectives.map((item,idx)=>{
                                             return {id: item._id, title: item.objective}
                                         }));
@@ -317,8 +322,8 @@ const AddQuestion = (props) => {
                                         ...newValue
                                     })
                                     validate({course: newValue})
+                                    setObjectives([])
                                     if(newValue.id==-1){
-                                        setObjectives([])
                                         setObjectiveOptions([])
                                     }else{
                                         setObjectiveOptions(courses.filter(course=>course._id==newValue.id)[0].objectives.map((item,idx)=>{

@@ -1,16 +1,14 @@
 import MainLayout from "../containers/app/mainLayout";
-import { Component, useState } from 'react';
+import { useState } from 'react';
 import { compose } from "recompose";
 import { withAuthSync } from "../utils/auth";
-import { withRouter } from "next/router";
 import Question from "../components/Question";
 import { connect } from "react-redux";
 import { fetchQuestion } from "../redux/actions/questionAction";
 import { bindActionCreators } from "redux";
-import { Modal, Row } from "reactstrap";
+import { Row } from "reactstrap";
 import Controls from "../components/MaterialUI/controls/Controls";
 import { Add } from "@material-ui/icons";
-import Popup from "../components/MaterialUI/Popup";
 import AddQuestion from "../components/Question/AddQuestion";
 import { withToastManager } from "react-toast-notifications";
 import { _error_handler } from "../utils/errorHandler";
@@ -26,11 +24,9 @@ const questionType = [
 
 const Item = (props) => {
     const [openDialog, setOpenDialog] = useState(false);
-    console.log(props);
-
     const insertQuestion=async(question)=>{
         question={
-            choices: question.choices.filter(choice=>choice.choice!=''),
+            choices: question.choices,
             courseId: question.course.id,
             objectiveId: question.objectives.map(objective=>objective.id),
             params: question.params,
@@ -80,27 +76,10 @@ const Item = (props) => {
                     }
                 </Row>
             </MainLayout>
-
-                <AddQuestion openDialog={openDialog} setOpenDialog={setOpenDialog} title="Add Item" courses={props.courses} quizzes={props.quizzes} handleSave={insertQuestion} />
+            <AddQuestion openDialog={openDialog} setOpenDialog={setOpenDialog} title="Add Item" courses={props.courses} quizzes={props.quizzes} handleSave={insertQuestion} />
         </>
     )
 }
-
-// class Item extends Component{
-//     render(){
-//         console.log('Item');
-//         console.log(this.props);
-//         return(
-//             <MainLayout title="Items">
-//                 {
-//                     this.props.
-//                 }
-//                 <Question id={1} type="Multiple Choice" question="What is the main purpose of exams?" params="Params: a=1, b=0.5, c=-1"/>
-//                 <Question id={1} type="Multiple Choice" question="What is the main purpose of exams?" params="Params: a=1, b=0.5, c=-1"/>
-//             </MainLayout>
-//         )
-//     }
-// }
 
 const mapDispatchToProps = dispatch => {
     return {

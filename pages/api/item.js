@@ -105,14 +105,64 @@ const insertQuestion=async(req,res)=>{
     })
 }
 
+const updateQuestion=async(req,res)=>{
+    return new Promise((resolve,reject)=>{
+        // if(req.headers.authorization===undefined){
+        //     response.statusCode=403;
+        //     response.data.message="Permission Denied!";
+        //     res.status(response.statusCode).json(response);
+        //     return reject(response);
+        // }
+        let question=JSON.parse(req.body);
+        let id=question.id;
+        let quiz=question.quiz;
+        delete question.id;
+        if(quiz.id==-1){
+            delete question.quizId;
+            dbModel.questionsModel.findByIdAndUpdate(id,question,{upsert: true, new: true},(err,result)=>{
+                if(!err){
+                    response.data.payload=result;
+                    res.status(response.statusCode).json(response)
+                    return resolve();
+                }
+                response.data.payload=err;
+                response.statusCode=400;
+                res.status(response.statusCode).json(response);
+                return reject(err);
+            })
+        }else{
+            dbModel.questionsModel.findByIdAndUpdate(id,question,{upsert: true, new: true},(err,result)=>{
+                if(!err){
+                    response.data.payload=result;
+                    res.status(response.statusCode).json(response)
+                    return resolve();
+                }
+                response.data.payload=err;
+                response.statusCode=400;
+                res.status(response.statusCode).json(response);
+                return reject(err);
+            })
+        }
+    })
+}
+
 const handleRequest=(req,res)=>{
     return new Promise((resolve,reject)=>{
         switch(req.method){
             case 'GET': getQuestion(req,res); break;
             case 'POST': insertQuestion(req,res); break;
+            case 'PUT': updateQuestion(req,res); break;
             default: res.status(200).json({err:'Method Not Allowed'}); break;
         }
     })
 }
 
 export default withMiddleware(handleRequest);
+
+export const config = {
+    api: {
+      bodyParser: {
+        sizeLimit: '5mb',
+      },
+    },
+  }

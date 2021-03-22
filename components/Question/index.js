@@ -1,53 +1,50 @@
-// import { Card, Row, Col, CardTitle, Badge, Button } from "reactstrap";
-
-import { FormControlLabel, FormControl, FormLabel, Radio, RadioGroup } from "@material-ui/core";
-import { Label } from "@material-ui/icons";
 import { useState } from "react";
-import Popup from "../MaterialUI/Popup";
+import { connect } from "react-redux";
+import { withToastManager } from "react-toast-notifications";
+import { compose } from "recompose";
+import { bindActionCreators } from "redux";
+import { API } from "../../constant/ENV";
+import { fetchQuestion } from "../../redux/actions/questionAction";
 import Card from "../ReactStrap/Card";
-import Modal from "../ReactStrap/Modal";
-import AddQuestion from "./AddQuestion";
-import QuestionDetail from "./questionDetail";
-
-
-// const Question=(props)=>{
-//     const {params}=props;
-//     const paramsStr=`Params: a=${params.a}, b=${params.b}, c=${params.c}`;
-//     return(
-//         <Col md={12}>
-//             <Card body>
-//                 <Row>
-//                     <Col sm={9}>
-//                         <CardTitle>{props.question}</CardTitle>
-//                     </Col>
-//                     <Col sm={3}>
-//                         <div className="float-right">
-//                             <Button outline className=""><i className="fas fa-eye"></i>   View</Button>
-//                             {' '}
-//                             <Button outline className="">+</Button>
-//                         </div>
-//                     </Col>
-
-//                 </Row>
-//                 <Row>
-//                     <Col sm={9}>
-//                         <Badge>{props.type}</Badge>
-//                         {' '}
-//                         <Badge color="dark">{paramsStr}</Badge>
-//                     </Col>
-//                 </Row>
-//             </Card>
-//         </Col>
-//     )
-// }
+import ViewQuestion from "./AddQuestion";
 
 const questionType = ['Multiple Choice', 'Match', 'True or False']
 
 const QuestionWidget = (props) => {
-    const [openModal, setOpenModal] = useState(false);
     const [openDialog, setOpenDialog] = useState(false);
-    const { isCollapse, question, courseId, objectiveId } = props;
-    console.log(props);
+    const { question } = props;
+    const updateQuestion=async(question)=>{
+        question={
+            id: question.id,
+            choices: question.choices,
+            courseId: question.course.id,
+            objectiveId: question.objectives.map(objective=>objective.id),
+            params: question.params,
+            question: question.question,
+            quizId: question.quiz.id,
+            quiz: question.quiz,
+            owner: question.owner
+        }
+        props.toastManager.add("Updating...",{appearance: 'info', autoDismiss: true})
+        try{
+            const url=`${API}/item`
+            const result=await fetch(url,{
+                method: 'PUT',
+                headers:{
+                    authorization: question.owner
+                },
+                body: JSON.stringify(question)
+            });
+            const res=await result.json();
+            if(res.statusCode==200||res.statusCode==204){
+                props.toastManager.add("Updated",{appearance:'success', autoDismiss:true}, ()=>setOpenDialog(false));
+                props.fetchQuestion(question.owner, props.toastManager)
+            }
+        }catch(err){
+            _error_handler(null,err,null);
+            console.log(err);
+        }
+    }
     return (
         <>
             <Card
@@ -57,37 +54,37 @@ const QuestionWidget = (props) => {
                 viewInModal={() => setOpenDialog(true)}
             >
             </Card>
-
-            <AddQuestion 
+            <ViewQuestion 
                 openDialog={openDialog} 
                 setOpenDialog={setOpenDialog} 
                 {...props} 
                 title="Preview Item" 
-                // courses={props.courses} 
-                // quizzes={props.quizzes} 
-                handleSave={(data) => { console.log(data); }} 
-                insertNew={false} 
-                recordForEdit={{ 
+                handleSave={updateQuestion}
+                recordForEdit={{
+                    id: question._id, 
                     question: question.question, 
-                    choices: question.choices, 
+                    choices: question.choices.map((item)=>({isTrue: item.isTrue, choice: item.choice, pict: item.pict})), 
                     params: question.params, 
                     quiz: question.quizId?{ id: question.quizId._id, title: question.quizId.quizName }:{
                         title: 'Not In Test',
                         id: -1
                     }, 
                     course: { id: question.courseId._id, title: question.courseId.courseName }, 
-                    objectives: question.objectiveId.map((item) => ({ id: item._id, title: item.objective }))
+                    objectives: question.objectiveId.map((item) => ({ id: item._id, title: item.objective })),
+                    owner: question.owner
                 }}
             />
-            {/* <Popup
-                open={openModal}
-                handleClose={()=>setOpenModal(false)}
-                fullScreen
-                title="Preview">
-                    <QuestionDetail {...props} toggle={()=>setOpenModal(false)} recordForEdit={{question: question.title, choice: "", courses: courseId.courseName, objectives: objectiveId.map(item=>{return item.objective}), params: "a=1, b=1, c=0"}}/>
-            </Popup> */}
         </>
     )
 }
 
-export default QuestionWidget;
+const mapDispatchToProps=dispatch=>{
+    return{
+        fetchQuestion: bindActionCreators(fetchQuestion, dispatch),
+    }
+}
+
+export default compose(
+    withToastManager,
+    connect(null,mapDispatchToProps)
+)(QuestionWidget)
