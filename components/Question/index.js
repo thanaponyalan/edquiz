@@ -5,6 +5,7 @@ import { compose } from "recompose";
 import { bindActionCreators } from "redux";
 import { API } from "../../constant/ENV";
 import { fetchQuestion } from "../../redux/actions/questionAction";
+import { fetchQuiz } from "../../redux/actions/quizAction";
 import Card from "../ReactStrap/Card";
 import ViewQuestion from "./AddQuestion";
 
@@ -39,6 +40,7 @@ const QuestionWidget = (props) => {
             if(res.statusCode==200||res.statusCode==204){
                 props.toastManager.add("Updated",{appearance:'success', autoDismiss:true}, ()=>setOpenDialog(false));
                 props.fetchQuestion(question.owner, props.toastManager)
+                props.fetchQuiz(question.owner, props.toastManager)
             }
         }catch(err){
             _error_handler(null,err,null);
@@ -63,7 +65,7 @@ const QuestionWidget = (props) => {
                 recordForEdit={{
                     id: question._id, 
                     question: question.question, 
-                    choices: question.choices.map((item)=>({isTrue: item.isTrue, choice: item.choice, pict: item.pict})), 
+                    choices: question.question.type!=1?question.choices.map((item)=>({isTrue: item.isTrue, choice: item.choice, pict: item.pict})):question.choices.map((item)=>({answer: item.answer, choice: item.choice, pict: item.pict})), 
                     params: question.params, 
                     quiz: question.quizId?{ id: question.quizId._id, title: question.quizId.quizName }:{
                         title: 'Not In Test',
@@ -81,6 +83,7 @@ const QuestionWidget = (props) => {
 const mapDispatchToProps=dispatch=>{
     return{
         fetchQuestion: bindActionCreators(fetchQuestion, dispatch),
+        fetchQuiz: bindActionCreators(fetchQuiz, dispatch)
     }
 }
 

@@ -13,6 +13,7 @@ import AddQuestion from "../components/Question/AddQuestion";
 import { withToastManager } from "react-toast-notifications";
 import { _error_handler } from "../utils/errorHandler";
 import {API} from '../constant/ENV'
+import { fetchQuiz } from "../redux/actions/quizAction";
 
 const questionType = [
     "Multiple Choice",
@@ -49,6 +50,7 @@ const Item = (props) => {
             if(res.statusCode==200||res.statusCode==204){
                 props.toastManager.add("Created",{appearance:'success', autoDismiss:true}, ()=>setOpenDialog(false));
                 props.fetchQuestion(question.owner, props.toastManager)
+                props.fetchQuiz(question.owner, prop.toastManager)
             }
         }catch(err){
             _error_handler(null,err,null);
@@ -84,6 +86,7 @@ const Item = (props) => {
 const mapDispatchToProps = dispatch => {
     return {
         fetchQuestion: bindActionCreators(fetchQuestion, dispatch),
+        fetchQuiz: bindActionCreators(fetchQuiz, dispatch)
     }
 }
 

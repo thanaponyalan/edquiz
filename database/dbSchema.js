@@ -41,7 +41,7 @@ const questionSchema=new mongoose.Schema({
         pict: String,
         type: {type: Number}
     },
-    choices:[{isTrue: Boolean, choice:String, pict: String}],
+    choices:[],
     params:{
         a: Number,
         b: Number,

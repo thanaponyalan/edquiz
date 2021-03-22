@@ -117,32 +117,71 @@ const updateQuestion=async(req,res)=>{
         let id=question.id;
         let quiz=question.quiz;
         delete question.id;
-        if(quiz.id==-1){
-            delete question.quizId;
-            dbModel.questionsModel.findByIdAndUpdate(id,question,{upsert: true, new: true},(err,result)=>{
-                if(!err){
-                    response.data.payload=result;
-                    res.status(response.statusCode).json(response)
-                    return resolve();
-                }
-                response.data.payload=err;
+        dbModel.quizzesModel.updateMany({questionId: id},{$pull:{questionId: id}},(quizErr,quizResult)=>{
+            if(quizErr){
                 response.statusCode=400;
-                res.status(response.statusCode).json(response);
-                return reject(err);
-            })
-        }else{
-            dbModel.questionsModel.findByIdAndUpdate(id,question,{upsert: true, new: true},(err,result)=>{
-                if(!err){
-                    response.data.payload=result;
-                    res.status(response.statusCode).json(response)
-                    return resolve();
-                }
-                response.data.payload=err;
-                response.statusCode=400;
-                res.status(response.statusCode).json(response);
-                return reject(err);
-            })
-        }
+                response.data.payload=quizErr.message||quizErr.toString();
+                res.status(response.statusCode).json(response)
+                return reject(quizErr)
+            }
+            if(quiz.id==0){
+                dbModel.quizzesModel.create({courseId: question.courseId, quizName: quiz.title, owner: question.owner, questionId: [id]},(err,result)=>{
+                    if(err){
+                        response.statusCode=400;
+                        response.data.payload=err.message||err.toString();
+                        res.status(response.statusCode).json(response)
+                        return reject(err)
+                    }
+                    question.quizId=result._id;
+                    dbModel.questionsModel.findByIdAndUpdate(id,question,{upsert: true, new: true},(questionErr,questionResult)=>{
+                        if(!questionErr){
+                            response.data.payload=questionResult;
+                            res.status(response.statusCode).json(response)
+                            return resolve();
+                        }
+                        response.data.payload=questionErr;
+                        response.statusCode=400;
+                        res.status(response.statusCode).json(response);
+                        return reject(questionErr);
+                    })
+                })
+            }else if(quiz.id==-1){
+                delete question.quizId;
+                dbModel.questionsModel.findByIdAndUpdate(id,question,{upsert: true, new: true},(err,result)=>{
+                    if(!err){
+                        response.data.payload=result;
+                        res.status(response.statusCode).json(response)
+                        return resolve();
+                    }
+                    response.data.payload=err;
+                    response.statusCode=400;
+                    res.status(response.statusCode).json(response);
+                    return reject(err);
+                })
+            }else{
+                dbModel.quizzesModel.findByIdAndUpdate(question.quizId,{
+                    $push: {questionId: id}
+                },{upsert: true, new: true},(err,result)=>{
+                    if(err){
+                        response.data.payload=err;
+                        response.statusCode=400;
+                        res.status(response.statusCode).json(response);
+                        return reject(err);
+                    }
+                    dbModel.questionsModel.findByIdAndUpdate(id,question,{upsert: true, new: true},(questionErr,questionResult)=>{
+                        if(!questionErr){
+                            response.data.payload=questionResult;
+                            res.status(response.statusCode).json(response)
+                            return resolve();
+                        }
+                        response.data.payload=questionErr;
+                        response.statusCode=400;
+                        res.status(response.statusCode).json(response);
+                        return reject(questionErr);
+                    })
+                })
+            }
+        })
     })
 }
 

@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react'
-import Controls from "../MaterialUI/controls/Controls";
 import { Grid, makeStyles, Card, CardActionArea, Typography, CardContent } from "@material-ui/core";
 import { Form, useForm } from "../MaterialUI/useForm";
 import Popup from "../MaterialUI/Popup";
 import QuestionParameters from './QuestionParameters';
 import MultipleChoice from './MultipleChoice';
+import Match from './Matching';
+import TrueOrFalse from './TrueOrFalse';
 
 const questionType = [
     "Multiple Choice",
@@ -92,21 +93,26 @@ const initialValues = {
 }
 
 const AddQuestion = (props) => {
-    const validate=(fieldValues=values)=>{
-        let temp={...errors}
-        if('question' in fieldValues)
-            temp.question=fieldValues.question.title?"":"This field is required"        
-        if('course' in fieldValues)
-            temp.course=fieldValues.course.id!=-1?"":"Course must be selected"
-        if('objectives' in fieldValues)
-            temp.objectives=fieldValues.objectives.length?"":"At least one objective required";
-        if('choices' in fieldValues)
-            temp.choices=fieldValues.choices.filter(choice=>choice.choice=='').length<3&&fieldValues.choices.filter(choice=>{return choice.isTrue&&choice.choice}).length>0?"":"At least two choices required";
+    const validate = (fieldValues = values) => {
+        let temp = { ...errors }
+        if ('question' in fieldValues)
+            temp.question = fieldValues.question.title ? "" : "This field is required"
+        if ('course' in fieldValues)
+            temp.course = fieldValues.course.id != -1 ? "" : "Course must be selected"
+        if ('objectives' in fieldValues)
+            temp.objectives = fieldValues.objectives.length ? "" : "At least one objective required";
+        if ('choices' in fieldValues){
+            if(values.question.type==0){
+                temp.choices = fieldValues.choices.filter(choice => choice.choice == '').length < 3 && fieldValues.choices.filter(choice => { return choice.isTrue && choice.choice }).length > 0 ? "" : "At least two choices required";
+            }else if(values.question.type==1){
+                temp.choices=fieldValues.choices.filter(choice=>{return choice.choice==''||choice.answer.title==''}).length<3?'':'At least two pair required';
+            }
+        }
         setErrors({
             ...temp
         })
-        if(fieldValues==values)
-            return Object.values(temp).every(x=>x=="");
+        if (fieldValues == values)
+            return Object.values(temp).every(x => x == "");
     }
     const {
         values,
@@ -114,25 +120,25 @@ const AddQuestion = (props) => {
         errors,
         setErrors,
         handleInputChange
-    } = useForm(initialValues,true,validate)
-    
+    } = useForm(initialValues, true, validate)
+
     const [quiz, setQuiz] = useState(values.quiz);
     const [course, setCourse] = useState(values.course)
     const [objectives, setObjectives] = useState(values.objectives)
     const [choices, setChoices] = useState(values.choices)
-    const [disabledCourse,setDisabledCourse]=useState(false);
-    const [objectiveOptions, setObjectiveOptions]=useState([]);
+    const [disabledCourse, setDisabledCourse] = useState(false);
+    const [objectiveOptions, setObjectiveOptions] = useState([]);
 
     const { openDialog, title, setOpenDialog, courses, quizzes, handleSave, recordForEdit } = props;
-    const courseOptions=courses.map((item,i)=>{
-        return {id: item._id, title: item.courseName}
+    const courseOptions = courses.map((item, i) => {
+        return { id: item._id, title: item.courseName }
     })
-    const quizOptions=quizzes.map(item=>{
-        return {id: item._id, title: item.quizName}
+    const quizOptions = quizzes.map(item => {
+        return { id: item._id, title: item.quizName }
     })
 
     useEffect(() => {
-        if(recordForEdit!=null&&recordForEdit!=undefined){
+        if (recordForEdit != null && recordForEdit != undefined) {
             setValues({
                 ...recordForEdit
             })
@@ -140,8 +146,8 @@ const AddQuestion = (props) => {
             setCourse(recordForEdit.course)
             setObjectives(recordForEdit.objectives)
             setChoices(recordForEdit.choices)
-            setObjectiveOptions(courses.filter(course=>course._id==recordForEdit.course.id)[0].objectives.map((item,idx)=>{
-                return {id: item._id, title: item.objective}
+            setObjectiveOptions(courses.filter(course => course._id == recordForEdit.course.id)[0].objectives.map((item, idx) => {
+                return { id: item._id, title: item.objective }
             }));
         }
     }, [recordForEdit])
@@ -154,15 +160,28 @@ const AddQuestion = (props) => {
             objectives,
             choices
         })
-        if(choices.filter(item=>item.choice!='').length>0)validate({choices:choices});
-    }, [quiz,course,objectives,choices]);
+        if (choices.filter(item => item.choice != '').length > 0) validate({ choices: choices });
+    }, [quiz, course, objectives, choices]);
 
     const handleChangeType = (qType) => {
+        let typeChoices;
+        typeChoices = values.choices;
+        typeChoices = typeChoices.length == 4 ? typeChoices : typeChoices.push(...typeChoices);
+        if (qType == 0) {
+            typeChoices = values.choices.map((item, idx) => ({ choice: '', pict: item.pict, isTrue: !idx }));
+        } else if (qType == 1) {
+            typeChoices = values.choices.map(item => ({ choice: '', pict: item.pict, answer: { title: '', pict: '' } }))
+        } else {
+            typeChoices = values.choices.slice(0, 2)
+            typeChoices=typeChoices.map((item, idx)=>({choice: idx?'False':'True', pict: '', isTrue: !idx}))
+        }
+        setChoices(typeChoices)
         setValues({
             ...values,
             question: {
                 ...values.question, type: qType
-            }
+            },
+            choices: typeChoices
         })
     }
 
@@ -185,9 +204,16 @@ const AddQuestion = (props) => {
             if (reader.readyState === 2) {
                 if (imageInput.length > 1) {
                     const idx = imageInput[1];
-                    setChoices(choices.map((item, i) => {
-                        return { ...item, pict: i == idx ? reader.result : item.pict }
-                    }))
+                    const extractName = imageInput[0].split('.');
+                    if (extractName.length <= 1) {
+                        setChoices(choices.map((item, i) => {
+                            return { ...item, pict: i == idx ? reader.result : item.pict }
+                        }))
+                    } else {
+                        setChoices(choices.map((item, i) => {
+                            return { ...item, [extractName[1]]: { ...item.answer, pict: i == idx ? reader.result : item.answer.pict } }
+                        }))
+                    }
                 } else {
                     setValues({
                         ...values,
@@ -202,10 +228,24 @@ const AddQuestion = (props) => {
     }
 
     const clearImage = (idx = null) => {
-        if (idx != null) {
-            setChoices(choices.map((item, i) => {
-                return { ...item, pict: idx == i ? '' : item.pict }
-            }))
+        console.log(idx);
+        if (idx != null && (typeof (idx) == 'string' || typeof (idx) == 'number')) {
+            if (typeof (idx) == 'string') {
+                const imageInput = idx.split('_');
+                if (imageInput.length > 1) {
+                    const index = imageInput[1];
+                    const extractName = imageInput[0].split('.')
+                    if (extractName.length > 1) {
+                        setChoices(choices.map((item, i) => {
+                            return { ...item, [extractName[1]]: { ...item.answer, pict: i == index ? '' : item.answer.pict } }
+                        }))
+                    }
+                }
+            } else {
+                setChoices(choices.map((item, i) => {
+                    return { ...item, pict: idx == i ? '' : item.pict }
+                }))
+            }
         } else {
             setValues({
                 ...values,
@@ -218,23 +258,41 @@ const AddQuestion = (props) => {
 
     const getForm = (questionType) => {
         const Forms = [
-            <MultipleChoice 
-                validate={validate} 
-                errors={errors} 
-                values={values} 
-                choices={choices} 
-                setChoices={setChoices} 
-                handleInputChange={handleInputChange} 
-                imageHandler={imageHandler} 
-                clearImage={clearImage} 
-            />, 
-            <Match />, 
-            <TrueOrFalse />]
+            <MultipleChoice
+                validate={validate}
+                errors={errors}
+                values={values}
+                choices={choices}
+                setChoices={setChoices}
+                handleInputChange={handleInputChange}
+                imageHandler={imageHandler}
+                clearImage={clearImage}
+            />,
+            <Match
+                values={values}
+                imageHandler={imageHandler}
+                clearImage={clearImage}
+                handleInputChange={handleInputChange}
+                errors={errors}
+                setChoices={setChoices}
+                choices={choices}
+            />,
+            <TrueOrFalse 
+                validate={validate}
+                errors={errors}
+                values={values}
+                choices={choices}
+                setChoices={setChoices}
+                handleInputChange={handleInputChange}
+                imageHandler={imageHandler}
+                clearImage={clearImage}
+            />
+        ]
         return Forms[questionType];
     }
 
     const handleQuestionSave = () => {
-        if(validate()){
+        if (validate()) {
             handleSave(values)
             setOpenDialog(false)
             setValues(initialValues)
@@ -257,10 +315,10 @@ const AddQuestion = (props) => {
                             <TypeSelection values={values} handleChangeType={handleChangeType} />
                         </Grid>
                     </Grid>
-                    <Grid item xs={12} sm={9}>
+                    <Grid item xs={12} sm={8}>
                         {getForm(values.question.type)}
                     </Grid>
-                    <Grid item xs={12} sm={3}>
+                    <Grid item xs={12} sm={4}>
                         <QuestionParameters
                             values={values}
                             setQuiz={setQuiz}
@@ -306,26 +364,8 @@ const TypeSelection = (props) => {
     )
 }
 
-const Match = (props) => {
-    const classes = useStyles()
-    return (
-        <Controls.Input
-            label="Question : Matching"
-            name="question"
-            value="How long I've been doing this?"
-        />
-    )
-}
 
-const TrueOrFalse = (props) => {
-    const classes = useStyles();
-    return (
-        <Controls.Input
-            label="Question : TrueOrFalse"
-            name="question"
-            value="How long I've been doing this?"
-        />
-    )
-}
+
+
 
 export default AddQuestion;
