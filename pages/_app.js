@@ -9,6 +9,8 @@ import nextCookie from 'next-cookies';
 import {login} from '../redux/actions/authAction';
 import { ToastProvider } from 'react-toast-notifications';
 import dynamic from 'next/dynamic'
+import { DndProvider } from 'react-dnd';
+import {HTML5Backend} from 'react-dnd-html5-backend'
 
 const TopProgressBar=dynamic(
     ()=>import("../components/TopProgressBar"),
@@ -31,9 +33,11 @@ function MyApp(props) {
         {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
         <TopProgressBar/>
         <CssBaseline />
+        <DndProvider backend={HTML5Backend}>
         <ToastProvider placement={'bottom-center'} autoDismissTimeout={3000} components={{ Toast: Snack}}>
             <Component {...pageProps} />
         </ToastProvider>
+        </DndProvider>
       </ThemeProvider>
   );
 }

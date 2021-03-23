@@ -1,3 +1,4 @@
+import { FormLabel } from '@material-ui/core';
 import React from 'react'
 import Controls from '../MaterialUI/controls/Controls'
 
@@ -22,6 +23,7 @@ export default function QuestionParameters(props) {
     } = props;
     return (
         <>
+            <FormLabel component="legend">Question Meta</FormLabel>
             <Controls.AutoComplete
                 disabled={previewMode}
                 name="test"

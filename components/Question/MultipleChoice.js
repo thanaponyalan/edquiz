@@ -32,7 +32,7 @@ const useStyles = makeStyles((theme) => ({
         left: '50%'
     },
     card: {
-        margin: '8px',
+        margin: '8px 0',
         width: '100%'
     },
     formControlLabel: {
@@ -58,6 +58,9 @@ export default function MultipleChoice(props) {
                 error={errors.question}
                 InputProps={{
                     readOnly: previewMode
+                }}
+                style={{
+                    margin: '8px 0'
                 }}
             />
             <Card className={classes.card}>
@@ -98,7 +101,7 @@ export default function MultipleChoice(props) {
                                         setChoices(choices.map((item, i) => {
                                             return { ...item, choice: i == e.target.name.split('_')[1] ? e.target.value : item.choice }
                                         }))
-                                    }} />} checked={!previewMode?item.isTrue:selectedChoices[i].isTrue} />
+                                    }} />} checked={!previewMode?item.isTrue:selectedChoices[i].isTrue} style={{margin: '8px 0'}} />
                                     <Card className={classes.card}>
                                         <CardActionArea disabled={previewMode} component="label" htmlFor={`choiceImg_${i}`}>
                                             <CardMedia

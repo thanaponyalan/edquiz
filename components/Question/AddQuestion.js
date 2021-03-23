@@ -62,7 +62,7 @@ const initialValues = {
     },
     choices: [
         {
-            isTrue: true,
+            isTrue: false,
             choice: '',
             pict: ''
         },
@@ -126,7 +126,8 @@ const AddQuestion = (props) => {
     const [course, setCourse] = useState(values.course)
     const [objectives, setObjectives] = useState(values.objectives)
     const [choices, setChoices] = useState(values.choices)
-    const [selectedChoices, setSelectedChoices]=useState(choices)
+    const [selectedChoices, setSelectedChoices]=useState(choices.map(item=>({...item, isTrue: false})))
+    const [answeredChoices, setAnsweredChoices]=useState([])
     const [disabledCourse, setDisabledCourse] = useState(false);
     const [objectiveOptions, setObjectiveOptions] = useState([]);
 
@@ -146,7 +147,11 @@ const AddQuestion = (props) => {
             setQuiz(recordForEdit.quiz)
             setCourse(recordForEdit.course)
             setObjectives(recordForEdit.objectives)
-            setChoices(recordForEdit.choices)
+            if(recordForEdit.question.type==1){
+                setChoices(recordForEdit.choices.filter(item=>item.choice!=''&&item.answer.title!=''))
+                setAnsweredChoices(recordForEdit.choices.filter(item=>item.choice!=''&&item.answer.title!='').map(item=>null))
+            }else
+                setChoices(recordForEdit.choices)
             setObjectiveOptions(courses.filter(course => course._id == recordForEdit.course.id)[0].objectives.map((item, idx) => {
                 return { id: item._id, title: item.objective }
             }));
@@ -193,9 +198,11 @@ const AddQuestion = (props) => {
         setCourse(initialValues.course)
         setObjectives(initialValues.objectives)
         setChoices(initialValues.choices)
+        setSelectedChoices(initialValues.choices)
         setObjectiveOptions([])
         setDisabledCourse(false)
         setErrors({})
+        setAnsweredChoices([])
         if(setPreviewMode!=null){
             setPreviewMode(true)
         }
@@ -283,6 +290,9 @@ const AddQuestion = (props) => {
                 errors={errors}
                 setChoices={setChoices}
                 choices={choices}
+                previewMode={previewMode}
+                answeredChoices={answeredChoices}
+                setAnsweredChoices={setAnsweredChoices}
             />,
             <TrueOrFalse 
                 validate={validate}
@@ -293,6 +303,9 @@ const AddQuestion = (props) => {
                 handleInputChange={handleInputChange}
                 imageHandler={imageHandler}
                 clearImage={clearImage}
+                previewMode={previewMode}
+                selectedChoices={selectedChoices}
+                setSelectedChoices={setSelectedChoices}
             />
         ]
         return Forms[questionType];
@@ -310,6 +323,10 @@ const AddQuestion = (props) => {
             setObjectiveOptions([])
             setDisabledCourse(false)
             setErrors({})
+            setAnsweredChoices([])
+            if(setPreviewMode!=null){
+                setPreviewMode(true)
+            }
         }
     }
 
@@ -317,11 +334,27 @@ const AddQuestion = (props) => {
         if(values.question.type!=1){
             const trueIdx=choices.findIndex((choice)=>choice.isTrue);
             const selectedIdx=selectedChoices.findIndex((choice)=>choice.isTrue);
+            if(selectedIdx==-1){
+                alert(`A choice must be selected!`);
+                return;
+            }
             if(trueIdx===selectedIdx){
                 alert('Correct')
             }else{
                 console.log(`Correct Answer is Choice ${trueIdx+1}`);
             }
+        }else{
+            const matchingChoices=choices.filter(item=>item!=null).map(item=>({title: item.answer.title}))
+            const matchedChoices=answeredChoices.filter(item=>item!=null).map(item=>({title: item.title}))
+            if(!matchedChoices.length){
+                alert(`At least one answer must be provided`)
+                return;
+            }
+            let score=0;
+            matchingChoices.forEach((value,idx)=>{
+                score+=matchedChoices.findIndex(choice=>choice.title===value.title)===idx?1:0;
+            })
+            alert(`${score} of ${matchingChoices.length} correct`);
         }
         // console.log(selectedChoices);
     }

@@ -201,7 +201,7 @@ export default withMiddleware(handleRequest);
 export const config = {
     api: {
       bodyParser: {
-        sizeLimit: '5mb',
+        sizeLimit: '10mb',
       },
     },
   }

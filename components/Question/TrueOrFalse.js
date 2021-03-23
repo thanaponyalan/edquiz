@@ -44,7 +44,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function TrueOrFalse(props){
-    const { values, handleInputChange, imageHandler, clearImage, choices, setChoices, errors, validate } = props;
+    const { values, handleInputChange, imageHandler, clearImage, choices, setChoices, errors, validate, previewMode, selectedChoices, setSelectedChoices } = props;
     const classes = useStyles();
     return (
         <>
@@ -56,9 +56,15 @@ export default function TrueOrFalse(props){
                 multiline
                 rows={4}
                 error={errors.question}
+                inputProps={{
+                    readOnly: previewMode
+                }}
+                style={{
+                    margin: '8px 0'
+                }}
             />
             <Card className={classes.card}>
-                <CardActionArea component="label" htmlFor="uploadQuestionImage">
+                <CardActionArea disabled={previewMode} component="label" htmlFor="uploadQuestionImage">
                     <CardMedia
                         className={classes.media}
                         image={values.question.pict||'/static/dist/img/boxed-bg.png'}
@@ -68,7 +74,7 @@ export default function TrueOrFalse(props){
                     {!values.question.pict && <AddPhotoAlternate className={classes.addImg} />}
                 </CardActionArea>
                 <CardActions>
-                    <Button onClick={clearImage} size="small" color="primary" style={{ marginLeft: 'auto' }}>Clear Image</Button>
+                    <Button disabled={previewMode} onClick={clearImage} size="small" color="primary" style={{ marginLeft: 'auto' }}>Clear Image</Button>
                 </CardActions>
             </Card>
             <FormControl variant="outlined" {...errors.choices && { error: true }}>
@@ -76,14 +82,20 @@ export default function TrueOrFalse(props){
                 {errors.choices && <FormHelperText>{errors.choices}</FormHelperText>}
                 <RadioGroup
                     onChange={(e) => {
-                        setChoices(choices.map((item, i) => {
-                            return { ...item, isTrue: i == e.target.value }
-                        }))
+                        if(previewMode){
+                            setSelectedChoices(choices.map((item,i)=>{
+                                return {...item, isTrue: i==e.target.value}
+                            }))
+                        }else{
+                            setChoices(choices.map((item, i) => {
+                                return { ...item, isTrue: i == e.target.value }
+                            }))
+                        }
                     }}
                 >
                     {
                         choices.map((item, i) =>
-                            <FormControlLabel key={i} className={classes.formControlLabel} value={i} control={<Radio />} label={item.choice} checked={item.isTrue} />
+                            <FormControlLabel key={i} className={classes.formControlLabel} value={i} control={<Radio />} label={item.choice} checked={!previewMode?item.isTrue:selectedChoices[i].isTrue} style={{margin: '8px 0'}} />
                         )
                     }
                 </RadioGroup>

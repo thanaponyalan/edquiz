@@ -50,7 +50,7 @@ const Item = (props) => {
             if(res.statusCode==200||res.statusCode==204){
                 props.toastManager.add("Created",{appearance:'success', autoDismiss:true}, ()=>setOpenDialog(false));
                 props.fetchQuestion(question.owner, props.toastManager)
-                props.fetchQuiz(question.owner, prop.toastManager)
+                props.fetchQuiz(question.owner, props.toastManager)
             }
         }catch(err){
             _error_handler(null,err,null);
