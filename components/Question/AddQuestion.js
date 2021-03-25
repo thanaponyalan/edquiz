@@ -105,7 +105,8 @@ const AddQuestion = (props) => {
             if(values.question.type==0){
                 temp.choices = fieldValues.choices.filter(choice => choice.choice == '').length < 3 && fieldValues.choices.filter(choice => { return choice.isTrue && choice.choice }).length > 0 ? "" : "At least two choices required";
             }else if(values.question.type==1){
-                temp.choices=fieldValues.choices.filter(choice=>{return choice.choice==''||choice.answer.title==''}).length<3?'':'At least two pair required';
+                temp.choices=fieldValues.choices.filter(choice=>{return (choice.choice!=''&&choice.answer.title=='')||(choice.choice==''&&choice.answer.title!='')}).length?'ทุกคำถามต้องมีตัวเลือก/ทุกตัวเลือกต้องมีคำถาม':
+                    fieldValues.choices.filter(choice=>{return choice.choice==''||choice.answer.title==''}).length<3?'':'At least two pair required';
             }
         }
         setErrors({
