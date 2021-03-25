@@ -134,7 +134,7 @@ const AddQuestion = (props) => {
     const [disabledCourse, setDisabledCourse] = useState(false);
     const [objectiveOptions, setObjectiveOptions] = useState([]);
 
-    const { openDialog, title, setOpenDialog, courses, quizzes, handleSave, recordForEdit, previewMode=false, setPreviewMode=null } = props;
+    const { openDialog, title, setOpenDialog, courses, quizzes, handleSave, recordForEdit, previewMode=false, setPreviewMode=null, setAnchorEl=null } = props;
     const courseOptions = courses.map((item, i) => {
         return { id: item._id, title: item.courseName }
     })
@@ -208,6 +208,9 @@ const AddQuestion = (props) => {
         setAnsweredChoices([])
         if(setPreviewMode!=null){
             setPreviewMode(true)
+        }
+        if(setAnchorEl!=null){
+            setAnchorEl(null)
         }
     }
 
@@ -329,6 +332,9 @@ const AddQuestion = (props) => {
             setAnsweredChoices([])
             if(setPreviewMode!=null){
                 setPreviewMode(true)
+            }
+            if(setAnchorEl!=null){
+                setAnchorEl(null)
             }
         }
     }

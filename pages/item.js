@@ -1,5 +1,5 @@
 import MainLayout from "../containers/app/mainLayout";
-import { useState } from 'react';
+import { Fragment, useState } from 'react';
 import { compose } from "recompose";
 import { withAuthSync } from "../utils/auth";
 import Question from "../components/Question";
@@ -14,6 +14,7 @@ import { withToastManager } from "react-toast-notifications";
 import { _error_handler } from "../utils/errorHandler";
 import {API} from '../constant/ENV'
 import { fetchQuiz } from "../redux/actions/quizAction";
+import { Grid, Typography } from "@material-ui/core";
 
 const questionType = [
     "Multiple Choice",
@@ -66,17 +67,37 @@ const Item = (props) => {
             </Controls.Fab>
         </li>;
 
+    const sort=(a,b)=>{
+        if(a.courseId.courseName<b.courseId.courseName)return -1; 
+        else if(b.courseId.courseName>a.courseId.courseName)return 1; 
+        return 0;
+    }
 
+console.log(props.questions);
+    let courseName,oldCourseName='',distinctCourses;
+    if(props.questions&&props.questions.length){
+        distinctCourses=[...new Set(props.questions.sort(sort).map((question)=>question.courseId.courseName))]
+        console.log(distinctCourses);
+    }
     return (
         <>
             <MainLayout title="Items" pageActions={addItem}>
-                <Row>
-                    {
-                        props.questions.length && props.questions.map((item, i) =>
-                            <Question key={i} question={{...item}} courses={props.courses} quizzes={props.quizzes} />
+                {
+                    distinctCourses&&distinctCourses.map((course,i)=>{
+                        return(
+                            <Fragment>
+                                <Typography variant='h5' component='h5' className={i?'mt-4 mb-2':''}>{course}</Typography>
+                                <Grid container spacing={2}>
+                                    {
+                                        props.questions.filter(question=>question.courseId.courseName===course).map((item,idx)=>
+                                            <Question key={idx} question={{...item}} courses={props.courses} quizzes={props.quizzes} />
+                                        )
+                                    }
+                                </Grid>
+                            </Fragment>
                         )
-                    }
-                </Row>
+                    })
+                }
             </MainLayout>
             <AddQuestion openDialog={openDialog} setOpenDialog={setOpenDialog} title="Add Item" courses={props.courses} quizzes={props.quizzes} handleSave={insertQuestion} />
         </>

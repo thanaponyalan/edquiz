@@ -6,14 +6,16 @@ import { bindActionCreators } from "redux";
 import { API } from "../../constant/ENV";
 import { fetchQuestion } from "../../redux/actions/questionAction";
 import { fetchQuiz } from "../../redux/actions/quizAction";
-import Card from "../ReactStrap/Card";
+import Card from "../MaterialUI/Card";
 import ViewQuestion from "./AddQuestion";
+import { Menu, MenuItem, Button, Grid } from "@material-ui/core";
 
 const questionType = ['Multiple Choice', 'Match', 'True or False']
 
 const QuestionWidget = (props) => {
     const [openDialog, setOpenDialog] = useState(false);
     const [previewMode, setPreviewMode]=useState(true);
+    const [anchorEl, setAnchorEl]=useState(null)
     const { question } = props;
     const updateQuestion=async(question)=>{
         question={
@@ -48,15 +50,24 @@ const QuestionWidget = (props) => {
             console.log(err);
         }
     }
+
+    const handleClose=()=>{
+        setAnchorEl(null)
+    }
+
     return (
         <>
-            <Card
-                title={question.question.title}
-                type={questionType[question.question.type]}
-                viewable
-                viewInModal={() => setOpenDialog(true)}
-            >
-            </Card>
+            <Grid item xs={12} md={6}>
+                <Card
+                    title={question.question.title}
+                    type={questionType[question.question.type]}
+                    viewable
+                    viewInModal={() => setOpenDialog(true)}
+                    menuId={"questionMenus"}
+                    setAnchorEl={setAnchorEl}
+                >
+                </Card>
+            </Grid>
             <ViewQuestion 
                 openDialog={openDialog} 
                 setOpenDialog={setOpenDialog} 
@@ -64,6 +75,7 @@ const QuestionWidget = (props) => {
                 title="Preview Item" 
                 previewMode={previewMode}
                 setPreviewMode={setPreviewMode}
+                setAnchorEl={setAnchorEl}
                 handleSave={updateQuestion}
                 recordForEdit={{
                     id: question._id, 
@@ -79,6 +91,17 @@ const QuestionWidget = (props) => {
                     owner: question.owner
                 }}
             />
+            <Menu
+                id="questionMenus"
+                anchorEl={anchorEl}
+                keepMounted
+                open={Boolean(anchorEl)}
+                onClose={handleClose}
+            >
+                <MenuItem onClick={()=>setOpenDialog(true)}>Preview</MenuItem>
+                <MenuItem onClick={()=>{setPreviewMode(false); setOpenDialog(true)}}>Edit</MenuItem>
+                <MenuItem disabled>Duplicate</MenuItem>
+            </Menu>
         </>
     )
 }
