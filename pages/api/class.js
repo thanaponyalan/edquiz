@@ -2,6 +2,7 @@ import withMiddleware from "../../middlewares";
 import googleMiddleware from '../../middlewares/google';
 import {google} from 'googleapis';
 import dbModel from "../../database/dbModel";
+import { Mongoose } from "mongoose";
 
 let response={
     statusCode: 200,
@@ -18,14 +19,27 @@ const getClass=async(req,res)=>{
             res.status(response.statusCode).json(response);
             return reject(response);
         }
-        dbModel.classesModel.find({owner: req.headers.authorization}).populate('courseId').populate('students').exec((err,classes)=>{
-            if(!err){
-                response.data.payload=classes;
-                res.status(response.statusCode).json(response);
-                return resolve();
-            }
-            return reject(err);
-        })
+        const {isTeacher}=req.query;
+        if(isTeacher){
+            dbModel.classesModel.find({owner: req.headers.authorization}).populate('courseId').populate('students').exec((err,classes)=>{
+                if(!err){
+                    response.data.payload=classes;
+                    res.status(response.statusCode).json(response);
+                    return resolve();
+                }
+                return reject(err);
+            })
+        }else{
+            dbModel.classesModel.find({students:req.headers.authorization}).populate('courseId').exec((err,classes)=>{
+                if(!err){
+                    console.log(classes);
+                    response.data.payload=classes;
+                    res.status(response.statusCode).json(response);
+                    return resolve();
+                }
+                return reject(err);
+            })
+        }
     })
 }
 
