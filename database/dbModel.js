@@ -6,7 +6,8 @@ module.exports={
     coursesModel: mongoose.models.courses || mongoose.model('courses',dbSchema.coursesSchema),
     objectivesModel: mongoose.models.objectives || mongoose.model('objectives',dbSchema.objectivesSchema),
     questionsModel: mongoose.models.questions || mongoose.model('questions',dbSchema.questionSchema),
-    quizzesModel: mongoose.models.quizzes||mongoose.model('quizzes', dbSchema.quizSchema)
+    quizzesModel: mongoose.models.quizzes||mongoose.model('quizzes', dbSchema.quizSchema),
+    classesModel: mongoose.models.classes||mongoose.model('classes',dbSchema.classesSchema)
 }
 
 // module.exports={

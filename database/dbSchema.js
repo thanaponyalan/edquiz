@@ -13,13 +13,13 @@ const usersSchema=new mongoose.Schema({
     photoUrl: String
 });
 
-const classesSchema=new mongoose.Schema({
-    classId: {type: String, unique: true},
-    className: String,
-    subjectId: Schema.Types.ObjectId,
-    studentId: [Schema.Types.ObjectId],
-    teacherId: [Schema.Types.ObjectId]
-});
+// const classesSchema=new mongoose.Schema({
+//     classId: {type: String, unique: true},
+//     className: String,
+//     subjectId: Schema.Types.ObjectId,
+//     studentId: [Schema.Types.ObjectId],
+//     teacherId: [Schema.Types.ObjectId]
+// });
 
 const coursesSchema=new mongoose.Schema({
     courseName: String,
@@ -57,6 +57,15 @@ const quizSchema=new mongoose.Schema({
     courseId: {type: Schema.Types.ObjectId, ref: 'courses'},
     questionId: [{type: Schema.Types.ObjectId, ref: 'questions'}],
     quizName: String,
+    owner: Schema.Types.ObjectId
+})
+
+const classesSchema=new mongoose.Schema({
+    className: String,
+    gClassId: String,
+    gClassName: String,
+    courseId: {type: Schema.Types.ObjectId, ref: 'courses'},
+    students: [{type: Schema.Types.ObjectId, ref: 'users'}],
     owner: Schema.Types.ObjectId
 })
 
