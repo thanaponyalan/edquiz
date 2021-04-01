@@ -1,73 +1,37 @@
-import { Component } from "react";
-import { compose } from "recompose";
-import { connect } from "react-redux";
-import { setProfile } from "../redux/actions/profileAction";
-import { bindActionCreators } from 'redux'
+import React from 'react'
+import { connect } from 'react-redux'
+import { Row } from 'reactstrap'
+import { bindActionCreators, compose } from 'redux'
+import Class from '../components/Class'
+import MainLayout from '../containers/app/mainLayout'
+import { fetchClass } from '../redux/actions/classAction'
 import { withAuthSync } from '../utils/auth'
-import MainLayout from "../containers/app/mainLayout";
-import Class from "../components/Class";
-import ImportGC from "../components/Class/importGC";
-import { Row } from "reactstrap";
 
-
-const addClass=
-    <li className="nav-item">
-        <ImportGC/>
-    </li>
-
-class MyClass extends Component{
-    classes=[
-        {
-            className: "Operating System Section 1",
-            courseNo: "03376812"
-        },
-        {
-            className: "Operating System Section 2",
-            courseNo: "03376812"
-        },
-        {
-            className: "Operating System Section 3",
-            courseNo: "03376812"
-        },
-        {
-            className: "Operating System Section 4",
-            courseNo: "03376812"
-        }
-    ];
-    constructor(props){
-        super(props);
-    }
-
-    render(){
-        // console.log(this.props);
-        return(
-            <MainLayout title="My Classes" pageActions={addClass}>
+function MyClass(props) {
+    console.log(props)
+    return (
+            <MainLayout title="My Class" >
                 <Row>
-                    { 
-                        this.classes&&this.classes.map((item,i)=>
-                            <Class className={item.className} courseNo={item.courseNo} key={i} />
+                    {
+                        props.classes&&props.classes.map((item,i)=>
+                        <Class className={item.className} courseNo={item.courseId.courseNo} key={i}/> 
                         )
                     }
                 </Row>
             </MainLayout>
-        )
-    }
+    )
 }
-
-const mapDispatchToProps = (dispatch) => {
-    return {
-        setProfile: bindActionCreators(setProfile,dispatch),
-        // setRole: bindActionCreators(setRole,dispatch)
-    }
-}
-
-const mapStateToProps=(state)=>{
+const mapDispatchToProps = dispatch => {
     return{
-        profile: state.profileReducer
+        fetchClass: bindActionCreators(fetchClass, dispatch)
     }
 }
-
+const mapStateToProps = state => {
+    return{
+        classes: state.classReducer.classes
+    }
+}
 export default compose(
-    // connect(mapStateToProps,mapDispatchToProps),
-    withAuthSync,
+    connect(mapStateToProps, mapDispatchToProps),
+    withAuthSync
 )(MyClass)
