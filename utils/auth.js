@@ -8,6 +8,8 @@ import { setCourse } from "../redux/actions/courseAction";
 import { API } from "../constant/ENV";
 import { setQuestion } from "../redux/actions/questionAction";
 import { setQuiz } from "../redux/actions/quizAction";
+import { setClass } from "../redux/actions/classAction";
+import { fetchClassroom } from "../redux/actions/classroomAction";
 
 export const withAuthSync = WrappedComponent => class extends Component {
     constructor(props) {
@@ -51,7 +53,7 @@ export const withAuthSync = WrappedComponent => class extends Component {
     static async getInitialProps(ctx) {
         const {uid, role} = auth(ctx)||{};
         const {pathname, store}=ctx;
-        let courses=[],questions,quizzes;
+        let courses=[],questions,quizzes, classes;
         try {
             var url = new URL(`${API}/user`), params = { uid: uid }
             Object.keys(params).forEach(key => url.searchParams.append(key, params[key]));
@@ -99,6 +101,18 @@ export const withAuthSync = WrappedComponent => class extends Component {
                 })
                 quizzes=await quizRes.json();
                 store.dispatch(setQuiz(quizzes))
+            }
+            if(pathname=='/manage-class'){
+                url=`${API}/class`
+                const classRes=await fetch(url,{
+                    method: 'GET',
+                    headers:{
+                        authorization: uid
+                    }
+                })
+                classes=await classRes.json();
+                store.dispatch(setClass(classes));
+                store.dispatch(fetchClassroom(uid));
             }
         } catch (err) {
             console.log(err);

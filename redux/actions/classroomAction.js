@@ -7,7 +7,7 @@ export const classroomActionTypes={
 
 export const fetchClassroom=(uid,toast)=>async dispatch=>{
     try{
-        const url=`${API}/class`
+        const url=`${API}/gClass`
         fetch(url,{
             method: 'GET',
             headers:{
