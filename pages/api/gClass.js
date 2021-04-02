@@ -1,6 +1,7 @@
 import withMiddleware from "../../middlewares";
 import googleMiddleware from '../../middlewares/google';
 import { google } from 'googleapis';
+import { API } from "../../constant/ENV";
 
 let response = {
     statusCode: null,
@@ -25,15 +26,28 @@ const listClass = (req, res, oAuth2Client) => {
                 // throw err;
                 // reject();
             } else {
-                const courses = courseRes.data.courses;
-                let response = {
-                    statusCode: 200,
-                    data: {
-                        payload: courses
+                // const courses = courseRes.data.courses;
+                const url=`${API}/class?isTeacher=1`
+                fetch(url,{
+                    method: 'GET',
+                    headers:{
+                        authorization: req.headers.authorization
                     }
-                }
-                console.log(response);
-                res.status(response.statusCode).json(response);
+                }).then(response=>response.json()).then((resp)=>{
+                    if(resp.statusCode!=200){
+                        return resp;
+                    }
+                    const classes=resp.data.payload;
+                    const existingClass=classes.map((item)=>{return item.gClassId})
+                    const courses=courseRes.data.courses.filter(item=>!existingClass.includes(item.id));
+                    let response = {
+                        statusCode: 200,
+                        data: {
+                            payload: courses
+                        }
+                    }
+                    res.status(response.statusCode).json(response);
+                });
                 // resolve();
             }
         })

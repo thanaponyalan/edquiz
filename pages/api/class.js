@@ -3,6 +3,7 @@ import googleMiddleware from '../../middlewares/google';
 import {google} from 'googleapis';
 import dbModel from "../../database/dbModel";
 import { Mongoose } from "mongoose";
+import { API } from "../../constant/ENV";
 
 let response={
     statusCode: 200,
@@ -43,6 +44,62 @@ const getClass=async(req,res)=>{
     })
 }
 
+const getStudentsId=async(students)=>{
+    return Promise.all(students.map(async(stdItem)=>{
+        const usr=await dbModel.usersModel.findOneAndUpdate({email: stdItem.profile.emailAddress},{
+            email: stdItem.profile.emailAddress,
+            familyName: stdItem.profile.name.familyName,
+            firstName: stdItem.profile.name.givenName,
+            photoUrl: stdItem.profile.photoUrl,
+        },{upsert: true, new: true})
+        return Promise.resolve(usr._id)
+    }))
+}
+
+const insertClass=async(classObject)=>{
+    return new Promise((resolve,reject)=>{
+        dbModel.classesModel.create(classObject,(err,result)=>{
+            if(err){
+                response.statusCode=400;
+                response.data.payload=err.message||err.toString();
+                // res.status(response.statusCode).json(response)
+                return reject(err);
+            }
+            response.data.payload=result;
+            // res.status(response.statusCode).json(response);
+            return resolve(response);
+        })
+    })
+}
+
+const importClass=async(req,res)=>{
+    const classes=JSON.parse(req.body);
+    return Promise.all(
+        classes.map(async(classItem)=>{
+            const url=`${API}/gStudent?courseId=${classItem.gClassId}`;
+            const std=await fetch(url,{
+                method: 'GET',
+                headers:{
+                    authorization: req.headers.authorization
+                }
+            });
+            const stdRes=await std.json();
+            const students=stdRes.data.payload;
+            if(students){
+                return getStudentsId(students).then(studentsId=>{
+                    return insertClass({...classItem, students: studentsId, owner: req.headers.authorization}).then(data=>{
+                        return Promise.resolve(data)
+                    })
+                })
+            }else{
+                return insertClass({...classItem, students:[], owner:req.headers.authorization}).then(data=>{
+                    return Promise.resolve(data);
+                })
+            }
+        })
+    )
+}
+
 // const listClass=(req,res,oAuth2Client)=>{
 //     return new Promise((resolve,reject)=>{
 //         const classroom=google.classroom({version: 'v1', auth: oAuth2Client});  
@@ -79,7 +136,16 @@ const handleRequest=(req,res)=>{
     return new Promise((resolve,reject)=>{
         switch(req.method){
             case 'GET': getClass(req,res); break;
-            // case 'POST': insertQuestion(req,res); break;
+            case 'POST': importClass(req,res).then(resp=>{
+                const hasError=resp.filter(item=>item.statusCode!=200);
+                if(hasError.length){
+                    response.statusCode=500;
+                    response.data.payload='somethings went wrong'
+                }else{
+                    response.data.payload='Created'
+                    res.status(response.statusCode).json(response)
+                }
+            }); break;
             // case 'PUT': updateQuestion(req,res); break;
             default: res.status(200).json({err:'Method Not Allowed'}); break;
         }

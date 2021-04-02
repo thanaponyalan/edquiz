@@ -23,10 +23,10 @@ const useStyles=makeStyles(theme=>({
 }))
 
 export default function Popup(props) {
-    const {title, children, open, handleClose, fullScreen, handleSave, checkAnswer, toggleEdit}=props;
+    const {title, children, open, handleClose, fullScreen, handleSave, checkAnswer, toggleEdit, maxWidth, fullWidth}=props;
     const classes=useStyles();
     return (
-        <Dialog fullScreen={fullScreen} open={open} onClose={handleClose}>
+        <Dialog fullScreen={fullScreen} open={open} onClose={handleClose} maxWidth={maxWidth} fullWidth={fullWidth}>
             <AppBar className={classes.appBar}>
                 <Toolbar>
                     <IconButton edge="start" color="inherit" onClick={handleClose} aria-label="close">

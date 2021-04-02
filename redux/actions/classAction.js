@@ -8,7 +8,7 @@ export const classActionTypes={
 
 export const fetchClass=(uid,toast)=>async(dispatch)=>{
     try{
-        const url=`${API}/class`
+        const url=`${API}/class?isTeacher=1`
         const classRes=await fetch(url,{
             method: 'GET',
             headers:{

@@ -103,7 +103,7 @@ export const withAuthSync = WrappedComponent => class extends Component {
                 store.dispatch(setQuiz(quizzes))
             }
             if(pathname=='/manage-class'){
-                url=`${API}/class`
+                url=`${API}/class?isTeacher=1`
                 const classRes=await fetch(url,{
                     method: 'GET',
                     headers:{
@@ -112,7 +112,6 @@ export const withAuthSync = WrappedComponent => class extends Component {
                 })
                 classes=await classRes.json();
                 store.dispatch(setClass(classes));
-                store.dispatch(fetchClassroom(uid));
             }
             if(pathname=='/my-class'){
                 if (role== 'student'){
@@ -125,7 +124,6 @@ export const withAuthSync = WrappedComponent => class extends Component {
                     })
                     classes=await classRes.json();
                     store.dispatch(setClass(classes));
-                    store.dispatch(fetchClassroom(uid));
                 }
                 else{
                     url=`${API}/class?isTeacher=1`
@@ -137,8 +135,6 @@ export const withAuthSync = WrappedComponent => class extends Component {
                     })
                     classes=await classRes.json();
                     store.dispatch(setClass(classes));
-                    store.dispatch(fetchClassroom(uid));
-                
                 }
             }
         } catch (err) {
