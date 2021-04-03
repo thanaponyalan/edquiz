@@ -23,7 +23,7 @@ const useStyles=makeStyles(theme=>({
 }))
 
 export default function Popup(props) {
-    const {title, children, open, handleClose, fullScreen, handleSave, checkAnswer, toggleEdit, maxWidth, fullWidth}=props;
+    const {title, children, open, handleClose, fullScreen, handleSave, checkAnswer, toggleEdit, maxWidth, fullWidth, disabledSave=false}=props;
     const classes=useStyles();
     return (
         <Dialog fullScreen={fullScreen} open={open} onClose={handleClose} maxWidth={maxWidth} fullWidth={fullWidth}>
@@ -37,7 +37,7 @@ export default function Popup(props) {
                     </Typography>
                     {
                         handleSave&&
-                        <Button color="inherit" onClick={handleSave}>
+                        <Button disabled={disabledSave} color="inherit" onClick={handleSave}>
                             save
                         </Button>
                     }

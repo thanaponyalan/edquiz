@@ -17,12 +17,15 @@ const Import=(props)=>{
     const {openDialog,title,setOpenDialog, googleClasses,courses,importClasses}=props;
     const [classes,setClasses]=useState([]);
     const [isFetched,setIsFetched]=useState(false)
+    const [disabledSave,setDisabledSave]=useState(true);
     const handleClose=()=>{
         setOpenDialog(false);
         setClasses([])
         setIsFetched(false)
     }
     const handleSave=()=>{
+        setClasses([])
+        setIsFetched(false)
         const insertingClasses=classes.filter(item=>item.selected).map(item=>({className: item.className, courseId: item.courseId, gClassId: item.gClassId, gClassName: item.gClassName}));
         if(insertingClasses.length){
             console.log(insertingClasses);
@@ -41,10 +44,10 @@ const Import=(props)=>{
         }
     }, [googleClasses])
     return (
-        <Popup maxWidth="md" fullWidth={true} open={openDialog} handleClose={handleClose} handleSave={handleSave} title={title}>
+        <Popup maxWidth="md" fullWidth={true} open={openDialog} handleClose={handleClose} handleSave={handleSave} title={title} disabledSave={disabledSave}>
                 {
                     classes.length>0&&courses&&classes.map((item,idx)=>
-                        <Form key={idx}><ClassInput key={idx} courses={courses} recordForEdit={item} idx={idx} setClasses={setClasses} classes={classes} /></Form>
+                        <Form key={idx}><ClassInput key={idx} courses={courses} recordForEdit={item} idx={idx} setClasses={setClasses} classes={classes} setDisabledSave={setDisabledSave} /></Form>
                     )
                 }
             {
@@ -86,7 +89,7 @@ const initialValues={
 }
 
 const ClassInput=(props)=>{
-    const {recordForEdit,idx,setClasses,classes,courses}=props;
+    const {recordForEdit,idx,setClasses,classes,courses,setDisabledSave}=props;
     const mappedCourses=courses.map((item)=>({id: item._id, title: `${item.courseName} (${item.courseNo})`}))
 
     const validate=(fieldValues=values)=>{
@@ -120,7 +123,13 @@ const ClassInput=(props)=>{
     }, [recordForEdit])
 
     useEffect(()=>{
-        if(values.selected)validate();
+        if(values.selected){
+            if(validate())setDisabledSave(false);
+            else setDisabledSave(true);
+        }else{
+            setErrors({})
+            setDisabledSave(true)
+        }
     },[values])
 
     return(

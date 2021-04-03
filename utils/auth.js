@@ -112,6 +112,15 @@ export const withAuthSync = WrappedComponent => class extends Component {
                 })
                 classes=await classRes.json();
                 store.dispatch(setClass(classes));
+                url=`${API}/course`
+                const coursesRes=await fetch(url,{
+                    method: 'GET',
+                    headers:{
+                        authorization: uid
+                    }
+                });
+                courses=await coursesRes.json();
+                store.dispatch(setCourse(courses));
             }
             if(pathname=='/my-class'){
                 if (role== 'student'){
