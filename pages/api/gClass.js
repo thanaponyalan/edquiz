@@ -39,7 +39,11 @@ const listClass = (req, res, oAuth2Client) => {
                     }
                     const classes=resp.data.payload;
                     const existingClass=classes.map((item)=>{return item.gClassId})
-                    const courses=courseRes.data.courses.filter(item=>!existingClass.includes(item.id));
+                    let courses=[]
+                    courses.length
+                    if(courseRes.data.courses.length){
+                        courses=courseRes.data.courses.filter(item=>!existingClass.includes(item.id));
+                    }
                     let response = {
                         statusCode: 200,
                         data: {
