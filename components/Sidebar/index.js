@@ -51,7 +51,7 @@ const Sidebar = (props) => {
                         </li>
                         <li className="nav-header">GOOGLE CLASSROOM</li>
                         <li className="nav-item">
-                            <Link href={isTeacher?'/my-class':'studentClass'}>
+                            <Link href='/my-class'>
                                 <a href="#" className={pathname==="/my-class"?"nav-link active":"nav-link"}>
                                     <i className="nav-icon fas fa-tachometer-alt" />
                                     <p>
