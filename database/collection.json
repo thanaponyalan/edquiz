@@ -1,5 +1,7 @@
 {
     "Quizzes":{
+        "status":"done",
+
         "users":{
             "tokens":{
                 "access_token":"String",
@@ -28,21 +30,6 @@
             "bloomLevel":"int",
             "courseId":"ObjectId"
         },
-
-        "classes":{
-            "classId":"String",
-            "className":"String",
-            "subjectId":"ObjectId",
-            "studentId":[
-                "studentId1","studentId2","studentId3","...","studentIdn"
-            ],
-            "teacherId":[
-                "teacherId1","teacherId2","teacherId3","...","teacherIdn"
-            ],
-            "_id":"ObjectId"
-        },
-
-
         "quizzes":{
             "_id":"ObjectId",
             "courseId":"ObjectId",
@@ -77,7 +64,19 @@
             ],
             "owner":"ObjectId"
         },
+        "classes":{
+            "_id":"ObjectId",
+            "className":"String",
+            "gClassId":"String",
+            "gClassName":"String",
+            "courseId":"ObjectId",
+            "students":[
+                "studentId1","studentId2","studentId3","...","studentIdn"
+            ],
+            "owner":"ObjectId"
+        },
 
+        "Status":"Doing",
         "assign":{
             "_id":"ObjectId",
             "classId":"ObjectId",
