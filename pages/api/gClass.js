@@ -40,8 +40,7 @@ const listClass = (req, res, oAuth2Client) => {
                     const classes=resp.data.payload;
                     const existingClass=classes.map((item)=>{return item.gClassId})
                     let courses=[]
-                    courses.length
-                    if(courseRes.data.courses.length){
+                    if(courseRes.data.courses){
                         courses=courseRes.data.courses.filter(item=>!existingClass.includes(item.id));
                     }
                     let response = {
