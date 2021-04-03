@@ -1,8 +1,5 @@
 import withMiddleware from "../../middlewares";
-import googleMiddleware from '../../middlewares/google';
-import {google} from 'googleapis';
 import dbModel from "../../database/dbModel";
-import { Mongoose } from "mongoose";
 import { API } from "../../constant/ENV";
 
 let response={
@@ -72,65 +69,43 @@ const insertClass=async(classObject)=>{
     })
 }
 
+const getStudents=async(gClassId,uid)=>{
+    return new Promise(async(resolve,reject)=>{
+        try{
+            const url=`${API}/gStudent?courseId=${gClassId}`;
+            const studentsRes=await fetch(url,{
+                method: 'GET',
+                headers:{
+                    authorization: uid
+                }
+            });
+            const students=await studentsRes.json();
+            return resolve(students.data.payload)
+        }catch(err){
+            console.log(err);
+            return reject(err)
+        }
+    })
+
+}
+
 const importClass=async(req,res)=>{
     const classes=JSON.parse(req.body);
     return Promise.all(
-        classes.map(async(classItem)=>{
-            const url=`${API}/gStudent?courseId=${classItem.gClassId}`;
-            const std=await fetch(url,{
-                method: 'GET',
-                headers:{
-                    authorization: req.headers.authorization
+        classes.map((classItem)=>
+            getStudents(classItem.gClassId,req.headers.authorization).then(async(students)=>{
+                if(students){
+                    const studentsId = await getStudentsId(students);
+                    const data = await insertClass({ ...classItem, students: studentsId, owner: req.headers.authorization });
+                    return await Promise.resolve(data);
+                }else{
+                    const data_1 = await insertClass({ ...classItem, students: [], owner: req.headers.authorization });
+                    return await Promise.resolve(data_1);
                 }
-            });
-            const stdRes=await std.json();
-            const students=stdRes.data.payload;
-            if(students){
-                return getStudentsId(students).then(studentsId=>{
-                    return insertClass({...classItem, students: studentsId, owner: req.headers.authorization}).then(data=>{
-                        return Promise.resolve(data)
-                    })
-                })
-            }else{
-                return insertClass({...classItem, students:[], owner:req.headers.authorization}).then(data=>{
-                    return Promise.resolve(data);
-                })
-            }
-        })
+            })
+        )
     )
 }
-
-// const listClass=(req,res,oAuth2Client)=>{
-//     return new Promise((resolve,reject)=>{
-//         const classroom=google.classroom({version: 'v1', auth: oAuth2Client});  
-//         classroom.courses.list({
-//             courseStates: 'ACTIVE'
-//         },(err,courseRes)=>{
-//             if(err){
-//                 response.statusCode=err.code;
-//                 var errorMessage=err.errors;
-//                 response.data.message=errorMessage[0].message;
-//                 res.status(response.statusCode).json(response);
-//                 console.log(response);
-//                 return reject();
-//                 // res.status(500).send(err);
-//                 // throw err;
-//                 // reject();
-//             }else{
-//                 const courses=courseRes.data.courses;
-//                 let response={
-//                     statusCode: 200,
-//                     data:{
-//                         payload: courses
-//                     }
-//                 }
-//                 console.log(response);
-//                 res.status(response.statusCode).json(response);
-//                 // resolve();
-//             }
-//         })
-//     });
-// }
 
 const handleRequest=(req,res)=>{
     return new Promise((resolve,reject)=>{
@@ -141,10 +116,14 @@ const handleRequest=(req,res)=>{
                 if(hasError.length){
                     response.statusCode=500;
                     response.data.payload='somethings went wrong'
+                    return reject(response);
                 }else{
                     response.data.payload='Created'
                     res.status(response.statusCode).json(response)
                 }
+            }).catch((err)=>{
+                console.log(err);
+                reject(err)
             }); break;
             // case 'PUT': updateQuestion(req,res); break;
             default: res.status(200).json({err:'Method Not Allowed'}); break;
