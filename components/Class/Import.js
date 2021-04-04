@@ -24,13 +24,11 @@ const Import=(props)=>{
         setIsFetched(false)
     }
     const handleSave=()=>{
-        setClasses([])
-        setIsFetched(false)
-        const insertingClasses=classes.filter(item=>item.selected).map(item=>({className: item.className, courseId: item.courseId, gClassId: item.gClassId, gClassName: item.gClassName}));
+        const insertingClasses=classes.filter(item=>item.selected).map(item=>({className: item.className, courseId: item.courseId, gClassId: item.gClassId, gClassName: item.gClassName, alternateLink: item.alternateLink}));
         if(insertingClasses.length){
-            console.log(insertingClasses);
             importClasses(insertingClasses)
         }
+        handleClose();
     }
     
     if(openDialog&&!isFetched){
@@ -39,7 +37,7 @@ const Import=(props)=>{
     }
     useEffect(() => {
         if(googleClasses){
-            setClasses(googleClasses.map((item)=>({selected: false, className:'', gClassId: item.id, gClassName: item.name, courseId: ''})))
+            setClasses(googleClasses.map((item)=>({selected: false, className:'', gClassId: item.id, gClassName: item.name, courseId: '', alternateLink: item.alternateLink})))
             setIsFetched(true);
         }
     }, [googleClasses])
@@ -85,7 +83,8 @@ const initialValues={
     className: '',
     courseId: '',
     gClassId: '',
-    gClassName: ''
+    gClassName: '',
+    alternateLink: ''
 }
 
 const ClassInput=(props)=>{

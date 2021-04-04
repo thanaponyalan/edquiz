@@ -55,86 +55,55 @@ export const withAuthSync = WrappedComponent => class extends Component {
         const {pathname, store}=ctx;
         let courses=[],questions,quizzes, classes;
         try {
-            var url = new URL(`${API}/user`), params = { uid: uid }
-            Object.keys(params).forEach(key => url.searchParams.append(key, params[key]));
-            const uRes = await fetch(url);
-            const user = await uRes.json();
-            store.dispatch(setProfile(user));
-            if(pathname=='/course'){
-                url=`${API}/course`
-                const coursesRes=await fetch(url,{
-                    method: 'GET',
-                    headers:{
-                        authorization: uid
-                    }
-                });
-                courses=await coursesRes.json();
-                store.dispatch(setCourse(courses));
-            }
-            if(pathname=='/item'){
-                url=`${API}/item`
-                const questionRes=await fetch(url,{
-                    method: 'GET',
-                    headers:{
-                        authorization: uid
-                    }
-                })
-                questions=await questionRes.json();
-                store.dispatch(setQuestion(questions));
-
-                url=`${API}/course`
-                const coursesRes=await fetch(url,{
-                    method: 'GET',
-                    headers:{
-                        authorization: uid
-                    }
-                });
-                courses=await coursesRes.json();
-                store.dispatch(setCourse(courses));
-
-                url=`${API}/test`
-                const quizRes=await fetch(url,{
-                    method: 'GET',
-                    headers:{
-                        authorization: uid
-                    }
-                })
-                quizzes=await quizRes.json();
-                store.dispatch(setQuiz(quizzes))
-            }
-            if(pathname=='/manage-class'){
-                url=`${API}/class?isTeacher=1`
-                const classRes=await fetch(url,{
-                    method: 'GET',
-                    headers:{
-                        authorization: uid
-                    }
-                })
-                classes=await classRes.json();
-                store.dispatch(setClass(classes));
-                url=`${API}/course`
-                const coursesRes=await fetch(url,{
-                    method: 'GET',
-                    headers:{
-                        authorization: uid
-                    }
-                });
-                courses=await coursesRes.json();
-                store.dispatch(setCourse(courses));
-            }
-            if(pathname=='/my-class'){
-                if (role== 'student'){
-                    url=`${API}/class`
-                    const classRes=await fetch(url,{
+            if(uid&&role){
+                var url = new URL(`${API}/user`), params = { uid: uid }
+                Object.keys(params).forEach(key => url.searchParams.append(key, params[key]));
+                const uRes = await fetch(url);
+                const user = await uRes.json();
+                store.dispatch(setProfile(user));
+                if(pathname=='/course'){
+                    url=`${API}/course`
+                    const coursesRes=await fetch(url,{
+                        method: 'GET',
+                        headers:{
+                            authorization: uid
+                        }
+                    });
+                    courses=await coursesRes.json();
+                    store.dispatch(setCourse(courses));
+                }
+                if(pathname=='/item'){
+                    url=`${API}/item`
+                    const questionRes=await fetch(url,{
                         method: 'GET',
                         headers:{
                             authorization: uid
                         }
                     })
-                    classes=await classRes.json();
-                    store.dispatch(setClass(classes));
+                    questions=await questionRes.json();
+                    store.dispatch(setQuestion(questions));
+    
+                    url=`${API}/course`
+                    const coursesRes=await fetch(url,{
+                        method: 'GET',
+                        headers:{
+                            authorization: uid
+                        }
+                    });
+                    courses=await coursesRes.json();
+                    store.dispatch(setCourse(courses));
+    
+                    url=`${API}/test`
+                    const quizRes=await fetch(url,{
+                        method: 'GET',
+                        headers:{
+                            authorization: uid
+                        }
+                    })
+                    quizzes=await quizRes.json();
+                    store.dispatch(setQuiz(quizzes))
                 }
-                else{
+                if(pathname=='/manage-class'){
                     url=`${API}/class?isTeacher=1`
                     const classRes=await fetch(url,{
                         method: 'GET',
@@ -144,6 +113,39 @@ export const withAuthSync = WrappedComponent => class extends Component {
                     })
                     classes=await classRes.json();
                     store.dispatch(setClass(classes));
+                    url=`${API}/course`
+                    const coursesRes=await fetch(url,{
+                        method: 'GET',
+                        headers:{
+                            authorization: uid
+                        }
+                    });
+                    courses=await coursesRes.json();
+                    store.dispatch(setCourse(courses));
+                }
+                if(pathname=='/my-class'){
+                    if (role== 'student'){
+                        url=`${API}/class`
+                        const classRes=await fetch(url,{
+                            method: 'GET',
+                            headers:{
+                                authorization: uid
+                            }
+                        })
+                        classes=await classRes.json();
+                        store.dispatch(setClass(classes));
+                    }
+                    else{
+                        url=`${API}/class?isTeacher=1`
+                        const classRes=await fetch(url,{
+                            method: 'GET',
+                            headers:{
+                                authorization: uid
+                            }
+                        })
+                        classes=await classRes.json();
+                        store.dispatch(setClass(classes));
+                    }
                 }
             }
         } catch (err) {

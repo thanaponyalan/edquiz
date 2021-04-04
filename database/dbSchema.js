@@ -66,6 +66,7 @@ const classesSchema=new mongoose.Schema({
     gClassName: String,
     courseId: {type: Schema.Types.ObjectId, ref: 'courses'},
     students: [{type: Schema.Types.ObjectId, ref: 'users'}],
+    alternateLink: String,
     owner: Schema.Types.ObjectId
 })
 

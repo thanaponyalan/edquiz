@@ -64,7 +64,7 @@ const Class=(props)=>{
                 <CardHeader
                     title={thisClass.className}
                     subheader={
-                        <Chip size="small" avatar={<Avatar>GC</Avatar>}
+                        <Chip onClick={()=>{if(thisClass.alternateLink)window.open(thisClass.alternateLink,'_blank')}} size="small" avatar={<Avatar>GC</Avatar>}
                             label={thisClass.gClassName}
                         />
                     }
