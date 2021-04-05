@@ -20,8 +20,7 @@ const listClass = (req, res, oAuth2Client) => {
                 var errorMessage = err.errors;
                 response.data.message = errorMessage[0].message;
                 res.status(response.statusCode).json(response);
-                console.log(response);
-                return reject();
+                return reject(response);
                 // res.status(500).send(err);
                 // throw err;
                 // reject();

@@ -30,7 +30,7 @@ const getClass=async(req,res)=>{
         }else{
             dbModel.classesModel.find({students:req.headers.authorization}).populate('courseId').exec((err,classes)=>{
                 if(!err){
-                    console.log(classes);
+                    // console.log(classes);
                     response.data.payload=classes;
                     res.status(response.statusCode).json(response);
                     return resolve();
@@ -116,7 +116,7 @@ const updateClass=async(req,res)=>{
             return reject(response);
         }
         let thisClass=JSON.parse(req.body)
-        console.log(thisClass);
+        // console.log(thisClass);
         dbModel.classesModel.findByIdAndUpdate(thisClass._id,{
             className: thisClass.className,
             courseId: thisClass.courseId

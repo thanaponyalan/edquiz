@@ -47,7 +47,7 @@ export default function assignPopup(props) {
                 ...recordForEdit
             })
     },[recordForEdit])
-
+    console.log(values);
     return (
         <Form onSubmit={handleSubmit}>
             <Grid container>

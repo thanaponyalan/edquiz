@@ -104,14 +104,6 @@ export default function AnswerMatching(props) {
                                     <CardHeader
                                         title={`Drag answer here.`}
                                     />
-                                    {
-                                        item.question.pict &&
-                                        <CardMedia
-                                            className={classes.media}
-                                            image={item.question.pict}
-                                            style={item.question.pict && { backgroundSize: 'contain' } || { backgroundSize: 'cover' }}
-                                        />
-                                    }
                                 </Card>
                             </Grid>
                             {possibleAnswers && possibleAnswers.map((item, idx) =>

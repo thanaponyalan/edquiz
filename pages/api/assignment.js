@@ -23,7 +23,7 @@ const getAssignments=async(req,res)=>{
         if(isTeacher){
             dbModel.assignmentsModel.find({owner: req.headers.authorization}).populate('classId').populate('quizId').exec((err,assignments)=>{
                 if(!err){
-                    console.log(assignments);
+                    // console.log(assignments);
                     response.data.payload=assignments;
                     res.status(response.statusCode).json(response);
                     return resolve();

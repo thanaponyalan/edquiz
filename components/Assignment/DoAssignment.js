@@ -7,6 +7,7 @@ import AnswerQuestion from '../Question/AnswerQuestion';
 import AnswerMatching from '../Question/AnswerMatching';
 import { _error_handler } from '../../utils/errorHandler';
 import { API } from '../../constant/ENV';
+import { fetchAssignment } from '../../redux/actions/assignmentAction';
 
 const DoAssignment=(props)=>{
     const {quizId,uid,questions,setOpenDialog, assignmentId}=props;
@@ -23,7 +24,7 @@ const DoAssignment=(props)=>{
             if(answered.length===questions.length){
                 console.log(`Submit`);
                 storeResult(answered)
-                
+                props.fetchAssignment(props.uid)
 
                 // setOpenDialog(false)   
             }
@@ -90,7 +91,8 @@ const mapStateToProps=state=>{
 const mapDispatchToProps=dispatch=>{
     return{
         fetchQuestionByQuizId: bindActionCreators(fetchQuestionByQuizId,dispatch),
-        setQuestion: bindActionCreators(setQuestion,dispatch)
+        setQuestion: bindActionCreators(setQuestion,dispatch),
+        fetchAssignment: bindActionCreators(fetchAssignment, dispatch)
     }
 }
 

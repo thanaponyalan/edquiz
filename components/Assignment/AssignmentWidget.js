@@ -59,7 +59,7 @@ const AssignmentWidget=(props)=>{
     }
 
     const thisAssignee=assignment.assignees.filter(item=>item.studentId==props.uid)
-    const isDone=thisAssignee[0].status==='done';
+    const isDone=thisAssignee[0]?.status==='done';
 
     return(
         <>
