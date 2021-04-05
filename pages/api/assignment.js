@@ -2,6 +2,7 @@ import withMiddleware from "../../middlewares";
 import {serialize} from 'cookie';
 const dbModel=require('../../database/dbModel');
 import moment from "moment";
+import { API } from "../../constant/ENV";
 
 let response={
     statusCode: 200,
@@ -42,53 +43,6 @@ const getAssignments=async(req,res)=>{
     })
 }
 
-const getCourses=async(req,res)=>{
-    return new Promise((resolve, reject)=>{
-        if(req.headers.authorization===undefined){
-            response.statusCode=403;
-            response.data.message="Permission Denied!";
-            res.status(response.statusCode).json(response);
-            return reject(response);
-        }
-        dbModel.coursesModel.find({owner: req.headers.authorization}).populate('objectives').exec((err,courses)=>{
-            if(!err){
-                response.data.payload=courses
-                res.status(response.statusCode).json(response);
-                return resolve();
-            }
-            return reject(err);
-        })
-    })
-}
-
-const updateCourse=async(req,res)=>{
-    return new Promise((resolve,reject)=>{
-        if(req.headers.authorization===undefined){
-            response.statusCode=403;
-            response.data.message="Permission Denied!";
-            res.status(response.statusCode).json(response);
-            return reject(response);
-        }
-        let course=JSON.parse(req.body)
-        dbModel.coursesModel.findByIdAndUpdate(course._id,{
-            courseName: course.courseName,
-            courseNo: course.courseNo,
-            courseDescription: course.courseDescription
-        },{upsert: true, new: true},(err,result)=>{
-            if(!err){
-                response.data.payload=result;
-                res.status(response.statusCode).json(response)
-                return resolve();
-            }
-            response.data.payload=err;
-            response.statusCode=400;
-            res.status(response.statusCode).json(response);
-            return reject(err);
-        })
-        
-    })
-}
-
 const getStudents=async(classId)=>{
     return new Promise(async(resolve,reject)=>{
         try{
@@ -101,6 +55,32 @@ const getStudents=async(classId)=>{
         }
     })
 
+}
+
+const getGoogleClassId=async(classId)=>{
+    return new Promise(async(resolve,reject)=>{
+        try{
+            const classDetail=await dbModel.classesModel.findById(classId);
+            const gClassId=await classDetail.gClassId
+            return resolve(gClassId)
+        }catch(err){
+            console.log(err);
+            return reject(err)
+        }
+    })
+}
+
+const getQuizName=async(quizId)=>{
+    return new Promise(async(resolve,reject)=>{
+        try{
+            const quizDetail=await dbModel.quizzesModel.findById(quizId);
+            const quizName=await quizDetail.quizName;
+            return resolve(quizName)
+        }catch(err){
+            console.log(err);
+            return reject(err);
+        }
+    })
 }
 
 const insertAssignment=async(req,res)=>{
@@ -126,9 +106,19 @@ const insertAssignment=async(req,res)=>{
                     res.status(response.statusCode).json(response)
                     return reject(err);
                 }
-                response.data.payload=result;
-                res.status(response.statusCode).json(response);
-                return resolve();
+                getGoogleClassId(assignment.classId).then(gClassId=>{
+                    getQuizName(assignment.quizId).then(async(quizName)=>{
+                        const assignToGClass=await fetch(`${API}/gClassAssignment?courseId=${gClassId}`,{
+                            method: 'POST',
+                            headers:{
+                                authorization: req.headers.authorization
+                            },
+                            body: JSON.stringify({...assignment, quizName})
+                        });
+                        const assignResult=await assignToGClass.json();
+                        res.status(assignResult.statusCode).json(assignResult)
+                    })
+                })
             })
         })
     })

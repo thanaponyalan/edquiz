@@ -57,4 +57,15 @@ const listClass = (req, res, oAuth2Client) => {
     });
 }
 
-export default withMiddleware(googleMiddleware.setOAuth2Client(listClass));
+const handleRequest=(req,res,oAuth2Client)=>{
+    return new Promise((resolve,reject)=>{
+        switch(req.method){
+            case 'GET': listClass(req,res,oAuth2Client); break;
+            // case 'POST': insertClass(req,res); break;
+            // case 'PUT': updateQuestion(req,res); break;
+            default: res.status(200).json({err:'Method Not Allowed'}); break;
+        }
+    })
+}
+
+export default withMiddleware(googleMiddleware.setOAuth2Client(handleRequest));
