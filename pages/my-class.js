@@ -1,3 +1,4 @@
+import { Grid } from '@material-ui/core'
 import React from 'react'
 import { connect } from 'react-redux'
 import { Row } from 'reactstrap'
@@ -11,13 +12,13 @@ function MyClass(props) {
     console.log(props)
     return (
             <MainLayout title="My Class" >
-                <Row>
+                <Grid container spacing={2}>
                     {
                         props.classes&&props.classes.map((item,i)=>
                         <Class className={item.className} courseNo={item.courseId.courseNo} key={i}/> 
                         )
                     }
-                </Row>
+                </Grid>
             </MainLayout>
     )
 }
