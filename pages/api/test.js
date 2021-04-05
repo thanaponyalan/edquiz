@@ -16,7 +16,7 @@ const getQuiz=async(req,res)=>{
             res.status(response.statusCode).json(response);
             return reject(response);
         }
-        dbModel.quizzesModel.find({owner: req.headers.authorization}).populate('courseId').exec((err,quizzes)=>{
+        dbModel.quizzesModel.find({owner: req.headers.authorization}).populate('courseId').populate('questionId').exec((err,quizzes)=>{
             if(!err){
                 response.data.payload=quizzes;
                 res.status(response.statusCode).json(response);

@@ -70,11 +70,35 @@ const classesSchema=new mongoose.Schema({
     owner: Schema.Types.ObjectId
 })
 
+const assignmentsSchema=new mongoose.Schema({
+    classId: {type: Schema.Types.ObjectId, ref: 'classes'},
+    quizId: {type: Schema.Types.ObjectId, ref: 'quizzes'},
+    assignees: [{
+        studentId: {type: Schema.Types.ObjectId, ref: 'users'},
+        status: String,
+        historyId: {type: Schema.Types.ObjectId, ref: 'histories'}
+    }],
+    dueDate: Date,
+    assignedDate: Date,
+    owner: Schema.Types.ObjectId
+})
+
+const historiesSchema=new mongoose.Schema({
+    assignmentId: {type: Schema.Types.ObjectId, ref: 'assignments'},
+    studentId: {type: Schema.Types.ObjectId, ref: 'users'},
+    questions: [{
+        questionId: {type: Schema.Types.ObjectId, ref: 'questions'},
+        isCorrect: Boolean
+    }]
+})
+
 module.exports={
     usersSchema,
     classesSchema,
     coursesSchema,
     objectivesSchema,
     questionSchema,
-    quizSchema
+    quizSchema,
+    assignmentsSchema,
+    historiesSchema
 }

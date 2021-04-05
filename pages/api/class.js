@@ -116,6 +116,7 @@ const updateClass=async(req,res)=>{
             return reject(response);
         }
         let thisClass=JSON.parse(req.body)
+        console.log(thisClass);
         dbModel.classesModel.findByIdAndUpdate(thisClass._id,{
             className: thisClass.className,
             courseId: thisClass.courseId
