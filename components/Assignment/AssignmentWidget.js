@@ -13,6 +13,7 @@ import { API } from "../../constant/ENV";
 import AssignPopup from '../Assignment/assignPopup';
 import moment from "moment";
 import DoAssignment from './DoAssignment';
+import Insight from './Insight';
 
 const useStyle=makeStyles({
     root:{
@@ -35,29 +36,6 @@ const AssignmentWidget=(props)=>{
         setOpenDialog(false)
     }
 
-    const handleSave=async(data)=>{
-        // props.toastManager.add("Updating...",{appearance: 'info', autoDismiss: true})
-        // try{
-        //     const url=`${API}/assignment`
-        //     const result=await fetch(url,{
-        //         method: 'POST',
-        //         headers:{
-        //             authorization: props.uid
-        //         },
-        //         body: JSON.stringify(data)
-        //     })
-        //     const res=await result.json();
-        //     if(res.statusCode==200||res.statusCode==204){
-        //         props.toastManager.add("Updated",{appearance:'success', autoDismiss:true}, ()=>setOpenDialog(false));
-        //         props.fetchClass(props.uid,props.toastManager)
-        //     }
-        // }catch(err){
-        //     _error_handler(null,err,null);
-        //     console.log(err);
-        // }
-        console.log(data);
-    }
-
     const thisAssignee=assignment.assignees.filter(item=>item.studentId==props.uid)
     const isDone=thisAssignee[0]?.status==='done';
 
@@ -71,12 +49,12 @@ const AssignmentWidget=(props)=>{
                             label={assignment.classId.className}
                         />
                     }
-                    action={
-                        role==='teacher'&&
-                            <IconButton aria-controls="assignmentMenus" onClick={(e)=>setAnchorEl(e.currentTarget)} aria-label="actions">
-                                <MoreVert style={{color: 'white'}}/>
-                            </IconButton>
-                    }
+                    // action={
+                    //     role==='teacher'&&
+                    //         <IconButton aria-controls="assignmentMenus" onClick={(e)=>setAnchorEl(e.currentTarget)} aria-label="actions">
+                    //             <MoreVert style={{color: 'white'}}/>
+                    //         </IconButton>
+                    // }
                     style={{
                         backgroundColor: 'black',
                         color: 'white'
@@ -96,15 +74,17 @@ const AssignmentWidget=(props)=>{
                     {
                         role==='teacher'&&
                         <>
-                            <Button style={{marginLeft: 'auto', marginRight: 'auto'}} onClick={()=>setOpenDialog(true)}>assign</Button>
-                            <Button style={{marginLeft: 'auto', marginRight: 'auto'}}>show items</Button>
+                            <Button style={{marginLeft: 'auto', marginRight: 'auto'}} onClick={()=>setOpenDialog(true)}>Insight</Button>
+                            <Popup fullScreen={true} open={openDialog} handleClose={handleClose} title='Insight'>
+                                <Insight assignment={assignment} quizId={assignment.quizId._id} setOpenDialog={setOpenDialog}/>
+                            </Popup>
                         </>
                     }
                     {
                         role==='student'&&!isDone&&
                         <>
                             <Button style={{marginLeft: 'auto', marginRight: 'auto'}} onClick={()=>setOpenDialog(true)}>start this assignment</Button>
-                            <Popup fullScreen={true} open={openDialog} handleClose={handleClose} title="Assign Test">
+                            <Popup fullScreen={true} open={openDialog} handleClose={handleClose} title={assignment.quizId.quizName}>
                                 <DoAssignment quizId={assignment.quizId._id} assignmentId={assignment._id} setOpenDialog={setOpenDialog}/>
                             </Popup>
                         </>
