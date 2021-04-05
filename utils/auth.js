@@ -11,6 +11,7 @@ import { setQuiz } from "../redux/actions/quizAction";
 import { setClass } from "../redux/actions/classAction";
 import { fetchClassroom } from "../redux/actions/classroomAction";
 import { setTest } from "../redux/actions/testAction";
+import { setAssignment } from "../redux/actions/assignmentAction";
 
 export const withAuthSync = WrappedComponent => class extends Component {
     constructor(props) {
@@ -54,7 +55,7 @@ export const withAuthSync = WrappedComponent => class extends Component {
     static async getInitialProps(ctx) {
         const {uid, role} = auth(ctx)||{};
         const {pathname, store}=ctx;
-        let courses=[],questions,quizzes, classes, tests;
+        let courses=[],questions,quizzes, classes, tests, assignments;
         try {
             if(!uid||!role)return;
             var url = new URL(`${API}/user`), params = { uid: uid }
@@ -167,6 +168,18 @@ export const withAuthSync = WrappedComponent => class extends Component {
                 })
                 classes=await classRes.json();
                 store.dispatch(setClass(classes));
+            }
+            if(pathname=='/assignment'){
+                url=role=='teacher'?`${API}/assignment?isTeacher=1`:`${API}/assignment`
+                const assignmentsRes=await fetch(url,{
+                    method: 'GET',
+                    headers:{
+                        authorization: uid
+                    }
+                })
+                assignments=await assignmentsRes.json();
+                console.log(assignments);
+                store.dispatch(setAssignment(assignments))
             }
         } catch (err) {
             console.log(err);

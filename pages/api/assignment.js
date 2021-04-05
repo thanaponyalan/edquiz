@@ -10,6 +10,38 @@ let response={
     }
 }
 
+const getAssignments=async(req,res)=>{
+    return new Promise((resolve, reject)=>{
+        if(req.headers.authorization===undefined||!req.headers.authorization.match(/^[0-9a-fA-F]{24}$/)){
+            response.statusCode=403;
+            response.data.message="Permission Denied!";
+            res.status(response.statusCode).json(response);
+            return reject(response);
+        }
+        const {isTeacher}=req.query;
+        if(isTeacher){
+            dbModel.assignmentsModel.find({owner: req.headers.authorization}).populate('classId').populate('quizId').exec((err,assignments)=>{
+                if(!err){
+                    console.log(assignments);
+                    response.data.payload=assignments;
+                    res.status(response.statusCode).json(response);
+                    return resolve();
+                }
+                return reject(err)
+            })
+        }else{
+            dbModel.assignmentsModel.find({'assignees.studentId': req.headers.authorization}).populate('classId').populate('quizId').exec((err,assignments)=>{
+                if(!err){
+                    response.data.payload=assignments;
+                    res.status(response.statusCode).json(response);
+                    return resolve();
+                }
+                return reject(err)
+            })
+        }
+    })
+}
+
 const getCourses=async(req,res)=>{
     return new Promise((resolve, reject)=>{
         if(req.headers.authorization===undefined){
@@ -105,10 +137,10 @@ const insertAssignment=async(req,res)=>{
 const handleRequest=(req,res)=>{
     return new Promise((resolve,reject)=>{
         switch(req.method){
-            // case 'GET': getCourses(req,res); break;
+            case 'GET': getAssignments(req,res); break;
             // case 'PUT': updateCourse(req,res); break;
             case 'POST': insertAssignment(req,res); break;
-            default: res.status(200).json({test:'test'}); break;
+            default: res.status(200).json({err:'Method Not Allowed'}); break;
         }
     })
 }

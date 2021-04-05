@@ -9,6 +9,7 @@ import questionReducer from './reducers/questionReducer'
 import quizReducer from './reducers/quizReducer'
 import classReducer from "./reducers/classReducer";
 import testReducer from "./reducers/testReducer"
+import assignmentReducer from "./reducers/assignmentReducer"
 
 const bindMiddleware = (middleware) => {
   if (process.env.NODE_ENV !== 'production') {
@@ -26,7 +27,8 @@ const combinedReducer = combineReducers({
   questionReducer,
   quizReducer,
   classReducer,
-  testReducer
+  testReducer,
+  assignmentReducer
 })
 
 const reducer = (state, action) => {

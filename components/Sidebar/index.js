@@ -61,7 +61,7 @@ const Sidebar = (props) => {
                             </Link>
                         </li>
                         <li className="nav-item">
-                            <Link href={isTeacher?'assignment':'studentAssignment'}>
+                            <Link href='assignment'>
                                 <a href="#" className={pathname==="/assignment"?"nav-link active":"nav-link"}>
                                     <i className="nav-icon fas fa-th" />
                                     <p>

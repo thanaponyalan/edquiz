@@ -16,14 +16,26 @@ const getQuestion=async(req,res)=>{
             res.status(response.statusCode).json(response);
             return reject(response);
         }
-        dbModel.questionsModel.find({owner: req.headers.authorization}).populate('courseId').populate('objectiveId').populate('quizId').exec((err,questions)=>{
-            if(!err){
-                response.data.payload=questions
-                res.status(response.statusCode).json(response);
-                return resolve();
-            }
-            return reject(err)
-        })
+        const {quizId}=req.query;
+        if(quizId){
+            dbModel.questionsModel.find({quizId: quizId}).populate('courseId').populate('objectiveId').populate('quizId').exec((err,questions)=>{
+                if(!err){
+                    response.data.payload=questions
+                    res.status(response.statusCode).json(response);
+                    return resolve();
+                }
+                return reject(err)
+            })
+        }else{
+            dbModel.questionsModel.find({owner: req.headers.authorization}).populate('courseId').populate('objectiveId').populate('quizId').exec((err,questions)=>{
+                if(!err){
+                    response.data.payload=questions
+                    res.status(response.statusCode).json(response);
+                    return resolve();
+                }
+                return reject(err)
+            })
+        }
     })
 }
 

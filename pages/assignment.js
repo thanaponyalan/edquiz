@@ -1,44 +1,47 @@
 import MainLayout from "../containers/app/mainLayout";
-import { Component } from 'react';
+import React, { Component } from 'react';
 import { compose } from "recompose";
 import { withAuthSync } from "../utils/auth";
 import { withRouter } from "next/router";
 import { Table } from 'reactstrap';
-import AssignmentWidget from "../components/Assignment";
+import AssignmentWidget from "../components/Assignment/AssignmentWidget";
+import { bindActionCreators } from "redux";
+import { fetchAssignment } from "../redux/actions/assignmentAction";
+import { connect } from "react-redux";
+import { Grid } from "@material-ui/core";
 
-class Assignment extends Component{
-    classAssignment=[
-        {
-            courseName: "Operating System",
-            courseNo: "03376812",
-            objectives:[
-                { no:1, obj: "Can ...", bloomLevel: "1" },
-                { no:2, obj: "Explain ...", bloomLevel: "2"}
-            ]
-        },{
-            courseName: "Course 2",
-            courseNo: "03300001",
-            objectives:[
-                { no:1, obj: "Can ...", bloomLevel: "1" },
-                { no:2, obj: "Explain ...", bloomLevel: "2"}
-            ]
-        }
-    ]
-    render(){
-        console.log('Assignment');
-        console.log(this.props);
-        return(
-            <MainLayout title="Assignments">
+const Assignment=(props)=>{
+    const {assignments}=props
+    return (
+        <MainLayout title="Assignments">
+            <Grid container spacing={3}>
                 {
-                    this.classAssignment&&this.classAssignment.map((item,i)=>
-                        <AssignmentWidget key={i} courseDetail={item} isCollapse={i}/>
+                    assignments&&assignments.map((item,idx)=>
+                    <Grid key={idx} item xs={12} sm={3} md={4}>
+                        <AssignmentWidget assignment={item} />
+                    </Grid>
                     )
                 }
-            </MainLayout>
-        )
+            </Grid>
+        </MainLayout>
+    )
+}
+
+const mapStateToProps=state=>{
+    return{
+        uid: state.authReducer.uid,
+        assignments: state.assignmentReducer.assignments
     }
 }
 
+const mapDispatchToProps=dispatch=>{
+    return{
+        fetchAssignment: bindActionCreators(fetchAssignment,dispatch)
+    }
+}
+
+
 export default compose(
+    connect(mapStateToProps,mapDispatchToProps),
     withAuthSync
 )(Assignment);
