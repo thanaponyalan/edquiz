@@ -1,4 +1,4 @@
-import { Avatar, Card, CardActionArea, CardActions, CardHeader, CardMedia, Container, Grid, makeStyles, Typography, FormLabel } from '@material-ui/core';
+import { Avatar, Card, CardActionArea, CardActions, CardHeader, CardMedia, Container, Grid, makeStyles, Typography, FormLabel, Paper } from '@material-ui/core';
 import React, { useState, useEffect } from 'react'
 import { useDrag, useDrop } from 'react-dnd';
 
@@ -15,13 +15,18 @@ const useStyles = makeStyles((theme) => ({
     },
     avatar: {
         backgroundColor: 'red',
+    },  
+    stickyGrid: {
+        position: "sticky",
+        top: "1rem",
     },
 }));
 
 export default function AnswerMatching(props) {
     const [answeredChoices, setAnsweredChoices]=useState([]);
     const { item, handleChooseAnswer } = props;
-    const [possibleAnswers, setPossibleAnswers]=useState(item.choices.map(item=>item.answer))
+    const [answers,setAnswers]=useState(item.choices.filter(item=>item.choice!=''||item.pict!='').map(item=>item.answer))
+    const [possibleAnswers, setPossibleAnswers]=useState(answers)
     const classes = useStyles();
     const setAnswer = (sIdx, tIdx) => {
         let tempAnswers = [...answeredChoices]
@@ -38,11 +43,17 @@ export default function AnswerMatching(props) {
         setPossibleAnswers(tempPossibles)
     }
     useEffect(() => {
-        console.log(answeredChoices);
-        console.log(possibleAnswers.filter(item=>item&&(item.title!=''||item.pict!='')));
+        if(answers.length==answeredChoices.filter(item=>item).length){
+            let score=0;
+            answers.forEach((value,idx)=>{
+                score+=answeredChoices.findIndex(choice=>choice.title===value.title)===idx?1:0;
+            })
+            score/=answers.length
+            handleChooseAnswer({score: score})
+        }
     }, [answeredChoices])
     return (
-        <Container maxWidth="lg">
+        <Container maxWidth="lg" fixed>
             <Grid container spacing={3}>
                 <Grid item sm={9}>
                     <Grid container spacing={2}>
@@ -82,33 +93,34 @@ export default function AnswerMatching(props) {
                                 </Grid>
                                 )
                             }
-
                         </Grid>
                     </Grid>
                 </Grid>
                 <Grid item sm={3}>
-                    <Grid container spacing={2}>
-                        <Grid item sm={12} xs={12}>
-                            <Card>
-                                <CardHeader
-                                    title={`Drag answer here.`}
-                                />
-                                {
-                                    item.question.pict &&
-                                    <CardMedia
-                                        className={classes.media}
-                                        image={item.question.pict}
-                                        style={item.question.pict && { backgroundSize: 'contain' } || { backgroundSize: 'cover' }}
+                    <Paper className={classes.stickyGrid} elevation={0}>
+                        <Grid container spacing={2}>
+                            <Grid item sm={12} xs={12}>
+                                <Card>
+                                    <CardHeader
+                                        title={`Drag answer here.`}
                                     />
-                                }
-                            </Card>
-                        </Grid>
-                        {possibleAnswers && possibleAnswers.filter(item=>item&&(item.title!=''||item.pict!='')).map((item, idx) =>
-                            <Grid item xs={12} sm={12} md={12}>
-                                {item && <AnswerCard pict={item.pict} classes={classes} choice={item.title} idx={idx} />}
+                                    {
+                                        item.question.pict &&
+                                        <CardMedia
+                                            className={classes.media}
+                                            image={item.question.pict}
+                                            style={item.question.pict && { backgroundSize: 'contain' } || { backgroundSize: 'cover' }}
+                                        />
+                                    }
+                                </Card>
                             </Grid>
-                        )}
-                    </Grid>
+                            {possibleAnswers && possibleAnswers.map((item, idx) =>
+                                <Grid item xs={12} sm={12} md={12}>
+                                    {item && <AnswerCard pict={item.pict} classes={classes} choice={item.title} idx={idx} />}
+                                </Grid>
+                            )}
+                        </Grid>
+                    </Paper>
                 </Grid>
             </Grid>
         </Container>

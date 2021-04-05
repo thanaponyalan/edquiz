@@ -58,6 +58,9 @@ const AssignmentWidget=(props)=>{
         console.log(data);
     }
 
+    const thisAssignee=assignment.assignees.filter(item=>item.studentId==props.uid)
+    const isDone=thisAssignee[0].status==='done';
+
     return(
         <>
             <Card className={styleClasses.root} variant={variant} onMouseEnter={()=>{setVariant("elevation")}} onMouseLeave={()=>{setVariant('outlined')}}>
@@ -80,16 +83,16 @@ const AssignmentWidget=(props)=>{
                     }}
                 />
                 <CardContent>
-                    <Typography gutterBottom variant="body2">
+                    <div>
                         <label>Assigned Date :</label><br/>
                         <Chip label={moment(assignment.assignedDate).format('LLL')}/>
-                    </Typography>
-                    <Typography gutterBottom variant="body2">
+                    </div>
+                    <div>
                         <label>Due Date :</label><br/>
                         <Chip label={moment(assignment.dueDate).format('LLL')}/>
-                    </Typography>
+                    </div>
                 </CardContent>
-                <CardActions>
+                <CardActions style={{flexWrap: 'wrap'}}>
                     {
                         role==='teacher'&&
                         <>
@@ -98,13 +101,21 @@ const AssignmentWidget=(props)=>{
                         </>
                     }
                     {
-                        role==='student'&&
+                        role==='student'&&!isDone&&
                         <>
                             <Button style={{marginLeft: 'auto', marginRight: 'auto'}} onClick={()=>setOpenDialog(true)}>start this assignment</Button>
                             <Popup fullScreen={true} open={openDialog} handleClose={handleClose} title="Assign Test">
-                                <DoAssignment quizId={assignment.quizId._id}/>
+                                <DoAssignment quizId={assignment.quizId._id} assignmentId={assignment._id} setOpenDialog={setOpenDialog}/>
                             </Popup>
                         </>
+                    }
+                    {
+                        role==='student'&&isDone&&
+                        <>
+                            <Button style={{marginLeft: 'auto', marginRight: 'auto'}} disabled>You've Done This Assignment</Button>
+                            <div style={{width: '100%'}}></div>
+                            <Chip style={{marginLeft: 'auto', marginRight: 'auto'}} label={`ON ${moment(thisAssignee[0].lastUpdate).format('LLL')}`}/>
+                        </> 
                     }
                 </CardActions>
             </Card>

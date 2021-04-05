@@ -76,7 +76,8 @@ const assignmentsSchema=new mongoose.Schema({
     assignees: [{
         studentId: {type: Schema.Types.ObjectId, ref: 'users'},
         status: String,
-        historyId: {type: Schema.Types.ObjectId, ref: 'histories'}
+        historyId: {type: Schema.Types.ObjectId, ref: 'histories'},
+        lastUpdate: Date
     }],
     dueDate: Date,
     assignedDate: Date,
@@ -88,8 +89,9 @@ const historiesSchema=new mongoose.Schema({
     studentId: {type: Schema.Types.ObjectId, ref: 'users'},
     questions: [{
         questionId: {type: Schema.Types.ObjectId, ref: 'questions'},
-        isCorrect: Boolean
-    }]
+        score: Number
+    }],
+    lastUpdate: Date
 })
 
 module.exports={
