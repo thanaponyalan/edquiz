@@ -13,7 +13,7 @@ import { API } from "../../constant/ENV";
 import AssignPopup from '../Assignment/assignPopup';
 import moment from "moment";
 import DoAssignment from './DoAssignment';
-import Insight from './Insight';
+import Insight from './insight';
 
 const useStyle=makeStyles({
     root:{
