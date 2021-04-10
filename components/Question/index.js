@@ -57,7 +57,7 @@ const QuestionWidget = (props) => {
 
     return (
         <>
-            <Grid item xs={12} md={6}>
+            <Grid item xs={12}>
                 <Card
                     title={question.question.title}
                     type={questionType[question.question.type]}

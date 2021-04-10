@@ -12,7 +12,7 @@ export default function Card(props) {
     const {title,type, menuId, setAnchorEl}=props
     const classes=useStyles();
     return (
-        <MuiCard className={classes.card}>
+        <MuiCard className={classes.card} variant="outlined">
             <CardHeader 
                 action={
                     <IconButton aria-controls={menuId} onClick={(e)=>setAnchorEl(e.currentTarget)} aria-label="actions">
