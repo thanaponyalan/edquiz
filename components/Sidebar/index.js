@@ -39,6 +39,8 @@ const Sidebar = (props) => {
                 {/* Sidebar Menu */}
                 <nav className="mt-2">
                     <ul className="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+                        { !isTeacher&&
+                        <>
                         <li className="nav-item">
                             <Link href='/my-class'>
                                 <a href="#" className="nav-link">
@@ -70,16 +72,17 @@ const Sidebar = (props) => {
                                 </a>
                             </Link>
                         </li>
-                        { isTeacher?
+                        </>
+                        }
+                        { isTeacher&&
                         <>
-                        <li className="nav-header">LIBRARY</li>
+                        {/* <li className="nav-header">LIBRARY</li>
                         <li className="nav-item">
                             <Link href='/item'>
                                 <a href="#" className={pathname==="/item"?"nav-link active":"nav-link"}>
                                     <i className="nav-icon fas fa-calendar-alt" />
                                     <p>
                                         Items
-                                        {/* <span className="badge badge-info right">2</span> */}
                                     </p>
                                 </a>
                             </Link>
@@ -110,9 +113,77 @@ const Sidebar = (props) => {
                                     <p>Classes</p>
                                 </a>
                             </Link>
+                        </li> */}
+                        <li className="nav-item">
+                            <Link href='/my-class'>
+                                <a href="#" className="nav-link">
+                                    <i className="nav-icon fas fa-tachometer-alt" />
+                                    <p>
+                                        Get Started
+                                    </p>
+                                </a>
+                            </Link>
                         </li>
+                        <li className="nav-header">Quiz Creating</li>
+                        <li className="nav-item">
+                            <Link href='/course'>
+                                <a href="#" className={pathname==="/course"?"nav-link active":"nav-link"}>
+                                    <i className="nav-icon fas fa-file" />
+                                    <p>Courses and Objectives</p>
+                                </a>
+                            </Link>
+                        </li>
+                        <li className="nav-item">
+                            <Link href='/item'>
+                                <a href="#" className={pathname==="/item"?"nav-link active":"nav-link"}>
+                                    <i className="nav-icon fas fa-calendar-alt" />
+                                    <p>
+                                        Questions
+                                    </p>
+                                </a>
+                            </Link>
+                        </li>
+                        <li className="nav-item">
+                            <Link href='/test'>
+                                <a href="#" className={pathname==="/test"?"nav-link active":"nav-link"}>
+                                    <i className="nav-icon far fa-image" />
+                                    <p>
+                                        Quizzes
+                                    </p>
+                                </a>
+                            </Link>
+                        </li>
+                        <li className="nav-header">Google Classroom</li>
+                        <li className="nav-item">
+                            <Link href='/my-class'>
+                                <a href="#" className={pathname==="/my-class"?"nav-link active":"nav-link"}>
+                                    <i className="nav-icon fas fa-tachometer-alt" />
+                                    <p>
+                                        My Classes
+                                    </p>
+                                </a>
+                            </Link>
+                        </li>
+                        <li className="nav-item">
+                            <Link href='assignment'>
+                                <a href="#" className={pathname==="/assignment"?"nav-link active":"nav-link"}>
+                                    <i className="nav-icon fas fa-th" />
+                                    <p>
+                                        Assignments
+                                    </p>
+                                </a>
+                            </Link>
+                        </li>
+                        <li className="nav-item">
+                            <Link href='/manage-class'>
+                                <a href="#" className={pathname==="/manage-class"?"nav-link active":"nav-link"}>
+                                    <i className="fas fa-circle nav-icon" />
+                                    <p>Import Classes</p>
+                                </a>
+                            </Link>
+                        </li> 
                         </>
-                        :<></>}
+                        }
                     </ul>
                 </nav>
                 {/* /.sidebar-menu */}
