@@ -20,6 +20,7 @@
     "@material-ui/lab": "^4.0.0-alpha.57",
     "@material-ui/pickers": "^3.3.10",
     "axios": "^0.21.1",
+    "clsx": "^1.1.1",
     "cookie": "^0.4.1",
     "cors": "^2.8.5",
     "create-react-context": "^0.3.0",
