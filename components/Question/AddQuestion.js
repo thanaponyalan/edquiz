@@ -9,7 +9,6 @@ import TrueOrFalse from './TrueOrFalse';
 
 const questionType = [
     "Multiple Choice",
-    "Match",
     "True or False"
 ]
 
@@ -104,11 +103,6 @@ const AddQuestion = (props) => {
         if ('choices' in fieldValues){
             if(values.question.type==0){
                 temp.choices = fieldValues.choices.filter(choice => choice.choice == '').length < 3 && fieldValues.choices.filter(choice => { return choice.isTrue && choice.choice }).length > 0 ? "" : "At least two choices required";
-            }else if(values.question.type==1){
-                temp.choices=fieldValues.choices.filter(choice=>{return choice.choice==''||choice.answer.title==''}).length<3?
-                    (fieldValues.choices.filter(choice=>{return (choice.choice!=''&&choice.answer.title=='')||(choice.choice==''&&choice.answer.title!='')}).length?'ทุกคำถามต้องมีตัวเลือก/ทุกตัวเลือกต้องมีคำถาม':
-                    ''):
-                'At least two pair required';
             }
         }
         setErrors({
@@ -150,11 +144,7 @@ const AddQuestion = (props) => {
             setQuiz(recordForEdit.quiz)
             setCourse(recordForEdit.course)
             setObjectives(recordForEdit.objectives)
-            if(recordForEdit.question.type==1){
-                setChoices(recordForEdit.choices.filter(item=>item.choice!=''&&item.answer.title!=''))
-                setAnsweredChoices(recordForEdit.choices.filter(item=>item.choice!=''&&item.answer.title!='').map(item=>null))
-            }else
-                setChoices(recordForEdit.choices)
+            setChoices(recordForEdit.choices)
             setObjectiveOptions(courses.filter(course => course._id == recordForEdit.course.id)[0].objectives.map((item, idx) => {
                 return { id: item._id, title: item.objective }
             }));
@@ -178,8 +168,6 @@ const AddQuestion = (props) => {
         typeChoices = typeChoices.length == 4 ? typeChoices : typeChoices.push(...typeChoices);
         if (qType == 0) {
             typeChoices = values.choices.map((item, idx) => ({ choice: '', pict: item.pict, isTrue: !idx }));
-        } else if (qType == 1) {
-            typeChoices = values.choices.map(item => ({ choice: '', pict: item.pict, answer: { title: '', pict: '' } }))
         } else {
             typeChoices = values.choices.slice(0, 2)
             typeChoices=typeChoices.map((item, idx)=>({choice: idx?'False':'True', pict: '', isTrue: !idx}))
@@ -287,18 +275,6 @@ const AddQuestion = (props) => {
                 previewMode={previewMode}
                 selectedChoices={selectedChoices}
                 setSelectedChoices={setSelectedChoices}
-            />,
-            <Match
-                values={values}
-                imageHandler={imageHandler}
-                clearImage={clearImage}
-                handleInputChange={handleInputChange}
-                errors={errors}
-                setChoices={setChoices}
-                choices={choices}
-                previewMode={previewMode}
-                answeredChoices={answeredChoices}
-                setAnsweredChoices={setAnsweredChoices}
             />,
             <TrueOrFalse 
                 validate={validate}
