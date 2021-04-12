@@ -13,14 +13,20 @@ import { withToastManager } from "react-toast-notifications";
 import { _error_handler } from "../utils/errorHandler";
 import { API } from '../constant/ENV'
 import { fetchQuiz } from "../redux/actions/quizAction";
-import { Grid, Hidden, Typography } from "@material-ui/core";
+import { Grid, Hidden, Typography, makeStyles } from "@material-ui/core";
 import QuestionCourseWidget from "../components/Question/QuestionCourseWidget";
 
-const questionType = [
-    "Multiple Choice",
-    "Match",
-    "True or False"
-]
+const useStyles = makeStyles((theme) => ({
+    fab: {
+        position: 'absolute',
+        bottom: theme.spacing(2),
+        right: theme.spacing(2),
+        zIndex: '2'
+    },
+    extendedIcon: {
+        marginRight: theme.spacing(1),
+    },
+}));
 
 const Item = (props) => {
     const [openDialog, setOpenDialog] = useState(false);
@@ -57,15 +63,21 @@ const Item = (props) => {
             console.log(err);
         }
     }
-
+    
+    const classes = useStyles();
     const addItem =
         <li className="nav-item">
             <Controls.Fab
-                onClick={() => setOpenDialog(true)}>
-                <Add />
+                onClick={() => setOpenDialog(true)}
+                className={classes.fab}
+                size="small"
+                variant="extended"
+                >
+                <Add className={classes.extendedIcon} />
+                add question
             </Controls.Fab>
         </li>;
-
+/*
     const sort = (a, b) => {
         if (a.courseId.courseName < b.courseId.courseName) return -1;
         else if (b.courseId.courseName > a.courseId.courseName) return 1;
@@ -78,6 +90,12 @@ const Item = (props) => {
             setDistinctCourses(tempDistinct.map((course) => ({id: course, isExpanded: false, title: props.questions.filter(question=>question.courseId._id==course)[0].courseId.courseName})))
         }
     },[props.questions])
+*/
+    useEffect(()=>{
+        if(props.courses.length){
+            setDistinctCourses(props.courses.map(course=>({id: course._id, title: course.courseName, isExpanded: false})))
+        }
+    },[props.courses])
 
     return (
         <>
