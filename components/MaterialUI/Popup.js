@@ -23,12 +23,12 @@ const useStyles=makeStyles(theme=>({
 }))
 
 export default function Popup(props) {
-    const {title, children, open, handleClose, fullScreen, handleSave, checkAnswer, toggleEdit, maxWidth, fullWidth, disabledSave=false}=props;
+    const {title, children, open, handleClose, fullScreen, handleSave, checkAnswer, toggleEdit, maxWidth, fullWidth, disabledSave=false, bgColor, popupAction}=props;
     const classes=useStyles();
     return (
         <Dialog fullScreen={fullScreen} open={open} onClose={handleClose} maxWidth={maxWidth} fullWidth={fullWidth}>
             <AppBar className={classes.appBar}>
-                <Toolbar>
+                <Toolbar style={{backgroundColor: bgColor}}>
                     <IconButton edge="start" color="inherit" onClick={handleClose} aria-label="close">
                         <CloseIcon />
                     </IconButton>
@@ -51,6 +51,9 @@ export default function Popup(props) {
                                 <EditIcon/>
                             </IconButton>
                         </>
+                    }
+                    {
+                        popupAction&&popupAction
                     }
                 </Toolbar>
             </AppBar>

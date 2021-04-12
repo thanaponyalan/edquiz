@@ -8,7 +8,8 @@ export default function Fab(props) {
             size={size || "small"} 
             color={color || "primary"} 
             aria-label={label} 
-            onClick={onClick}>
+            onClick={onClick}
+            {...other}>
                 {children}
         </MuiFab>
     )
