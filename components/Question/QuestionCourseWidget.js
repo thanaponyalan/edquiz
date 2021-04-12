@@ -1,15 +1,17 @@
 
 import { compose } from "recompose";
 import { connect } from "react-redux";
-import { ExpandMore } from "@material-ui/icons";
+import { Add, ExpandMore } from "@material-ui/icons";
 import { _error_handler } from "../../utils/errorHandler";
-import { Button, Card, CardActions, CardContent, CardHeader, Chip, Collapse, Grid, IconButton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, makeStyles } from "@material-ui/core";
+import { Button, Card, CardActions, CardContent, CardHeader, Chip, Collapse, Grid, IconButton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, makeStyles, List, ListSubheader, ListItem } from "@material-ui/core";
 import clsx from "clsx";
 import { bindActionCreators } from "redux";
 import { fetchQuestion } from "../../redux/actions/questionAction";
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import Popup from "../MaterialUI/Popup";
 import Question from "./index";
+import Controls from "../MaterialUI/controls/Controls";
+import AddQuestion from "./AddQuestion";
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -28,6 +30,15 @@ const useStyles = makeStyles((theme) => ({
     },
     expandOpen: {
         transform: 'rotate(180deg)',
+    },
+    fab: {
+        position: 'absolute',
+        bottom: theme.spacing(2),
+        right: theme.spacing(2),
+        zIndex: '2'
+    },
+    extendedIcon: {
+        marginRight: theme.spacing(1),
     },
 }));
 
@@ -56,9 +67,10 @@ const bloomLevel=[
 
 const QuestionCourseWidget=(props)=>{
     const classes = useStyles();
-    const { course, distinctCourses, setDistinctCourses, idx } = props
+    const { course, distinctCourses, setDistinctCourses, idx, insertQuestion } = props
     const [courseQuestions,setCourseQuestions]=useState([])
     const [openDialog, setOpenDialog]=useState(false);
+    const [openQuestionDialog, setOpenQuestionDialog]=useState(false)
     const handleExpandClick = () => {
         let tempExpanded=distinctCourses.map(course=>({...course, isExpanded: false}))
         tempExpanded[idx].isExpanded=!distinctCourses[idx].isExpanded
@@ -86,36 +98,37 @@ const QuestionCourseWidget=(props)=>{
         return count;
     }
 
+
     return (
     <>
         <Grid item xs={12}>
             <Card>
-                    <CardHeader
-                        title={course.title}
-                        subheader={
-                            <Chip label={`Total Questions : ${courseQuestions.length}`} />
-                        }
-                        style={{
-                            backgroundColor: 'black',
-                            color: 'white'
-                        }}
-                        action={
-                            <IconButton
-                                className={clsx(classes.expand, {
-                                    [classes.expandOpen]: course.isExpanded,
-                                })}
-                                onClick={handleExpandClick}
-                                aria-expanded={course.isExpanded}
-                                aria-label="show more"
-                                style={{
-                                    color: 'white'
-                                }}
-                            >
-                                <ExpandMore />
-                            </IconButton>
-                        }
-                    />
-                    <Collapse in={course.isExpanded} timeout="auto" unmountOnExit>
+                <CardHeader
+                    title={course.title}
+                    subheader={
+                        <Chip label={`Total Questions : ${courseQuestions.length}`} />
+                    }
+                    style={{
+                        backgroundColor: '#343a40',
+                        color: 'white'
+                    }}
+                    action={
+                        <IconButton
+                            className={clsx(classes.expand, {
+                                [classes.expandOpen]: course.isExpanded,
+                            })}
+                            onClick={handleExpandClick}
+                            aria-expanded={course.isExpanded}
+                            aria-label="show more"
+                            style={{
+                                color: 'white'
+                            }}
+                        >
+                            <ExpandMore />
+                        </IconButton>
+                    }
+                />
+                <Collapse in={course.isExpanded} timeout="auto" unmountOnExit>
                     <CardContent>
                         <TableContainer>
                             <Table size="small">
@@ -127,7 +140,7 @@ const QuestionCourseWidget=(props)=>{
                                 </TableHead>
                                 <TableBody>
                                     {
-                                        bloomLevel.map((bloom,idx)=><RowCollapse name={bloom} value={countBloom(idx+1)}/>)
+                                        bloomLevel.map((bloom,idx)=><RowCollapse key={idx} name={bloom} value={countBloom(idx+1)}/>)
                                     }
                                 </TableBody>
                             </Table>
@@ -139,34 +152,52 @@ const QuestionCourseWidget=(props)=>{
                 </Collapse>
             </Card>
         </Grid>
-        <Popup open={openDialog} handleClose={()=>setOpenDialog(false)} fullScreen title={course.title}>
+        <Popup open={openDialog} handleClose={()=>setOpenDialog(false)} fullScreen title={course.title} bgColor="#343a40" popupAction={
+            <Controls.Fab
+                onClick={() => setOpenQuestionDialog(true)}
+                className={classes.fab}
+                size="medium"
+                variant="extended"
+                >
+                <Add className={classes.extendedIcon} />
+                add question
+            </Controls.Fab>
+
+        }>
             <Grid container spacing={2}>
-                <Grid item sm={8}>
-                    <Grid container spacing={2}>
-                    {
-                        courseQuestions.map((item, idx) => <Question key={idx} question={{ ...item }} courses={props.courses} quizzes={props.quizzes} />)
-                    }
-                    </Grid>
-                </Grid>
-                <Grid item sm={4}>
-                    <TableContainer>
-                        <Table size="small">
-                            <TableHead>
-                                <TableRow>
-                                    <TableCell style={{fontWeight: '600'}}>Bloom's Taxonomy</TableCell>
-                                    <TableCell align="center" style={{fontWeight: '600'}}>Questions Amount</TableCell>
-                                </TableRow>
-                            </TableHead>
-                            <TableBody>
-                                {
-                                    bloomLevel.map((bloom,idx)=><RowCollapse name={bloom} value={countBloom(idx+1)}/>)
-                                }
-                            </TableBody>
-                        </Table>
-                    </TableContainer>
+                <Grid item xs={12}>
+                    <List subheader={<li/>}>
+                        {
+                            bloomLevel.map((bloom,idx)=>
+                            countBloom(idx+1)?
+                                <li key={bloom}>
+                                    <ul>
+                                        <ListSubheader>
+                                            <Card>
+                                                <CardHeader
+                                                    title={`${bloom} (${countBloom(idx+1)})`}
+                                                    style={{backgroundColor: 'rgb(119, 135, 149)', color: 'white'}}
+                                                />
+                                            </Card>        
+                                        </ListSubheader>
+                                        {
+                                            courseQuestions.filter(question=>question.objectiveId.some(obj=>obj.bloomLevel==idx+1)).map((item,idx)=>
+                                                <ListItem key={idx}>
+                                                    <Question question={{ ...item }} courses={props.courses} quizzes={props.quizzes} />
+                                                </ListItem>
+                                            )
+                                        }
+                                    </ul>
+                                </li>
+                                :
+                                <Fragment key={idx}></Fragment>
+                            )
+                        }
+                    </List>
                 </Grid>
             </Grid>
         </Popup>
+        <AddQuestion openDialog={openQuestionDialog} setOpenDialog={setOpenQuestionDialog} title="Add Item" currentCourse={course} courses={props.courses} quizzes={props.quizzes} handleSave={insertQuestion} />
     </>
     )
 }

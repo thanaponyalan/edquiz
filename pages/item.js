@@ -88,7 +88,7 @@ const Item = (props) => {
                             <Grid container spacing={2} >
                                 {
                                     distinctCourses && distinctCourses.filter((course, i) => i % 2 == 0).map((course, i) => {
-                                        return <QuestionCourseWidget course={course} distinctCourses={distinctCourses} setDistinctCourses={setDistinctCourses} idx={i*2} />
+                                        return <QuestionCourseWidget key={i} course={course} distinctCourses={distinctCourses} setDistinctCourses={setDistinctCourses} idx={i*2} insertQuestion={insertQuestion} />
                                     })
                                 }
                             </Grid>
@@ -97,7 +97,7 @@ const Item = (props) => {
                             <Grid container spacing={2}>
                                 {
                                     distinctCourses && distinctCourses.filter((course, i) => i % 2 !== 0).map((course, i) => {
-                                        return <QuestionCourseWidget course={course} distinctCourses={distinctCourses} setDistinctCourses={setDistinctCourses} idx={(i*2)+1} />
+                                        return <QuestionCourseWidget key={i} course={course} distinctCourses={distinctCourses} setDistinctCourses={setDistinctCourses} idx={(i*2)+1} insertQuestion={insertQuestion} />
                                     })
                                 }
                             </Grid>
@@ -106,28 +106,13 @@ const Item = (props) => {
                     <Hidden mdUp>
                         {
                             distinctCourses && distinctCourses.map((course, i) => {
-                                return <QuestionCourseWidget course={course} distinctCourses={distinctCourses} setDistinctCourses={setDistinctCourses} idx={i} />
+                                return <QuestionCourseWidget key={i} course={course} distinctCourses={distinctCourses} setDistinctCourses={setDistinctCourses} idx={i} insertQuestion={insertQuestion} />
                             })
                         }
                     </Hidden>
                 </Grid>
             </MainLayout>
             <AddQuestion openDialog={openDialog} setOpenDialog={setOpenDialog} title="Add Item" courses={props.courses} quizzes={props.quizzes} handleSave={insertQuestion} />
-        </>
-    )
-}
-
-const oldElem = () => {
-    return (
-        <>
-            <Typography variant='h5' component='h5' className={i ? 'mt-4 mb-2' : ''}>{course}</Typography>
-            <Grid container spacing={2}>
-                {
-                    props.questions.filter(question => question.courseId.courseName === course).map((item, idx) =>
-                        <Question key={idx} question={{ ...item }} courses={props.courses} quizzes={props.quizzes} />
-                    )
-                }
-            </Grid>
         </>
     )
 }

@@ -128,11 +128,14 @@ const AddQuestion = (props) => {
     const [disabledCourse, setDisabledCourse] = useState(false);
     const [objectiveOptions, setObjectiveOptions] = useState([]);
 
-    const { openDialog, title, setOpenDialog, courses, quizzes, handleSave, recordForEdit, previewMode=false, setPreviewMode=null, setAnchorEl=null } = props;
+    const { openDialog, title, setOpenDialog, courses, quizzes, handleSave, recordForEdit, previewMode=false, setPreviewMode=null, setAnchorEl=null, currentCourse=null } = props;
     const courseOptions = courses.map((item, i) => {
         return { id: item._id, title: item.courseName }
     })
-    const quizOptions = quizzes.map(item => {
+    
+    const quizOptions = currentCourse?quizzes.filter(quiz=>quiz.courseId._id==currentCourse.id).map(item => {
+        return { id: item._id, title: item.quizName }
+    }):quizzes.map(item => {
         return { id: item._id, title: item.quizName }
     })
 
@@ -150,6 +153,16 @@ const AddQuestion = (props) => {
             }));
         }
     }, [recordForEdit])
+
+    useEffect(()=>{
+        if(currentCourse){
+            setCourse(currentCourse)
+            setObjectiveOptions(courses.filter(course => course._id == currentCourse.id)[0].objectives.map((item, idx) => {
+                return { id: item._id, title: item.objective }
+            }));
+            setDisabledCourse(true)
+        }
+    },[currentCourse])
 
     useEffect(() => {
         setValues({
@@ -186,7 +199,7 @@ const AddQuestion = (props) => {
         setOpenDialog(false)
         setValues(initialValues)
         setQuiz(initialValues.quiz)
-        setCourse(initialValues.course)
+        setCourse(currentCourse||initialValues.course)
         setObjectives(initialValues.objectives)
         setChoices(initialValues.choices)
         setSelectedChoices(initialValues.choices)
