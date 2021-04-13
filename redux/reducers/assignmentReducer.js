@@ -1,7 +1,7 @@
 import { assignmentActionTypes } from '../actions/assignmentAction';
 
 const initialAssignmentsState={
-    assignments: []
+    
 }
 // [{
 //     _id: null,

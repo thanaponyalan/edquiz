@@ -6,9 +6,9 @@ export const assignmentActionTypes={
     SET_ASGN: "SET_ASGN"
 }
 
-export const fetchAssignment=(uid,toast)=>async(dispatch)=>{
+export const fetchAssignment=(uid,role='student',toast)=>async(dispatch)=>{
     try{
-        const url=`${API}/assignment`
+        const url=`${API}/assignment${role=='teacher'?`?isTeacher=1`:``}`
         const assignmentRes=await fetch(url,{
             method: 'GET',
             headers:{

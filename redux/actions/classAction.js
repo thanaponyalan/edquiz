@@ -6,9 +6,9 @@ export const classActionTypes={
     SET_CLASS: "SET_CLASS"
 }
 
-export const fetchClass=(uid,toast)=>async(dispatch)=>{
+export const fetchClass=(uid,role='student',toast)=>async(dispatch)=>{
     try{
-        const url=`${API}/class?isTeacher=1`
+        const url=`${API}/class${role=='teacher'?`?isTeacher=1`:``}`
         const classRes=await fetch(url,{
             method: 'GET',
             headers:{

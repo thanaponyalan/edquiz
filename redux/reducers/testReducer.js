@@ -1,7 +1,7 @@
 import { testActionTypes } from '../actions/testAction';
 
 const initialTestsState={
-    tests: []
+    
 }
 // [{
 //     _id: null,
