@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import MainLayout from '../containers/app/mainLayout'
 import { withRouter } from 'next/router';
 import { withAuthSync } from '../utils/auth';
@@ -15,7 +15,7 @@ import { bindActionCreators } from "redux";
 import { withToastManager } from 'react-toast-notifications';
 import { _error_handler } from '../utils/errorHandler';
 import {API} from '../constant/ENV'
-import { Tooltip } from '@material-ui/core';
+import Loader from 'react-loader-spinner';
 
 const Course=(props)=>{
     const [openModal,setOpenModal]=useState(false);
@@ -46,24 +46,44 @@ const Course=(props)=>{
 
     const addCourse=
         <li className="nav-item">
-            <Tooltip title="Add Course">
-                <Controls.Fab
-                    onClick={()=>setOpenModal(true)}>
-                    <Add/>
-                </Controls.Fab>
-            </Tooltip>
+            <Controls.Fab
+                onClick={()=>setOpenModal(true)}
+                title="Add Course"
+                placement="left-start">
+                <Add/>
+            </Controls.Fab>
         </li>
     
+    useEffect(()=>{
+        if(!props.courses){
+            props.fetchCourse(props.uid)
+        }
+    },[])
+
     return (
         <>
             <MainLayout title="Courses and Objectives" pageActions={addCourse}>
+                {props.courses?
                 <Row>
                     {
-                        props.courses.length>0&&props.courses.map((item,i)=>(
+                        props.courses?.length>0&&props.courses.map((item,i)=>(
                             <CourseWidget key={i} courseDetail={item} isCollapse={i} />
                         ))
                     }
                 </Row>
+                :
+                <div
+                    style={{
+                        width: '100%',
+                        height: '100',
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center'
+                    }}
+                >
+                    <Loader type="TailSpin" color="#2bad60" height="100" width="100"/>
+                </div>    
+            }
             </MainLayout>
             <Modal
                 openModal={openModal}

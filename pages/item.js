@@ -15,6 +15,8 @@ import { API } from '../constant/ENV'
 import { fetchQuiz } from "../redux/actions/quizAction";
 import { Grid, Hidden, Typography, makeStyles } from "@material-ui/core";
 import QuestionCourseWidget from "../components/Question/QuestionCourseWidget";
+import { fetchCourse } from "../redux/actions/courseAction";
+import Loader from "react-loader-spinner";
 
 const useStyles = makeStyles((theme) => ({
     fab: {
@@ -92,45 +94,65 @@ const Item = (props) => {
     },[props.questions])
 */
     useEffect(()=>{
-        if(props.courses.length){
+        if(props.courses?.length){
             setDistinctCourses(props.courses.map(course=>({id: course._id, title: course.courseName, isExpanded: false})))
         }
     },[props.courses])
 
+    useEffect(()=>{
+        if(!props.questions)props.fetchQuestion(props.uid)
+        if(!props.courses)props.fetchCourse(props.uid)
+        if(!props.quizzes)props.fetchQuiz(props.uid)
+    },[])
+
     return (
         <>
             <MainLayout title="Questions">
-                <Grid container spacing={2}>
-                    <Hidden smDown>
-                        <Grid item md={6} xs={12}>
-                            <Grid container spacing={2} >
-                                {
-                                    distinctCourses && distinctCourses.filter((course, i) => i % 2 == 0).map((course, i) => {
-                                        return <QuestionCourseWidget key={i} course={course} distinctCourses={distinctCourses} setDistinctCourses={setDistinctCourses} idx={i*2} insertQuestion={insertQuestion} />
-                                    })
-                                }
+                {
+                    props.questions&&props.courses&&props.quizzes?
+                    <Grid container spacing={2}>
+                        <Hidden smDown>
+                            <Grid item md={6} xs={12}>
+                                <Grid container spacing={2} >
+                                    {
+                                        distinctCourses && distinctCourses.filter((course, i) => i % 2 == 0).map((course, i) => {
+                                            return <QuestionCourseWidget key={i} course={course} distinctCourses={distinctCourses} setDistinctCourses={setDistinctCourses} idx={i*2} insertQuestion={insertQuestion} />
+                                        })
+                                    }
+                                </Grid>
                             </Grid>
-                        </Grid>
-                        <Grid item md={6} xs={12}>
-                            <Grid container spacing={2}>
-                                {
-                                    distinctCourses && distinctCourses.filter((course, i) => i % 2 !== 0).map((course, i) => {
-                                        return <QuestionCourseWidget key={i} course={course} distinctCourses={distinctCourses} setDistinctCourses={setDistinctCourses} idx={(i*2)+1} insertQuestion={insertQuestion} />
-                                    })
-                                }
+                            <Grid item md={6} xs={12}>
+                                <Grid container spacing={2}>
+                                    {
+                                        distinctCourses && distinctCourses.filter((course, i) => i % 2 !== 0).map((course, i) => {
+                                            return <QuestionCourseWidget key={i} course={course} distinctCourses={distinctCourses} setDistinctCourses={setDistinctCourses} idx={(i*2)+1} insertQuestion={insertQuestion} />
+                                        })
+                                    }
+                                </Grid>
                             </Grid>
-                        </Grid>
-                    </Hidden>
-                    <Hidden mdUp>
-                        {
-                            distinctCourses && distinctCourses.map((course, i) => {
-                                return <QuestionCourseWidget key={i} course={course} distinctCourses={distinctCourses} setDistinctCourses={setDistinctCourses} idx={i} insertQuestion={insertQuestion} />
-                            })
-                        }
-                    </Hidden>
-                </Grid>
+                        </Hidden>
+                        <Hidden mdUp>
+                            {
+                                distinctCourses && distinctCourses.map((course, i) => {
+                                    return <QuestionCourseWidget key={i} course={course} distinctCourses={distinctCourses} setDistinctCourses={setDistinctCourses} idx={i} insertQuestion={insertQuestion} />
+                                })
+                            }
+                        </Hidden>
+                        <AddQuestion openDialog={openDialog} setOpenDialog={setOpenDialog} title="Add Item" courses={props.courses} quizzes={props.quizzes} handleSave={insertQuestion} />
+                    </Grid>:
+                    <div
+                        style={{
+                            width: '100%',
+                            height: '100',
+                            display: 'flex',
+                            justifyContent: 'center',
+                            alignItems: 'center'
+                        }}
+                    >
+                        <Loader type="TailSpin" color="#2bad60" height="100" width="100"/>
+                    </div>
+                }
             </MainLayout>
-            <AddQuestion openDialog={openDialog} setOpenDialog={setOpenDialog} title="Add Item" courses={props.courses} quizzes={props.quizzes} handleSave={insertQuestion} />
         </>
     )
 }
@@ -138,7 +160,8 @@ const Item = (props) => {
 const mapDispatchToProps = dispatch => {
     return {
         fetchQuestion: bindActionCreators(fetchQuestion, dispatch),
-        fetchQuiz: bindActionCreators(fetchQuiz, dispatch)
+        fetchQuiz: bindActionCreators(fetchQuiz, dispatch),
+        fetchCourse: bindActionCreators(fetchCourse, dispatch)
     }
 }
 
