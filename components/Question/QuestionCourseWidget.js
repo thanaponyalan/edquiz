@@ -153,12 +153,11 @@ const QuestionCourseWidget=(props)=>{
             </Card>
         </Grid>
         <Popup open={openDialog} handleClose={()=>setOpenDialog(false)} fullScreen title={course.title} bgColor="#343a40" popupAction={
-            <Tooltip title="Add Question">
-                <Controls.Fab
-                    onClick={() => setOpenQuestionDialog(true)}>
-                    <Add/>
-                </Controls.Fab>
-            </Tooltip>
+            <Controls.Fab
+                onClick={() => setOpenQuestionDialog(true)}
+                title="Add Question">
+                <Add/>
+            </Controls.Fab>
         }>
             <Grid container spacing={2}>
                 <Grid item xs={12}>

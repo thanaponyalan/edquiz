@@ -1,16 +1,19 @@
 import React from 'react';
-import { Fab as MuiFab } from "@material-ui/core";
+import { Fab as MuiFab, Tooltip } from "@material-ui/core";
 
 export default function Fab(props) {
-    const {size,color,label,onClick,children,...other} = props;
-    return (
-        <MuiFab 
-            size={size || "small"} 
+    const {size,color,label,onClick,children,title,placement,...other} = props;
+    return(
+    <Tooltip title={title} placement={placement || 'bottom'}>
+        <MuiFab
+            size={size||'small'}
             color={color || "primary"} 
             aria-label={label} 
             onClick={onClick}
-            {...other}>
-                {children}
+            {...other}
+        >
+            {children}
         </MuiFab>
+    </Tooltip>
     )
 }
