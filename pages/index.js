@@ -1,19 +1,33 @@
-import { Component, useEffect } from 'react'
-import { connect } from 'react-redux'
-import { bindActionCreators } from 'redux'
-import { setProfile } from '../redux/actions/profileAction'
-import { compose } from 'recompose'
+import { Component } from 'react'
+import nextCookie from "next-cookies";
+import { Router } from 'next/router'
 
 class Index extends Component{
     static async getInitialProps(ctx) {
-        if (ctx.req) {
-            ctx.res.writeHead(302, { Location: '/my-class' });
-            ctx.res.end();
-            return;
-        }
-
-        if (!ctx.req) {
-            Router.push('/my-class');
+        const {role,uid}=nextCookie(ctx)
+        if(role&&uid){
+            if(ctx.req){
+                ctx.res.writeHead(302, { Location: role=='student'?'/my-class':'/course' });
+                ctx.res.end();
+                return;
+            }else{
+                Router.push(role=='student'?'/my-class':'/course')
+            }
+        }else if(uid){
+            if(ctx.req){
+                ctx.res.writeHead(302, {Location: '/choose-role'})
+                ctx.res.end()
+            }else{
+                Router.push('/choose-role')
+            }
+        }else{
+            if(ctx.req){
+                ctx.res.writeHead(302, { Location: '/login' });
+                ctx.res.end();
+                return;
+            }else if(!ctx.req){
+                Router.push('/login');
+            }
         }
 
         return;
@@ -27,6 +41,4 @@ class Index extends Component{
     }
 }
 
-export default compose(
-    // connect(mapStateToProps, mapDispatchToProps),
-) (Index)
+export default Index

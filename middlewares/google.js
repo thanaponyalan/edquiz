@@ -91,7 +91,9 @@ const updateToken=(req,res)=>{
                         const usr=await dbModel.usersModel.findOneAndUpdate({email: emailAddress},{firstName:firstName, familyName:familyName, photoUrl:photoUrl},{upsert: true, new: false});
                         updateTokens.refresh_token=(updateTokens.refresh_token)?updateTokens.refresh_token:usr.tokens.refresh_token;
                         const pushToken=await dbModel.usersModel.findOneAndUpdate({email: emailAddress},{tokens: updateTokens},{upsert:false, new: true});
-                        res.setHeader('Set-Cookie',serialize('uid',pushToken._id,{path: '/'}));
+                        var date=new Date();
+                        date.setTime(date.getTime()+(24*60*60*1000))
+                        res.setHeader('Set-Cookie',serialize('uid',pushToken._id,{path: '/',expires: date}));
                         res.writeHead(301,{Location:'/'}).end();
                         // res.status(200).send(usr._id);
                         return resolve();

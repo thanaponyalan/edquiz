@@ -10,12 +10,12 @@ class Login extends Component{
     static async getInitialProps(ctx){
         const {uid}=nextCookie(ctx);
         if(ctx.req&&uid){
-            ctx.res.writeHead(302,{Location: '/my-class'});
+            ctx.res.writeHead(302,{Location: '/choose-role'});
             ctx.res.end();
             return;
         }
 
-        if(uid)Router.push('/my-class');
+        if(uid)Router.push('/choose-role');
 
         const res=await fetch(`${API}/googleUrl`);
         const loginUrl=await res.json();

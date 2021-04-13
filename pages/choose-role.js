@@ -22,10 +22,10 @@ class ChooseRole extends Component{
         }
         if(role){
             if(ctx.res){
-                ctx.res.writeHead(301,{Location: '/'})
+                ctx.res.writeHead(301,{Location: role=='student'?'/my-class':'/course'})
                 ctx.res.end()
             }else{
-                Router.replace('/')
+                Router.replace(role=='student'?'/my-class':'/course')
             }
         }
     }
