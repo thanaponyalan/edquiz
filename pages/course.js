@@ -15,6 +15,7 @@ import { bindActionCreators } from "redux";
 import { withToastManager } from 'react-toast-notifications';
 import { _error_handler } from '../utils/errorHandler';
 import {API} from '../constant/ENV'
+import { Tooltip } from '@material-ui/core';
 
 const Course=(props)=>{
     const [openModal,setOpenModal]=useState(false);
@@ -45,12 +46,13 @@ const Course=(props)=>{
 
     const addCourse=
         <li className="nav-item">
-            <Controls.Fab
-                onClick={()=>setOpenModal(true)}>
-                <Add/>
-            </Controls.Fab>
+            <Tooltip title="Add Course">
+                <Controls.Fab
+                    onClick={()=>setOpenModal(true)}>
+                    <Add/>
+                </Controls.Fab>
+            </Tooltip>
         </li>
-    
     
     return (
         <>

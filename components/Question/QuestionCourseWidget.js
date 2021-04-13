@@ -3,7 +3,7 @@ import { compose } from "recompose";
 import { connect } from "react-redux";
 import { Add, ExpandMore } from "@material-ui/icons";
 import { _error_handler } from "../../utils/errorHandler";
-import { Button, Card, CardActions, CardContent, CardHeader, Chip, Collapse, Grid, IconButton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, makeStyles, List, ListSubheader, ListItem } from "@material-ui/core";
+import { Button, Card, CardActions, CardContent, CardHeader, Chip, Collapse, Grid, IconButton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, makeStyles, List, ListSubheader, ListItem, Tooltip } from "@material-ui/core";
 import clsx from "clsx";
 import { bindActionCreators } from "redux";
 import { fetchQuestion } from "../../redux/actions/questionAction";
@@ -153,16 +153,12 @@ const QuestionCourseWidget=(props)=>{
             </Card>
         </Grid>
         <Popup open={openDialog} handleClose={()=>setOpenDialog(false)} fullScreen title={course.title} bgColor="#343a40" popupAction={
-            <Controls.Fab
-                onClick={() => setOpenQuestionDialog(true)}
-                className={classes.fab}
-                size="medium"
-                variant="extended"
-                >
-                <Add className={classes.extendedIcon} />
-                add question
-            </Controls.Fab>
-
+            <Tooltip title="Add Question">
+                <Controls.Fab
+                    onClick={() => setOpenQuestionDialog(true)}>
+                    <Add/>
+                </Controls.Fab>
+            </Tooltip>
         }>
             <Grid container spacing={2}>
                 <Grid item xs={12}>
