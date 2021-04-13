@@ -197,14 +197,10 @@ const AddQuestion = (props) => {
 
     const handleClose = () => {
         setOpenDialog(false)
-        setValues(initialValues)
         setQuiz(initialValues.quiz)
-        setCourse(currentCourse||initialValues.course)
         setObjectives(initialValues.objectives)
         setChoices(initialValues.choices)
         setSelectedChoices(initialValues.choices)
-        setObjectiveOptions([])
-        setDisabledCourse(false)
         setErrors({})
         setAnsweredChoices([])
         if(setPreviewMode!=null){
@@ -212,6 +208,14 @@ const AddQuestion = (props) => {
         }
         if(setAnchorEl!=null){
             setAnchorEl(null)
+        }
+        if(!currentCourse){
+            setCourse(initialValues.course)
+            setObjectiveOptions([])
+            setDisabledCourse(false)
+            setValues(initialValues)
+        }else{
+            setValues({...initialValues, course: currentCourse})
         }
     }
 
@@ -310,13 +314,9 @@ const AddQuestion = (props) => {
         if (validate()) {
             handleSave(values)
             setOpenDialog(false)
-            setValues(initialValues)
             setQuiz(initialValues.quiz)
-            setCourse(initialValues.course)
             setObjectives(initialValues.objectives)
             setChoices(initialValues.choices)
-            setObjectiveOptions([])
-            setDisabledCourse(false)
             setErrors({})
             setAnsweredChoices([])
             if(setPreviewMode!=null){
@@ -324,6 +324,14 @@ const AddQuestion = (props) => {
             }
             if(setAnchorEl!=null){
                 setAnchorEl(null)
+            }
+            if(!currentCourse){
+                setCourse(initialValues.course)
+                setObjectiveOptions([])
+                setDisabledCourse(false)
+                setValues(initialValues)
+            }else{
+                setValues({...initialValues, course: currentCourse})
             }
         }
     }

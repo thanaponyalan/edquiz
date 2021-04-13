@@ -99,7 +99,7 @@ const Item = (props) => {
 
     return (
         <>
-            <MainLayout title="Questions" pageActions={addItem}>
+            <MainLayout title="Questions">
                 <Grid container spacing={2}>
                     <Hidden smDown>
                         <Grid item md={6} xs={12}>
