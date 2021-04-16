@@ -18,7 +18,7 @@ const Assignment=(props)=>{
             props.fetchAssignment(props.uid,props.role)
         }
     },[])
-    console.log(props);
+    
     return (
         <MainLayout title="Assignments">
             {props.assignments?
