@@ -1,5 +1,5 @@
 import React from 'react'
-import { Dialog, DialogTitle, DialogContent, makeStyles, Typography, AppBar, IconButton, Button, Toolbar } from "@material-ui/core";
+import { Dialog, DialogTitle, DialogContent, makeStyles, Typography, AppBar, IconButton, Button, Toolbar, DialogActions } from "@material-ui/core";
 import Controls from "../MaterialUI/controls/Controls";
 import { Close as CloseIcon, Edit as EditIcon } from '@material-ui/icons';
 
@@ -20,13 +20,20 @@ const useStyles=makeStyles(theme=>({
         marginLeft: theme.spacing(2),
         flex: 1,
     },
+    closeButton: {
+        position: 'absolute',
+        right: theme.spacing(1),
+        top: theme.spacing(1),
+        color: theme.palette.grey[500],
+      },
 }))
 
 export default function Popup(props) {
-    const {title, children, open, handleClose, fullScreen, handleSave, checkAnswer, toggleEdit, maxWidth, fullWidth, disabledSave=false, bgColor, popupAction}=props;
+    const {title, children, open, handleClose, fullScreen, handleSave, checkAnswer, toggleEdit, maxWidth, fullWidth, disabledSave=false, bgColor, popupAction, scroll}=props;
     const classes=useStyles();
     return (
-        <Dialog fullScreen={fullScreen} open={open} onClose={handleClose} maxWidth={maxWidth} fullWidth={fullWidth}>
+        <Dialog fullScreen={fullScreen} open={open} onClose={handleClose} maxWidth={maxWidth} fullWidth={fullWidth} scroll={scroll}>
+            {fullScreen?
             <AppBar className={classes.appBar}>
                 <Toolbar style={{backgroundColor: bgColor}}>
                     <IconButton edge="start" color="inherit" onClick={handleClose} aria-label="close">
@@ -57,9 +64,24 @@ export default function Popup(props) {
                     }
                 </Toolbar>
             </AppBar>
-            <DialogContent>
+            :
+            <DialogTitle disableTypography>
+                <Typography variant="h6">{title}</Typography>
+                {handleClose?(
+                    <IconButton edge="start" color="inherit" className={classes.closeButton} onClick={handleClose} aria-label="close">
+                        <CloseIcon />
+                    </IconButton>
+                ):null}
+            </DialogTitle>
+            }
+            <DialogContent dividers={!fullScreen}>
                 {children}
             </DialogContent>
+            {popupAction&&!fullScreen?(
+                <DialogActions>
+                    {popupAction}
+                </DialogActions>
+            ):null}
         </Dialog>
     )
 }
