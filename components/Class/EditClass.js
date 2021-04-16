@@ -44,7 +44,7 @@ const Class=(props)=>{
             const res=await result.json();
             if(res.statusCode==200||res.statusCode==204){
                 props.toastManager.add("Updated",{appearance:'success', autoDismiss:true}, ()=>setOpenDialog(false));
-                props.fetchClass(props.uid,props.toastManager)
+                props.fetchClass(props.uid,props.role,props.toastManager)
             }
         }catch(err){
             _error_handler(null,err,null);
@@ -119,7 +119,8 @@ const mapStateToProps = state => {
     return {
         classes: state.classReducer.classes,
         uid: state.authReducer.uid,
-        courses: state.courseReducer.courses
+        courses: state.courseReducer.courses,
+        role: state.authReducer.role
     }
 }
 
