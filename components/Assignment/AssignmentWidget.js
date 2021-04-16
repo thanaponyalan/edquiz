@@ -5,12 +5,10 @@ import { compose } from "redux";
 import Popup from "../MaterialUI/Popup";
 import { _error_handler } from "../../utils/errorHandler";
 import { bindActionCreators } from "redux";
-import { Paper, makeStyles, TableBody, TableRow, TableCell, Toolbar, InputAdornment, Card, CardMedia, CardContent, Typography, CardActions, Grid, Button, IconButton, CardActionArea, CardHeader, Menu, MenuItem, Chip, Avatar } from "@material-ui/core";
+import { makeStyles, Card, CardContent, CardActions,  Button, CardHeader, Menu, MenuItem, Chip, Avatar } from "@material-ui/core";
 import { fetchClass } from "../../redux/actions/classAction";
 import { useState } from "react";
 import { Class, MoreVert } from "@material-ui/icons";
-import { API } from "../../constant/ENV";
-import AssignPopup from '../Assignment/assignPopup';
 import moment from "moment";
 import DoAssignment from './DoAssignment';
 import Insight from './insight';
@@ -36,8 +34,8 @@ const AssignmentWidget=(props)=>{
         setOpenDialog(false)
     }
 
-    const thisAssignee=assignment.assignees.filter(item=>item.studentId==props.uid)
-    const isDone=thisAssignee[0]?.status==='done';
+    const [thisAssignee,setThisAssignee]=useState(assignment.assignees.filter(item=>item.studentId==props.uid))
+    const [isDone,setIsDone]=useState(thisAssignee[0]?.status==='done')
 
     return(
         <>
@@ -113,16 +111,6 @@ const AssignmentWidget=(props)=>{
                         <MenuItem>Edit</MenuItem>
                     </Menu>
             }
-            {/* <Popup maxWidth="sm" fullWidth={true} open={openDialog} handleClose={handleClose} title="Assign Test">
-                {
-                    <AssignPopup setOpenDialog={setOpenDialog} recordForEdit={{quizName: test.quizName, quizId: test._id, classId: '', dueDate: moment(new Date()).format()}} classes={classes.map((item)=>({id: item._id, title: item.className}))} handleClose={handleClose} handleSave={handleSave} />
-                }
-            </Popup> */}
-            {/* <Popup maxWidth="sm" fullWidth={true} open={openDialog} handleClose={handleClose} title="Edit Class">
-                {
-                    <EditClassForm recordForEdit={{...thisClass, courseId: thisClass.courseId._id}} courses={courses.map((item)=>({id: item._id, title: item.courseName}))} handleClose={handleClose} handleSave={handleSave} />
-                }
-            </Popup> */}
         </>
     )
 }
