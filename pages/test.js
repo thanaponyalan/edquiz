@@ -33,32 +33,39 @@ const Tests=(props)=>{
             </Controls.Fab>
         </li>
 
+    const validate=()=>{
+        setQuizName({...quizName, error: quizName.value!=''?'':'This field is required'})
+        setCourse({...course, error: course.id!=''?'':'Course must be selected'})
+        return(quizName.value!=''&&course.id!='')
+    }
+
     const insertQuiz=async()=>{
-        if(quizName.error||course.error)return;
-        const quiz={
-            quizName: quizName.value,
-            courseId: course.id,
-            owner: props.uid
-        }
-        props.toastManager.add("Adding...",{appearance: 'info', autoDismiss: true})
-        try{
-            const url=`${API}/test`
-            const result=await fetch(url,{
-                method: 'POST',
-                headers:{
-                    authorization: props.uid
-                },
-                body: JSON.stringify(quiz)
-            })
-            const res=await result.json();
-            if(res.statusCode==200||res.statusCode==204){
-                props.toastManager.add("Added",{appearance: 'success', autoDismiss: true},()=>setOpenModal(false))
-                props.fetchTest(props.uid,props.toastManager)
-                props.fetchQuestion(props.uid, props.toastManager)
+        if(validate()){
+            const quiz={
+                quizName: quizName.value,
+                courseId: course.id,
+                owner: props.uid
             }
-        }catch(err){
-            _error_handler(null,err,null)
-            console.log(err);
+            props.toastManager.add("Adding...",{appearance: 'info', autoDismiss: true})
+            try{
+                const url=`${API}/test`
+                const result=await fetch(url,{
+                    method: 'POST',
+                    headers:{
+                        authorization: props.uid
+                    },
+                    body: JSON.stringify(quiz)
+                })
+                const res=await result.json();
+                if(res.statusCode==200||res.statusCode==204){
+                    props.toastManager.add("Added",{appearance: 'success', autoDismiss: true},()=>setOpenModal(false))
+                    props.fetchTest(props.uid,props.toastManager)
+                    props.fetchQuestion(props.uid, props.toastManager)
+                }
+            }catch(err){
+                _error_handler(null,err,null)
+                console.log(err);
+            }
         }
     }
 
