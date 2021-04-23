@@ -52,12 +52,9 @@ const Class=(props)=>{
         }
     }
     const handleSave=(data)=>{
-        delete data.students;
-        delete data.__v;
-        delete data.gClassId;
-        delete data.gClassName;
-        updateClass(data);
+        updateClass({...data, students: data.students.map(student=>student._id)});
     }
+
     return(
         <>
             <Card className={classes.root} variant={variant} onMouseEnter={()=>{setVariant("elevation")}} onMouseLeave={()=>{setVariant('outlined')}} style={{cursor: "pointer"}}>
@@ -99,6 +96,9 @@ const Class=(props)=>{
                 }}
             >
                 <MenuItem onClick={()=>{setOpenDialog(true); setAnchorEl(null)}}>Edit</MenuItem>
+                <MenuItem onClick={()=>{
+                    updateClass({...thisClass, courseId: thisClass.courseId._id, students: thisClass.students.map(student=>student._id)})
+                }}>Synchronize</MenuItem>
             </Menu>
             <Popup maxWidth="sm" fullWidth={true} open={openDialog} handleClose={handleClose} title="Edit Class">
                 {

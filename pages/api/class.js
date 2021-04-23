@@ -107,32 +107,74 @@ const importClass=async(req,res)=>{
     )
 }
 
-const updateClass=async(req,res)=>{
+const syncClass=async(classObject, auth)=>{
     return new Promise((resolve,reject)=>{
-        if(req.headers.authorization===undefined){
-            response.statusCode=403;
-            response.data.message="Permission Denied!";
-            res.status(response.statusCode).json(response);
-            return reject(response);
-        }
-        let thisClass=JSON.parse(req.body)
-        // console.log(thisClass);
-        dbModel.classesModel.findByIdAndUpdate(thisClass._id,{
-            className: thisClass.className,
-            courseId: thisClass.courseId
-        },{upsert: true, new: true},(err,result)=>{
-            if(!err){
-                response.data.payload=result;
-                res.status(response.statusCode).json(response)
-                return resolve();
+        getStudents(classObject.gClassId,auth).then(async(students)=>{
+            try{
+                if(students){
+                    const studentsId=await getStudentsId(students);
+                    classObject.students=studentsId
+                    await updateClass(classObject)
+                    response.data.payload="Synchronized";
+                    return resolve(response)
+                }else{
+                    await updateClass(classObject)
+                    response.data.payload="Synchronized";
+                    return resolve(response)
+                }
+            }catch(err){
+                console.log(err);
+                response.statusCode=400;
+                response.data.payload=err
+                return reject(response)
             }
-            response.data.payload=err;
-            response.statusCode=400;
-            res.status(response.statusCode).json(response);
-            return reject(err);
         })
     })
 }
+
+const updateClass=async(classObject)=>{
+    return new Promise((resolve,reject)=>{
+        const classId=classObject._id;
+        delete classObject._id;
+        dbModel.classesModel.findByIdAndUpdate(classId,classObject,{upsert: true, new: true},(err,result)=>{
+            if(err){
+                response.statusCode=400;
+                response.data.payload=err.message||err.toString();
+                return reject(err);
+            }
+            response.data.payload=result;
+            return resolve(response);
+        })
+    })
+
+}
+
+// const updateClass=async(req,res)=>{
+//     return new Promise((resolve,reject)=>{
+//         if(req.headers.authorization===undefined){
+//             response.statusCode=403;
+//             response.data.message="Permission Denied!";
+//             res.status(response.statusCode).json(response);
+//             return reject(response);
+//         }
+//         let thisClass=JSON.parse(req.body)
+//         // console.log(thisClass);
+//         dbModel.classesModel.findByIdAndUpdate(thisClass._id,{
+//             className: thisClass.className,
+//             courseId: thisClass.courseId
+//         },{upsert: true, new: true},(err,result)=>{
+//             if(!err){
+//                 response.data.payload=result;
+//                 res.status(response.statusCode).json(response)
+//                 return resolve();
+//             }
+//             response.data.payload=err;
+//             response.statusCode=400;
+//             res.status(response.statusCode).json(response);
+//             return reject(err);
+//         })
+//     })
+// }
 
 const handleRequest=(req,res)=>{
     return new Promise((resolve,reject)=>{
@@ -152,7 +194,21 @@ const handleRequest=(req,res)=>{
                 console.log(err);
                 reject(err)
             }); break;
-            case 'PUT': updateClass(req,res); break;
+            case 'PUT': 
+                if(req.headers.authorization===undefined||!req.headers.authorization.match(/^[0-9a-fA-F]{24}$/)){
+                    response.statusCode=403;
+                    response.data.message="Permission Denied!";
+                    res.status(response.statusCode).json(response);
+                    return reject(response);
+                }
+                const classObject=JSON.parse(req.body)
+                syncClass(classObject, req.headers.authorization).then(response=>{
+                    res.status(response.statusCode).json(response)
+                }).catch(err=>{
+                    console.log(err);
+                    res.status(response.statusCode).json(response)
+                })
+                break;
             default: res.status(200).json({err:'Method Not Allowed'}); break;
         }
     })
