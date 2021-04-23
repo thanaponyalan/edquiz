@@ -5,7 +5,7 @@ import Controls from '../MaterialUI/controls/Controls'
 export default function QuestionParameters(props) {
     const {
         values,
-        setQuiz,
+        setQuizzes,
         quizzes,
         quizOptions,
         setCourse,
@@ -25,6 +25,20 @@ export default function QuestionParameters(props) {
         <>
             <FormLabel component="legend">Question Meta</FormLabel>
             <Controls.AutoComplete
+                disabled={previewMode}
+                multiple
+                name="quizzes"
+                label="Quizzes"
+                id="quizzesSelector-quizzes.title"
+                value={quizzes}
+                handleInputChange={(event, newValue) => {
+                    setQuizzes(newValue.map(value=>({id:value.id?value.id:0, title:value.inputValue?value.inputValue:value.title})))
+                }}
+                options={quizOptions}
+                freeSolo
+                createAble
+            />
+            {/* <Controls.AutoComplete
                 disabled={previewMode}
                 name="test"
                 label="Test"
@@ -74,7 +88,7 @@ export default function QuestionParameters(props) {
                 options={[{ id: -1, title: 'Not In Test' }, ...quizOptions]}
                 freeSolo
                 createAble
-            />
+            /> */}
             <Controls.AutoComplete
                 error={errors.course}
                 disabled={disabledCourse||previewMode}

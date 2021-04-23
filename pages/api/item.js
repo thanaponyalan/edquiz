@@ -39,6 +39,53 @@ const getQuestion=async(req,res)=>{
     })
 }
 
+const insertQuiz=(data)=>{
+    return new Promise((resolve,reject)=>{
+        dbModel.quizzesModel.create(data,(err,res)=>{
+            if(err){
+                return reject(err)
+            }
+            return resolve(res._id)
+        })
+    })
+}
+
+const insertQuizzes=async(quizzes,question)=>{
+    return new Promise((resolve,reject)=>{
+        Promise.all(
+            quizzes.map(async(quiz)=>{
+                if(quiz.id!=0)return quiz.id
+                return insertQuiz({courseId: question.courseId, quizName: quiz.title, owner: question.owner})
+            })
+        )
+        .then(quizzesRes=>resolve(quizzesRes))
+        .catch(err=>reject(err))
+    })
+}
+
+const updateQuiz=(quizId,questionId)=>{
+    return new Promise((resolve,reject)=>{
+        dbModel.quizzesModel.findByIdAndUpdate(quizId,{
+            $push: {questionId: questionId}
+        },{new: true},(err,result)=>{
+            if(err){
+                return reject(err)
+            }
+            return resolve(result._id)
+        })
+    })
+}
+
+const updateQuizzes=async(quizzesId,questionId)=>{
+    return new Promise((resolve,reject)=>{
+        Promise.all(
+            quizzesId.map(async(quiz)=>updateQuiz(quiz,questionId))
+        )
+        .then(res=>resolve(res))
+        .catch(err=>reject(err))
+    })
+}
+
 const insertQuestion=async(req,res)=>{
     return new Promise((resolve,reject)=>{
         // if(req.headers.authorization===undefined){
@@ -48,39 +95,31 @@ const insertQuestion=async(req,res)=>{
         //     return reject(response);
         // }
         let question=JSON.parse(req.body);
-        let quiz=question.quiz;
+        let quizzes=question.quizzes;
 
-        if(quiz.id==0){
-            dbModel.quizzesModel.create({courseId: question.courseId, quizName: quiz.title, owner: question.owner},(quizErr,quizResult)=>{
-                if(quizErr){
-                    response.statusCode=400;
-                    response.data.payload=quizErr.message||quizErr.toString();
-                    res.status(response.statusCode).json(response)
-                    return reject(quizErr)
-                }
-                question.quizId=quizResult._id;
-                dbModel.questionsModel.create(question,(questionErr,questionResult)=>{
-                    if(questionErr){
+        if(quizzes.length){
+            insertQuizzes(quizzes,question).then(quizzesId=>{
+                question.quizId=quizzesId
+                dbModel.questionsModel.create(question,(err,questionRes)=>{
+                    if(err){
                         response.statusCode=400;
-                        response.data.payload=questionErr.message||questionErr.toString();
+                        response.data.payload=err.message||err.toString();
                         res.status(response.statusCode).json(response)
-                        return reject(questionErr)
+                        return reject(response)
                     }
-                    dbModel.quizzesModel.findByIdAndUpdate(question.quizId,{
-                        $push: {questionId: questionResult._id}
-                    },{new: true},(err,result)=>{
-                        if(err){
-                            response.statusCode=400;
-                            response.data.payload=err.message||err.toString();
-                            res.status(response.statusCode).json(response)
-                            return reject(err)
-                        }
-                        response.data.payload={...result,...questionResult}
+                    updateQuizzes(quizzesId,questionRes._id).then(quizResult=>{
+                        response.data.payload={...questionRes,...quizResult}
                         res.status(response.statusCode).json(response)
+                        resolve(response)
+                    }).catch(err=>{
+                        response.data.payload=err.message||err.toString();
+                        response.statusCode=400;
+                        res.status(response.statusCode).json(response)
+                        reject(response)
                     })
                 })
             })
-        }else if(quiz.id==-1){
+        }else{
             delete question.quizId;
             dbModel.questionsModel.create(question,(err,result)=>{
                 if(err){
@@ -92,28 +131,16 @@ const insertQuestion=async(req,res)=>{
                 response.data.payload=result;
                 res.status(response.statusCode).json(response)
             })
-        }else{
-            dbModel.questionsModel.create(question,(questionErr,questionResult)=>{
-                if(questionErr){
-                    response.statusCode=400;
-                    response.data.payload=questionErr.message||questionErr.toString();
-                    res.status(response.statusCode).json(response)
-                    return reject(questionErr)
-                }
-                dbModel.quizzesModel.findByIdAndUpdate(question.quizId,{
-                    $push: {questionId: questionResult._id}
-                },{new: true},(err,result)=>{
-                    if(err){
-                        response.statusCode=400;
-                        response.data.payload=err.message||err.toString();
-                        res.status(response.statusCode).json(response)
-                        return reject(err)
-                    }
-                    response.data.payload={...result,...questionResult}
-                    res.status(response.statusCode).json(response)
-                })
-            })
         }
+    })
+}
+
+const removeFromQuiz=(questionId)=>{
+    return new Promise((resolve,reject)=>{
+        dbModel.quizzesModel.updateMany({questionId: questionId},{$pull:{questionId: questionId}},(err,res)=>{
+            if(err)return reject(err);
+            return resolve(res)
+        })
     })
 }
 
@@ -127,70 +154,43 @@ const updateQuestion=async(req,res)=>{
         // }
         let question=JSON.parse(req.body);
         let id=question.id;
-        let quiz=question.quiz;
+        let quizzes=question.quizzes;
         delete question.id;
-        dbModel.quizzesModel.updateMany({questionId: id},{$pull:{questionId: id}},(quizErr,quizResult)=>{
-            if(quizErr){
-                response.statusCode=400;
-                response.data.payload=quizErr.message||quizErr.toString();
-                res.status(response.statusCode).json(response)
-                return reject(quizErr)
-            }
-            if(quiz.id==0){
-                dbModel.quizzesModel.create({courseId: question.courseId, quizName: quiz.title, owner: question.owner, questionId: [id]},(err,result)=>{
+        removeFromQuiz(id).then(quizRes=>{
+            if(quizzes.length){
+                insertQuizzes(quizzes,question).then(quizzesId=>{
+                    question.quizId=quizzesId
+                    dbModel.questionsModel.findByIdAndUpdate(id,question,{upsert: true, new: true},(err,questionRes)=>{
+                        if(err){
+                            response.statusCode=400;
+                            response.data.payload=err.message||err.toString();
+                            res.status(response.statusCode).json(response)
+                            return reject(response)
+                        }
+                        updateQuizzes(quizzesId,questionRes._id).then(quizResult=>{
+                            response.data.payload={...questionRes,...quizResult}
+                            res.status(response.statusCode).json(response)
+                            resolve(response)
+                        }).catch(err=>{
+                            response.data.payload=err.message||err.toString();
+                            response.statusCode=400;
+                            res.status(response.statusCode).json(response)
+                            reject(response)
+                        })
+                    })
+                })
+            }else{
+                question.quizId=undefined
+                dbModel.questionsModel.findByIdAndUpdate(id,question,{upsert: true, new: true},(err,questionRes)=>{
                     if(err){
                         response.statusCode=400;
                         response.data.payload=err.message||err.toString();
                         res.status(response.statusCode).json(response)
-                        return reject(err)
+                        return reject(response)
                     }
-                    question.quizId=result._id;
-                    dbModel.questionsModel.findByIdAndUpdate(id,question,{upsert: true, new: true},(questionErr,questionResult)=>{
-                        if(!questionErr){
-                            response.data.payload=questionResult;
-                            res.status(response.statusCode).json(response)
-                            return resolve();
-                        }
-                        response.data.payload=questionErr;
-                        response.statusCode=400;
-                        res.status(response.statusCode).json(response);
-                        return reject(questionErr);
-                    })
-                })
-            }else if(quiz.id==-1){
-                delete question.quizId;
-                dbModel.questionsModel.findByIdAndUpdate(id,question,{upsert: true, new: true},(err,result)=>{
-                    if(!err){
-                        response.data.payload=result;
-                        res.status(response.statusCode).json(response)
-                        return resolve();
-                    }
-                    response.data.payload=err;
-                    response.statusCode=400;
-                    res.status(response.statusCode).json(response);
-                    return reject(err);
-                })
-            }else{
-                dbModel.quizzesModel.findByIdAndUpdate(question.quizId,{
-                    $push: {questionId: id}
-                },{upsert: true, new: true},(err,result)=>{
-                    if(err){
-                        response.data.payload=err;
-                        response.statusCode=400;
-                        res.status(response.statusCode).json(response);
-                        return reject(err);
-                    }
-                    dbModel.questionsModel.findByIdAndUpdate(id,question,{upsert: true, new: true},(questionErr,questionResult)=>{
-                        if(!questionErr){
-                            response.data.payload=questionResult;
-                            res.status(response.statusCode).json(response)
-                            return resolve();
-                        }
-                        response.data.payload=questionErr;
-                        response.statusCode=400;
-                        res.status(response.statusCode).json(response);
-                        return reject(questionErr);
-                    })
+                    response.data.payload=questionRes
+                    res.status(response.statusCode).json(response)
+                    return resolve(response)
                 })
             }
         })

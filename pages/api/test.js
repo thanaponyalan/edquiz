@@ -69,7 +69,7 @@ const updateQuestionInQuiz=async(quizId, questionId)=>{
     })
 }
 
-const updateQuiz=async(req)=>{
+const updateQuiz=async(req)=>{ //ขาดเงื่อนไขกรณีที่ไม่มีคำถามเหลือในข้อสอบเลย
     return new Promise((resolve,reject)=>{
         if(req.headers.authorization===undefined||!req.headers.authorization.match(/^[0-9a-fA-F]{24}$/)){
             response.statusCode=403;

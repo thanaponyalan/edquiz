@@ -42,12 +42,7 @@ const questionSchema=new mongoose.Schema({
         type: {type: Number}
     },
     choices:[],
-    params:{
-        a: Number,
-        b: Number,
-        c: Number
-    },
-    quizId:{type: Schema.Types.ObjectId, ref: 'quizzes'},
+    quizId:[{type: Schema.Types.ObjectId, ref: 'quizzes'}],
     courseId:{type: Schema.Types.ObjectId, ref: 'courses'},
     objectiveId:[{type: Schema.Types.ObjectId, ref: 'objectives'}],
     owner: Schema.Types.ObjectId

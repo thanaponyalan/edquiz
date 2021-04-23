@@ -38,10 +38,8 @@ const Item = (props) => {
             choices: question.choices,
             courseId: question.course.id,
             objectiveId: question.objectives.map(objective => objective.id),
-            params: question.params,
             question: question.question,
-            quizId: question.quiz.id,
-            quiz: question.quiz,
+            quizzes: question.quizzes,
             owner: props.uid
         }
         props.toastManager.add("Creating...", { appearance: 'info', autoDismiss: true })

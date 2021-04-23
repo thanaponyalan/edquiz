@@ -9,13 +9,19 @@ import { fetchQuiz } from "../../redux/actions/quizAction";
 import Card from "../MaterialUI/Card";
 import ViewQuestion from "./AddQuestion";
 import { Menu, MenuItem, Button, Grid } from "@material-ui/core";
+import Popup from "../MaterialUI/Popup";
+import Controls from "../MaterialUI/controls/Controls";
+import { Form } from "../MaterialUI/useForm";
 
-const questionType = ['Multiple Choice', 'Match', 'True or False']
+const questionType = ['Multiple Choice', 'True or False']
 
 const QuestionWidget = (props) => {
     const [openDialog, setOpenDialog] = useState(false);
     const [previewMode, setPreviewMode]=useState(true);
+    const [chooseCourseDialog, setChooseCourseDialog]=useState(false)
     const [anchorEl, setAnchorEl]=useState(null)
+    const [chooseCourse,setChooseCourse]=useState({})
+    const [duplicateDialog, setDuplicateDialog]=useState(false)
     const { question } = props;
     const updateQuestion=async(question)=>{
         question={
@@ -23,10 +29,8 @@ const QuestionWidget = (props) => {
             choices: question.choices,
             courseId: question.course.id,
             objectiveId: question.objectives.map(objective=>objective.id),
-            params: question.params,
             question: question.question,
-            quizId: question.quiz.id,
-            quiz: question.quiz,
+            quizzes: question.quizzes,
             owner: question.owner
         }
         props.toastManager.add("Updating...",{appearance: 'info', autoDismiss: true})
@@ -47,6 +51,37 @@ const QuestionWidget = (props) => {
             }
         }catch(err){
             _error_handler(null,err,null);
+            console.log(err);
+        }
+    }
+
+    const duplicateQuestion = async (question) => {
+        question = {
+            choices: question.choices,
+            courseId: question.course.id,
+            objectiveId: question.objectives.map(objective => objective.id),
+            question: question.question,
+            quizzes: question.quizzes,
+            owner: question.owner
+        }
+        props.toastManager.add("Duplicating...", { appearance: 'info', autoDismiss: true })
+        try {
+            const url = `${API}/item`
+            const result = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    authorization: question.owner
+                },
+                body: JSON.stringify(question)
+            });
+            const res = await result.json();
+            if (res.statusCode == 200 || res.statusCode == 204) {
+                props.toastManager.add("Duplicated", { appearance: 'success', autoDismiss: true }, () => setOpenDialog(false));
+                props.fetchQuestion(question.owner, props.toastManager)
+                props.fetchQuiz(question.owner, props.toastManager)
+            }
+        } catch (err) {
+            _error_handler(null, err, null);
             console.log(err);
         }
     }
@@ -72,7 +107,7 @@ const QuestionWidget = (props) => {
                 openDialog={openDialog} 
                 setOpenDialog={setOpenDialog} 
                 {...props} 
-                title="Preview Item" 
+                title={previewMode?'Preview Item':'Edit Item'} 
                 previewMode={previewMode}
                 setPreviewMode={setPreviewMode}
                 setAnchorEl={setAnchorEl}
@@ -81,16 +116,54 @@ const QuestionWidget = (props) => {
                     id: question._id, 
                     question: question.question, 
                     choices: question.question.type!=1?question.choices.map((item)=>({isTrue: item.isTrue, choice: item.choice, pict: item.pict})):question.choices.map((item)=>({answer: item.answer, choice: item.choice, pict: item.pict})), 
-                    params: question.params, 
-                    quiz: question.quizId?{ id: question.quizId._id, title: question.quizId.quizName }:{
-                        title: 'Not In Test',
-                        id: -1
-                    }, 
+                    quizzes: question.quizId?question.quizId.map(quiz=>({ id: quiz._id, title: quiz.quizName })):[], 
                     course: { id: question.courseId._id, title: question.courseId.courseName }, 
                     objectives: question.objectiveId.map((item) => ({ id: item._id, title: item.objective })),
                     owner: question.owner
                 }}
+                currentCourse={{id: question.courseId._id, title: question.courseId.courseName}}
+                courses={props.courses}
             />
+            <ViewQuestion
+                openDialog={duplicateDialog}
+                setOpenDialog={setDuplicateDialog}
+                title="Duplicate Question"
+                setAnchorEl={setAnchorEl}
+                handleSave={duplicateQuestion}
+                recordForDuplicate={{
+                    question: question.question, 
+                    choices: question.question.type!=1?question.choices.map((item)=>({isTrue: item.isTrue, choice: item.choice, pict: item.pict})):question.choices.map((item)=>({answer: item.answer, choice: item.choice, pict: item.pict})), 
+                    quizzes: chooseCourse.value==question.courseId._id&&question.quizId?question.quizId.map(quiz=>({ id: quiz._id, title: quiz.quizName })):[], 
+                    course: {id: chooseCourse.value?chooseCourse.value:'', title: chooseCourse.value?props.courses.filter(course=>course._id==chooseCourse.value)[0].courseName:''}, 
+                    objectives: chooseCourse.value==question.courseId._id?question.objectiveId.map((item) => ({ id: item._id, title: item.objective })):[],
+                    owner: question.owner
+                }}
+                courses={props.courses}
+                quizzes={props.quizzes}
+            />
+            <Popup open={chooseCourseDialog} handleClose={()=>setChooseCourseDialog(false)} maxWidth='sm' fullWidth title='Select Course' popupAction={
+                <Button variant="contained" onClick={()=>{
+                    if(!chooseCourse.value)return
+                    setChooseCourseDialog(false)
+                    setDuplicateDialog(true)
+                }}>
+                    Duplicate
+                </Button>
+            }>
+                <Form>
+                        <Controls.Select
+                            style={{width: '100%'}}
+                            name="Course"
+                            label="Select Course"
+                            options={props.courses.map(course=>({id: course._id, title: course.courseName}))}
+                            value={chooseCourse.value||''}
+                            onChange={(e)=>{
+                                setChooseCourse({value: e.target.value, error: e.target.value?'':'Course must be selected'})
+                            }}
+                            error={chooseCourse.error||''}
+                        />
+                </Form>
+            </Popup>
             <Menu
                 id="questionMenus"
                 anchorEl={anchorEl}
@@ -100,7 +173,7 @@ const QuestionWidget = (props) => {
             >
                 <MenuItem onClick={()=>setOpenDialog(true)}>Preview</MenuItem>
                 <MenuItem onClick={()=>{setPreviewMode(false); setOpenDialog(true)}}>Edit</MenuItem>
-                <MenuItem disabled>Duplicate</MenuItem>
+                <MenuItem onClick={()=>setChooseCourseDialog(true)}>Duplicate</MenuItem>
             </Menu>
         </>
     )
@@ -113,7 +186,14 @@ const mapDispatchToProps=dispatch=>{
     }
 }
 
+const mapStateToProps=state=>{
+    return{
+        courses: state.courseReducer.courses,
+        quizzes: state.quizReducer.quizzes
+    }
+}
+
 export default compose(
     withToastManager,
-    connect(null,mapDispatchToProps)
+    connect(mapStateToProps,mapDispatchToProps)
 )(QuestionWidget)

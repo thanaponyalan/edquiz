@@ -81,12 +81,7 @@ const initialValues = {
             pict: ''
         }
     ],
-    params: {
-        a: 0,
-        b: 0,
-        c: 0
-    },
-    quiz: { id: -1, title: 'Not In Test' },
+    quizzes: [],
     course: { id: -1, title: 'No Course Selected' },
     objectives: []
 }
@@ -119,7 +114,7 @@ const AddQuestion = (props) => {
         handleInputChange
     } = useForm(initialValues, true, validate)
 
-    const [quiz, setQuiz] = useState(values.quiz);
+    const [quizzes, setQuizzes] = useState(values.quizzes);
     const [course, setCourse] = useState(values.course)
     const [objectives, setObjectives] = useState(values.objectives)
     const [choices, setChoices] = useState(values.choices)
@@ -127,24 +122,26 @@ const AddQuestion = (props) => {
     const [answeredChoices, setAnsweredChoices]=useState([])
     const [disabledCourse, setDisabledCourse] = useState(false);
     const [objectiveOptions, setObjectiveOptions] = useState([]);
+    const [quizOptions, setQuizOptions]=useState(props.quizzes.map(item=>({id: item._id, title: item.quizName})))
 
-    const { openDialog, title, setOpenDialog, courses, quizzes, handleSave, recordForEdit, previewMode=false, setPreviewMode=null, setAnchorEl=null, currentCourse=null } = props;
+    const { openDialog, title, setOpenDialog, courses, handleSave, recordForEdit, previewMode=false, setPreviewMode=null, setAnchorEl=null, currentCourse=null, recordForDuplicate } = props;
+    const storedQuizzes=props.quizzes;
     const courseOptions = courses.map((item, i) => {
         return { id: item._id, title: item.courseName }
     })
     
-    const quizOptions = currentCourse?quizzes.filter(quiz=>quiz.courseId._id==currentCourse.id).map(item => {
-        return { id: item._id, title: item.quizName }
-    }):quizzes.map(item => {
-        return { id: item._id, title: item.quizName }
-    })
+    // const quizOptions = currentCourse||recordForDuplicate?.course.id?storedQuizzes.filter(quiz=>(quiz.courseId._id==currentCourse?.id)||(quiz.courseId._id==recordForDuplicate?.course.id)).map(item => {
+    //     return { id: item._id, title: item.quizName }
+    // }):storedQuizzes.map(item => {
+    //     return { id: item._id, title: item.quizName }
+    // })
 
     useEffect(() => {
         if (recordForEdit != null && recordForEdit != undefined) {
             setValues({
                 ...recordForEdit
             })
-            setQuiz(recordForEdit.quiz)
+            setQuizzes(recordForEdit.quizzes)
             setCourse(recordForEdit.course)
             setObjectives(recordForEdit.objectives)
             setChoices(recordForEdit.choices)
@@ -155,25 +152,45 @@ const AddQuestion = (props) => {
     }, [recordForEdit])
 
     useEffect(()=>{
+        if(recordForDuplicate){
+            setValues({
+                ...recordForDuplicate
+            })
+            setQuizzes(recordForDuplicate.quizzes)
+            if(recordForDuplicate.course.id&&recordForDuplicate.course.title){
+                setCourse(recordForDuplicate.course)
+                setDisabledCourse(true)
+                setObjectiveOptions(courses.filter(course=>course._id==recordForDuplicate.course.id)[0].objectives.map((item,idx)=>({id: item._id, title: item.objective})))
+                setQuizOptions(storedQuizzes.filter(quiz=>quiz.courseId._id==recordForDuplicate.course.id).map(item=>({id: item._id, title: item.quizName})))
+            }
+            setObjectives(recordForDuplicate.objectives)
+            setChoices(recordForDuplicate.choices)
+        }
+    },[recordForDuplicate])
+
+    useEffect(()=>{
         if(currentCourse){
-            setCourse(currentCourse)
-            setObjectiveOptions(courses.filter(course => course._id == currentCourse.id)[0].objectives.map((item, idx) => {
-                return { id: item._id, title: item.objective }
-            }));
-            setDisabledCourse(true)
+            if(currentCourse.id&&currentCourse.title){
+                setCourse(currentCourse)
+                setObjectiveOptions(courses.filter(course => course._id == currentCourse.id)[0].objectives.map((item, idx) => {
+                    return { id: item._id, title: item.objective }
+                }));
+                setQuizOptions(storedQuizzes.filter(quiz=>quiz.courseId._id==currentCourse.id).map(item=>({id: item._id, title: item.quizName})))
+                setDisabledCourse(true)
+            }
         }
     },[currentCourse])
 
     useEffect(() => {
         setValues({
             ...values,
-            quiz,
+            quizzes,
             course,
             objectives,
             choices
         })
         if (choices.filter(item => item.choice != '').length > 0) validate({ choices: choices });
-    }, [quiz, course, objectives, choices]);
+    }, [quizzes, course, objectives, choices]);
 
     const handleChangeType = (qType) => {
         let typeChoices;
@@ -197,7 +214,7 @@ const AddQuestion = (props) => {
 
     const handleClose = () => {
         setOpenDialog(false)
-        setQuiz(initialValues.quiz)
+        setQuizzes(initialValues.quizzes)
         setObjectives(initialValues.objectives)
         setChoices(initialValues.choices)
         setSelectedChoices(initialValues.choices)
@@ -314,7 +331,7 @@ const AddQuestion = (props) => {
         if (validate()) {
             handleSave(values)
             setOpenDialog(false)
-            setQuiz(initialValues.quiz)
+            setQuizzes(initialValues.quizzes)
             setObjectives(initialValues.objectives)
             setChoices(initialValues.choices)
             setErrors({})
@@ -362,7 +379,6 @@ const AddQuestion = (props) => {
             })
             alert(`${score} of ${matchingChoices.length} correct`);
         }
-        // console.log(selectedChoices);
     }
 
     return (
@@ -381,7 +397,7 @@ const AddQuestion = (props) => {
                         <QuestionParameters
                             previewMode={previewMode}
                             values={values}
-                            setQuiz={setQuiz}
+                            setQuizzes={setQuizzes}
                             quizzes={quizzes}
                             quizOptions={quizOptions}
                             setCourse={setCourse}
