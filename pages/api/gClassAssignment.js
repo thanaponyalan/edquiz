@@ -47,6 +47,10 @@ const insertAssignment=async(req,res,oAuth2Client)=>{
         minutes: moment.utc(assignment.dueDate).minutes(),
         seconds: moment.utc(assignment.dueDate).seconds()
     }
+    if(moment()<moment(assignment.scheduled)){
+        body.scheduledTime=assignment.scheduled
+        body.state="DRAFT"
+    }
     const classroom = google.classroom({ version: 'v1', auth: oAuth2Client });
     const result = await classroom.courses.courseWork.create({
         courseId: req.query.courseId,

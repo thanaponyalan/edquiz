@@ -32,7 +32,7 @@ const TestWidget=(props)=>{
         setOpenDialog(false)
     }
     const handleSave=async(data)=>{
-        props.toastManager.add("Updating...",{appearance: 'info', autoDismiss: true})
+        props.toastManager.add("Assigning...",{appearance: 'info', autoDismiss: true})
         try{
             const url=`${API}/assignment`
             const result=await fetch(url,{
@@ -44,8 +44,8 @@ const TestWidget=(props)=>{
             })
             const res=await result.json();
             if(res.statusCode==200||res.statusCode==204){
-                props.toastManager.add("Updated",{appearance:'success', autoDismiss:true}, ()=>setOpenDialog(false));
-                props.fetchClass(props.uid,props.toastManager)
+                props.toastManager.add("Assigned",{appearance:'success', autoDismiss:true}, ()=>setOpenDialog(false));
+                props.fetchClass(props.uid,props.role,props.toastManager)
             }
         }catch(err){
             _error_handler(null,err,null);
@@ -203,7 +203,7 @@ const TestWidget=(props)=>{
             </Popup>
             <Popup maxWidth="sm" fullWidth={true} open={openDialog} handleClose={handleClose} title="Assign Test">
                 {
-                    <AssignPopup setOpenDialog={setOpenDialog} recordForEdit={{quizName: test.quizName, quizId: test._id, classId: '', dueDate: moment(new Date()).format()}} classes={classes.filter(item=>item.courseId._id==test.courseId._id).map((item)=>({id: item._id, title: item.className}))} handleClose={handleClose} handleSave={handleSave} />
+                    <AssignPopup setOpenDialog={setOpenDialog} recordForEdit={{quizName: test.quizName, quizId: test._id, classId: '', scheduled: moment().format(), dueDate: moment(moment()).add(1,'days').format()}} classes={classes.filter(item=>item.courseId._id==test.courseId._id).map((item)=>({id: item._id, title: item.className}))} handleClose={handleClose} handleSave={handleSave} />
                 }
             </Popup>
             <Popup maxWidth="sm" fullWidth={true} open={openQuestionList} handleClose={handleCancelChanged} title="Questions" scroll="paper" popupAction={
@@ -282,6 +282,7 @@ const mapDispatchToProps = dispatch => {
 const mapStateToProps = state => {
     return {
         uid: state.authReducer.uid,
+        role: state.authReducer.role,
         classes: state.classReducer.classes,
         storedQuestions: state.questionReducer.questions
     }

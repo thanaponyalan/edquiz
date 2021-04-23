@@ -97,7 +97,7 @@ const insertAssignment=async(req,res)=>{
             dbModel.assignmentsModel.create({
                 ...assignment,
                 assignees: assignees,
-                assignedDate: moment(new Date()).format(),
+                assignedDate: moment()<moment(assignment.scheduled)?moment(assignment.scheduled).format():moment().format(),
                 owner: req.headers.authorization
             },(err,result)=>{
                 if(err){

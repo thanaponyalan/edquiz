@@ -6,11 +6,14 @@ import { Form, useForm } from '../MaterialUI/useForm';
 import { DateTimePicker } from "@material-ui/pickers";
 import moment from "moment";
 
+const date=new Date();
+
 const initialValues={
     classId: '',
     quizId: '',
     quizName: '',
-    dueDate: new Date()
+    scheduled: date,
+    dueDate: date.setDate(date.getDate()+1)
 }
 
 export default function assignPopup(props) {
@@ -47,7 +50,7 @@ export default function assignPopup(props) {
                 ...recordForEdit
             })
     },[recordForEdit])
-    console.log(values);
+    
     return (
         <Form onSubmit={handleSubmit}>
             <Grid container>
@@ -66,6 +69,17 @@ export default function assignPopup(props) {
                         onChange={handleInputChange}
                         options={classes}
                         error={errors.classId}
+                    />
+                    <DateTimePicker
+                        inputVariant="outlined"
+                        label="Post Scheduling"
+                        value={values.scheduled}
+                        onChange={(e)=>{
+                            setValues({
+                                ...values,
+                                scheduled: moment(e).format()
+                            })
+                        }}
                     />
                     <DateTimePicker
                         inputVariant="outlined"
