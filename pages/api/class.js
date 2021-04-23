@@ -30,7 +30,6 @@ const getClass=async(req,res)=>{
         }else{
             dbModel.classesModel.find({students:req.headers.authorization}).populate('courseId').exec((err,classes)=>{
                 if(!err){
-                    // console.log(classes);
                     response.data.payload=classes;
                     res.status(response.statusCode).json(response);
                     return resolve();
@@ -59,11 +58,9 @@ const insertClass=async(classObject)=>{
             if(err){
                 response.statusCode=400;
                 response.data.payload=err.message||err.toString();
-                // res.status(response.statusCode).json(response)
                 return reject(err);
             }
             response.data.payload=result;
-            // res.status(response.statusCode).json(response);
             return resolve(response);
         })
     })
@@ -149,51 +146,26 @@ const updateClass=async(classObject)=>{
 
 }
 
-// const updateClass=async(req,res)=>{
-//     return new Promise((resolve,reject)=>{
-//         if(req.headers.authorization===undefined){
-//             response.statusCode=403;
-//             response.data.message="Permission Denied!";
-//             res.status(response.statusCode).json(response);
-//             return reject(response);
-//         }
-//         let thisClass=JSON.parse(req.body)
-//         // console.log(thisClass);
-//         dbModel.classesModel.findByIdAndUpdate(thisClass._id,{
-//             className: thisClass.className,
-//             courseId: thisClass.courseId
-//         },{upsert: true, new: true},(err,result)=>{
-//             if(!err){
-//                 response.data.payload=result;
-//                 res.status(response.statusCode).json(response)
-//                 return resolve();
-//             }
-//             response.data.payload=err;
-//             response.statusCode=400;
-//             res.status(response.statusCode).json(response);
-//             return reject(err);
-//         })
-//     })
-// }
-
 const handleRequest=(req,res)=>{
     return new Promise((resolve,reject)=>{
         switch(req.method){
             case 'GET': getClass(req,res); break;
-            case 'POST': importClass(req,res).then(resp=>{
-                const hasError=resp.filter(item=>item.statusCode!=200);
-                if(hasError.length){
-                    response.statusCode=500;
-                    response.data.payload='somethings went wrong'
-                    return reject(response);
-                }else{
-                    response.data.payload='Created'
-                    res.status(response.statusCode).json(response)
-                }
-            }).catch((err)=>{
-                console.log(err);
-                reject(err)
-            }); break;
+            case 'POST': 
+                importClass(req,res).then(resp=>{
+                    const hasError=resp.filter(item=>item.statusCode!=200);
+                    if(hasError.length){
+                        response.statusCode=500;
+                        response.data.payload='somethings went wrong'
+                        return reject(response);
+                    }else{
+                        response.data.payload='Created'
+                        res.status(response.statusCode).json(response)
+                    }
+                }).catch((err)=>{
+                    console.log(err);
+                    reject(err)
+                }); 
+                break;
             case 'PUT': 
                 if(req.headers.authorization===undefined||!req.headers.authorization.match(/^[0-9a-fA-F]{24}$/)){
                     response.statusCode=403;
@@ -216,6 +188,4 @@ const handleRequest=(req,res)=>{
 
 
 export default withMiddleware(handleRequest);
-
-// export default withMiddleware(googleMiddleware.setOAuth2Client(listClass));
 
