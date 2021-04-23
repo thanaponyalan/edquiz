@@ -14,6 +14,8 @@ import AssignPopup from '../Assignment/assignPopup';
 import moment from "moment";
 import { fetchQuestion } from '../../redux/actions/questionAction';
 import { fetchTest } from '../../redux/actions/testAction';
+import { Form } from '../MaterialUI/useForm';
+import Controls from '../MaterialUI/controls/Controls';
 
 const TestWidget=(props)=>{
     const [variant,setVariant]=useState("outlined")
@@ -24,6 +26,8 @@ const TestWidget=(props)=>{
     const [questions, setQuestions]=useState(test.questionId)
     const [openAddQuestion, setOpenAddQuestion]=useState(false)
     const [selectedQuestion, setSelectedQuestion]=useState([])
+    const [duplicateDialog, setDuplicateDialog]=useState(false)
+    const [quizName, setQuizName]=useState('')
     const handleClose=()=>{
         setOpenDialog(false)
     }
@@ -80,6 +84,10 @@ const TestWidget=(props)=>{
     }
     
     const handleSaveQuiz=async()=>{
+        if(!questions.length){
+            props.toastManager.add("At least one question required.",{appearance: 'error', autoDismiss: true})
+            return
+        }
         const data={
             questionId: questions.map(question=>question._id),
             _id: test._id,
@@ -108,6 +116,35 @@ const TestWidget=(props)=>{
         }
     }
 
+    const duplicateQuiz=async()=>{
+        const newQuiz={
+            courseId: test.courseId._id,
+            quizName: quizName,
+            questionId: test.questionId.map(question=>question._id),
+            owner: test.owner
+        }
+        props.toastManager.add("Duplicating...",{appearance: 'info', autoDismiss: true})
+        try{
+            const url=`${API}/test`
+            const result=await fetch(url,{
+                method: 'POST',
+                headers:{
+                    authorization: props.uid
+                },
+                body: JSON.stringify(newQuiz)
+            })
+            const res=await result.json();
+            if(res.statusCode==200||res.statusCode==204){
+                props.toastManager.add("Duplicated",{appearance: 'success', autoDismiss: true})
+                props.fetchTest(props.uid,props.toastManager)
+                props.fetchQuestion(props.uid, props.toastManager)
+            }
+        }catch(err){
+            _error_handler(null,err,null)
+            console.log(err);
+        }
+    }
+
     return(
         <>
             <Card variant={variant} onMouseEnter={()=>{setVariant("elevation")}} onMouseLeave={()=>{setVariant('outlined')}} style={{cursor: "pointer"}}>
@@ -118,11 +155,11 @@ const TestWidget=(props)=>{
                             label={test.courseId.courseName}
                         />
                     }
-                    // action={
-                    //     <IconButton aria-controls="testMenus" onClick={(e)=>setAnchorEl(e.currentTarget)} aria-label="actions">
-                    //         <MoreVert style={{color: 'white'}}/>
-                    //     </IconButton>
-                    // }
+                    action={
+                        <IconButton aria-controls="testMenus" onClick={(e)=>setAnchorEl(e.currentTarget)} aria-label="actions">
+                            <MoreVert style={{color: 'white'}}/>
+                        </IconButton>
+                    }
                     style={{
                         backgroundColor: 'black',
                         color: 'white'
@@ -148,8 +185,22 @@ const TestWidget=(props)=>{
                     setAnchorEl(null)
                 }}
             >
-                <MenuItem>Edit</MenuItem>
+                <MenuItem onClick={()=>{setAnchorEl(null); setDuplicateDialog(true);}}>Duplicate</MenuItem>
             </Menu>
+            <Popup maxWidth="sm" fullWidth open={duplicateDialog} handleClose={()=>setDuplicateDialog(false)} title="Enter Quiz Name" popupAction={
+                <Button variant="contained" onClick={duplicateQuiz}>Duplicate</Button>
+            }>
+                <Form>
+                    <Controls.Input
+                        name="quizName"
+                        label="Quiz Name"
+                        value={quizName}
+                        onChange={(e)=>{
+                            setQuizName(e.target.value)
+                        }}
+                    />
+                </Form>
+            </Popup>
             <Popup maxWidth="sm" fullWidth={true} open={openDialog} handleClose={handleClose} title="Assign Test">
                 {
                     <AssignPopup setOpenDialog={setOpenDialog} recordForEdit={{quizName: test.quizName, quizId: test._id, classId: '', dueDate: moment(new Date()).format()}} classes={classes.filter(item=>item.courseId._id==test.courseId._id).map((item)=>({id: item._id, title: item.className}))} handleClose={handleClose} handleSave={handleSave} />
