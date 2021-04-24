@@ -36,12 +36,10 @@ const AssignmentWidget=(props)=>{
         props.fetchAssignment(props.uid, props.role)
         setOpenDialog(false)
     }
+    const [thisAssignee,setThisAssignee]=useState({})
+    const [isDone,setIsDone]=useState(false)
 
     if(role=='student'){
-        const [thisAssignee,setThisAssignee]=useState(assignment.assignees.filter(item=>item.studentId==props.uid))
-        const [isDone,setIsDone]=useState(thisAssignee[0]?.status==='done')
-    
-
         useEffect(()=>{
             setThisAssignee(assignment.assignees.filter(item=>item.studentId==props.uid)[0])
         },[assignment])
