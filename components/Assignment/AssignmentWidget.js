@@ -37,19 +37,22 @@ const AssignmentWidget=(props)=>{
         setOpenDialog(false)
     }
 
-    const [thisAssignee,setThisAssignee]=useState(assignment.assignees.filter(item=>item.studentId==props.uid))
-    const [isDone,setIsDone]=useState(thisAssignee[0]?.status==='done')
+    if(role=='student'){
+        const [thisAssignee,setThisAssignee]=useState(assignment.assignees.filter(item=>item.studentId==props.uid))
+        const [isDone,setIsDone]=useState(thisAssignee[0]?.status==='done')
+    
 
-    useEffect(()=>{
-        setThisAssignee(assignment.assignees.filter(item=>item.studentId==props.uid)[0])
-    },[assignment])
+        useEffect(()=>{
+            setThisAssignee(assignment.assignees.filter(item=>item.studentId==props.uid)[0])
+        },[assignment])
 
-    useEffect(()=>{
-        setIsDone(thisAssignee?.status==='done')
-        if(thisAssignee?.status==='in-progress'){
-            props.fetchHistory(props.uid,assignment._id,props.toastManager)
-        }
-    },[thisAssignee])
+        useEffect(()=>{
+            setIsDone(thisAssignee?.status==='done')
+            if(thisAssignee?.status==='in-progress'){
+                props.fetchHistory(props.uid,assignment._id,props.toastManager)
+            }
+        },[thisAssignee])
+    }
     
     return(
         <>
