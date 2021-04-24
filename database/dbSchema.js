@@ -76,7 +76,8 @@ const assignmentsSchema=new mongoose.Schema({
     }],
     dueDate: Date,
     assignedDate: Date,
-    owner: Schema.Types.ObjectId
+    owner: Schema.Types.ObjectId,
+    courseWorkId: String
 })
 
 const historiesSchema=new mongoose.Schema({

@@ -33,7 +33,8 @@ const insertAssignment=async(req,res,oAuth2Client)=>{
             "minutes": 59,
             "seconds": 59
         },
-        "associatedWithDeveloper": true
+        "associatedWithDeveloper": true,
+        "maxPoints": 10
     }
     const assignment=JSON.parse(req.body)
     body.title=assignment.quizName;
@@ -47,6 +48,7 @@ const insertAssignment=async(req,res,oAuth2Client)=>{
         minutes: moment.utc(assignment.dueDate).minutes(),
         seconds: moment.utc(assignment.dueDate).seconds()
     }
+    body.maxPoints=assignment.maxPoints
     if(moment()<moment(assignment.scheduled)){
         body.scheduledTime=assignment.scheduled
         body.state="DRAFT"

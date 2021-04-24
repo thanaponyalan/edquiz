@@ -71,6 +71,7 @@ const DoAssignment=(props)=>{
                     setAnswered([...done])
                     setFilteredQuestions(questions.filter(question=>done.findIndex(id=>id.questionId==question._id)==-1))
                 }else{
+                    setAnswered([])
                     setFilteredQuestions(questions)
                 }
             }
@@ -106,6 +107,8 @@ const DoAssignment=(props)=>{
             console.log(err);
         }
     }
+
+    console.log(filteredQuestions, currentIndex, questions, answered);
 
     return (
         filteredQuestions&&filteredQuestions[currentIndex]?

@@ -13,7 +13,8 @@ const initialValues={
     quizId: '',
     quizName: '',
     scheduled: date,
-    dueDate: date.setDate(date.getDate()+1)
+    dueDate: date.setDate(date.getDate()+1),
+    maxPoints: 0
 }
 
 export default function assignPopup(props) {

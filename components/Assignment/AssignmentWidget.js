@@ -21,6 +21,10 @@ const useStyle=makeStyles({
     },
     media:{
         height: 140
+    },
+    action:{
+        marginTop: 'auto',
+        marginBottom: 'auto'
     }
 })
 
@@ -38,6 +42,7 @@ const AssignmentWidget=(props)=>{
     }
     const [thisAssignee,setThisAssignee]=useState({})
     const [isDone,setIsDone]=useState(false)
+    const [graded, setGraded]=useState(false)
 
     if(role=='student'){
         useEffect(()=>{
@@ -46,6 +51,7 @@ const AssignmentWidget=(props)=>{
 
         useEffect(()=>{
             setIsDone(thisAssignee?.status==='done')
+            setGraded(thisAssignee?.status==='graded')
             if(thisAssignee?.status==='in-progress'){
                 props.fetchHistory(props.uid,assignment._id,props.toastManager)
             }
@@ -62,6 +68,11 @@ const AssignmentWidget=(props)=>{
                             label={assignment.classId.className}
                         />
                     }
+                    action={
+                        graded&&
+                        <Chip size="medium" style={{margin: 'auto'}} label={`5/10`}/>
+                    }
+                    classes={{action: styleClasses.action}}
                     // action={
                     //     role==='teacher'&&
                     //         <IconButton aria-controls="assignmentMenus" onClick={(e)=>setAnchorEl(e.currentTarget)} aria-label="actions">
@@ -94,7 +105,7 @@ const AssignmentWidget=(props)=>{
                         </>
                     }
                     {
-                        role==='student'&&!isDone&&
+                        role==='student'&&!isDone&&!graded&&
                         <>
                             <Button style={{marginLeft: 'auto', marginRight: 'auto'}} onClick={()=>setOpenDialog(true)}>start this assignment</Button>
                             <Popup fullScreen={true} open={openDialog} handleClose={handleClose} title={assignment.quizId.quizName}>
@@ -103,7 +114,7 @@ const AssignmentWidget=(props)=>{
                         </>
                     }
                     {
-                        role==='student'&&isDone&&
+                        role==='student'&&(isDone||graded)&&
                         <>
                             <Button style={{marginLeft: 'auto', marginRight: 'auto'}} disabled>You've Done This Assignment</Button>
                             <div style={{width: '100%'}}></div>

@@ -104,7 +104,8 @@ const insertAssignment=async(req,res)=>{
                             body: JSON.stringify({...assignment, quizName})
                         });
                         const assignResult=await assignToGClass.json();
-                        res.status(assignResult.statusCode).json(assignResult)
+                        const updateCourseWork=await updateAssignmentCourseWork({assignmentId: result._id, courseWorkId: assignResult.data.payload.id})
+                        res.status(assignResult.statusCode).json({...assignResult,...updateCourseWork})
                     })
                 })
             })
@@ -112,11 +113,24 @@ const insertAssignment=async(req,res)=>{
     })
 }
 
-const updateAssigneeStatus=(data)=>{
+const updateAssignmentCourseWork=async(data)=>{
+    return new Promise((resolve,reject)=>{
+        dbModel.assignmentsModel.findOneAndUpdate({_id: data.assignmentId},{
+            courseWorkId: data.courseWorkId
+        },{new: true},(err,res)=>{
+            if(err){
+                return reject(err)
+            }
+            return resolve(res)
+        })
+    })
+}
+
+const updateAndTurnIn=(data)=>{
     return new Promise((resolve,reject)=>{
         dbModel.assignmentsModel.findOneAndUpdate({_id: data.assignmentId, 'assignees.studentId': data.studentId},{
             $set:{
-                'assignees.$.status': data.status,
+                'assignees.$.status': 'done',
                 'assignees.$.lastUpdate': moment().format()
             }
         },{new: true},(err,res)=>{
@@ -125,8 +139,19 @@ const updateAssigneeStatus=(data)=>{
                 response.data.payload=err;
                 return reject(response)
             }
-            response.data.payload=res;
-            return resolve(response)
+            getGoogleClassId(res.classId).then(async(gClassId)=>{
+                const url=`${API}/googleCourseWork`;
+                const turnInRes=await fetch(url,{
+                    method: 'PUT',
+                    headers:{
+                        authorization: data.studentId
+                    },
+                    body: JSON.stringify({courseId: gClassId, courseWorkId: res.courseWorkId})
+                })
+                const turnIn=await turnInRes.json();
+                response.data.payload={...res,...turnIn};
+                return resolve(response)
+            })
         })
     })
 }
@@ -148,7 +173,7 @@ const handleRequest=(req,res)=>{
             case 'PUT': 
                 const data=JSON.parse(req.body)
                 if(data.state=='markAsDone'&&data.assignmentId){
-                    updateAssigneeStatus({assignmentId: data.assignmentId, studentId: req.headers.authorization, status: 'done'}).then(result=>{
+                    updateAndTurnIn({assignmentId: data.assignmentId, studentId: req.headers.authorization}).then(result=>{
                         res.status(result.statusCode).json(result)
                     }).catch(err=>{
                         res.status(err.statusCode).json(err)

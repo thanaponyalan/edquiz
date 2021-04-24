@@ -203,7 +203,7 @@ const TestWidget=(props)=>{
             </Popup>
             <Popup maxWidth="sm" fullWidth={true} open={openDialog} handleClose={handleClose} title="Assign Test">
                 {
-                    <AssignPopup setOpenDialog={setOpenDialog} recordForEdit={{quizName: test.quizName, quizId: test._id, classId: '', scheduled: moment().format(), dueDate: moment(moment()).add(1,'days').format()}} classes={classes.filter(item=>item.courseId._id==test.courseId._id).map((item)=>({id: item._id, title: item.className}))} handleClose={handleClose} handleSave={handleSave} />
+                    <AssignPopup setOpenDialog={setOpenDialog} recordForEdit={{quizName: test.quizName, quizId: test._id, classId: '', scheduled: moment().format(), dueDate: moment(moment()).add(1,'days').format(), maxPoints: questions.length}} classes={classes.filter(item=>item.courseId._id==test.courseId._id).map((item)=>({id: item._id, title: item.className}))} handleClose={handleClose} handleSave={handleSave} />
                 }
             </Popup>
             <Popup maxWidth="sm" fullWidth={true} open={openQuestionList} handleClose={handleCancelChanged} title="Questions" scroll="paper" popupAction={
