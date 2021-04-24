@@ -13,12 +13,6 @@ let response={
 
 const getAssignments=async(req,res)=>{
     return new Promise((resolve, reject)=>{
-        if(req.headers.authorization===undefined||!req.headers.authorization.match(/^[0-9a-fA-F]{24}$/)){
-            response.statusCode=403;
-            response.data.message="Permission Denied!";
-            res.status(response.statusCode).json(response);
-            return reject(response);
-        }
         const {isTeacher}=req.query;
         if(isTeacher){
             dbModel.assignmentsModel.find({owner: req.headers.authorization}).populate('classId').populate('quizId').exec((err,assignments)=>{
@@ -85,12 +79,6 @@ const getQuizName=async(quizId)=>{
 
 const insertAssignment=async(req,res)=>{
     return new Promise((resolve,reject)=>{
-        if(req.headers.authorization===undefined||!req.headers.authorization.match(/^[0-9a-fA-F]{24}$/)){
-            response.statusCode=403;
-            response.data.message="Permission Denied!";
-            res.status(response.statusCode).json(response);
-            return reject(response);
-        }
         let assignment=JSON.parse(req.body);
         getStudents(assignment.classId).then((students)=>{
             const assignees=students.map((item)=>({studentId: item, status: 'assigned'}))
@@ -124,11 +112,51 @@ const insertAssignment=async(req,res)=>{
     })
 }
 
+const updateAssigneeStatus=(data)=>{
+    return new Promise((resolve,reject)=>{
+        dbModel.assignmentsModel.findOneAndUpdate({_id: data.assignmentId, 'assignees.studentId': data.studentId},{
+            $set:{
+                'assignees.$.status': data.status,
+                'assignees.$.lastUpdate': moment().format()
+            }
+        },{new: true},(err,res)=>{
+            if(err){
+                response.statusCode=400;
+                response.data.payload=err;
+                return reject(response)
+            }
+            response.data.payload=res;
+            return resolve(response)
+        })
+    })
+}
+
+const updateAssignment=()=>{
+
+}
+
 const handleRequest=(req,res)=>{
     return new Promise((resolve,reject)=>{
+        if(req.headers.authorization===undefined||!req.headers.authorization.match(/^[0-9a-fA-F]{24}$/)){
+            response.statusCode=403;
+            response.data.message="Permission Denied!";
+            res.status(response.statusCode).json(response);
+            return reject(response);
+        }
         switch(req.method){
             case 'GET': getAssignments(req,res); break;
-            // case 'PUT': updateCourse(req,res); break;
+            case 'PUT': 
+                const data=JSON.parse(req.body)
+                if(data.state=='markAsDone'&&data.assignmentId){
+                    updateAssigneeStatus({assignmentId: data.assignmentId, studentId: req.headers.authorization, status: 'done'}).then(result=>{
+                        res.status(result.statusCode).json(result)
+                    }).catch(err=>{
+                        res.status(err.statusCode).json(err)
+                    })
+                }else{
+                    res.status(200).json({err:'Method Not Allowed'});
+                }
+                break;
             case 'POST': insertAssignment(req,res); break;
             default: res.status(200).json({err:'Method Not Allowed'}); break;
         }

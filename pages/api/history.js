@@ -29,6 +29,20 @@ const getCourses=async(req,res)=>{
     })
 }
 
+const getHistory=(params)=>{
+    return new Promise((resolve,reject)=>{
+        dbModel.historiesModel.findOne(params).populate('questions').exec((err,history)=>{
+            if(err){
+                response.statusCode=400;
+                response.data.payload=err;
+                return reject(response)
+            }
+            response.data.payload=history
+            return resolve(response)
+        })
+    })
+}
+
 const updateCourse=async(req,res)=>{
     return new Promise((resolve,reject)=>{
         if(req.headers.authorization===undefined){
@@ -59,12 +73,6 @@ const updateCourse=async(req,res)=>{
 
 const insertHistory=async(req,res)=>{
     return new Promise((resolve,reject)=>{
-        if(req.headers.authorization===undefined||!req.headers.authorization.match(/^[0-9a-fA-F]{24}$/)){
-            response.statusCode=403;
-            response.data.message="Permission Denied!";
-            res.status(response.statusCode).json(response);
-            return reject(response);
-        }
         let history=JSON.parse(req.body)
         let lastUpdate=moment(new Date()).format();
         dbModel.historiesModel.create({...history, lastUpdate: lastUpdate},(err,result)=>{
@@ -95,11 +103,77 @@ const insertHistory=async(req,res)=>{
     })
 }
 
+const updateHistoryQuestion=(data)=>{
+    return new Promise((resolve,reject)=>{
+        dbModel.historiesModel.findOneAndUpdate({assignmentId: data.assignmentId, studentId: data.studentId},{
+            $push:{questions: data.question},
+            lastUpdate: moment().format()
+        },{upsert: true, new: true},(err,res)=>{
+            if(err){
+                return reject(err)
+            }
+            return resolve(res)
+        })
+    })
+}
+
+const updateAssigneeStatus=(data)=>{
+    return new Promise((resolve,reject)=>{
+        dbModel.assignmentsModel.findOneAndUpdate({_id: data.assignmentId, 'assignees.studentId': data.studentId},{
+            $set:{
+                'assignees.$.status': 'in-progress',
+                'assignees.$.historyId': data.historyId,
+                'assignees.$.lastUpdate': moment().format()
+            }
+        },{new: true},(err,res)=>{
+            if(err){
+                return reject(err)
+            }
+            return resolve(res)
+        })
+    })
+}
+
+const updateHistory=async(req)=>{
+    return new Promise((resolve,reject)=>{
+        const history=JSON.parse(req.body)
+        updateHistoryQuestion(history).then(hist=>{
+            updateAssigneeStatus({...history, historyId: hist._id}).then(ass=>{
+                response.data.payload=ass
+                return resolve(response)
+            }).catch(err=>{
+                response.statusCode=400
+                response.data.payload=err;
+                return reject(response)
+            })
+        })
+    })
+}
+
 const handleRequest=(req,res)=>{
     return new Promise((resolve,reject)=>{
+        if(req.headers.authorization===undefined||!req.headers.authorization.match(/^[0-9a-fA-F]{24}$/)){
+            response.statusCode=403;
+            response.data.message="Permission Denied!";
+            res.status(response.statusCode).json(response);
+            return reject(response);
+        }
         switch(req.method){
-            // case 'GET': getCourses(req,res); break;
-            // case 'PUT': updateCourse(req,res); break;
+            case 'GET': 
+                const {assignmentId}=req.query
+                getHistory({assignmentId: assignmentId, studentId: req.headers.authorization}).then(history=>{
+                    res.status(history.statusCode).json(history)
+                }).catch(err=>{
+                    res.status(err.statusCode).json(err)
+                })
+                break;
+            case 'PUT': 
+                updateHistory(req).then(result=>{
+                    res.status(result.statusCode).json({...result, data:{payload: 'ok'}})
+                }).catch(err=>{
+                    res.status(err.statusCode).json(err)
+                }); 
+                break;
             case 'POST': insertHistory(req,res); break;
             default: res.status(200).json({err:'Method not allow'}); break;
         }

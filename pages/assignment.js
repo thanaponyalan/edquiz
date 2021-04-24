@@ -12,11 +12,8 @@ import { Grid } from "@material-ui/core";
 import Loader from "react-loader-spinner";
 
 const Assignment=(props)=>{
-    const {assignments}=props
     useEffect(()=>{
-        if(!props.assignments){
-            props.fetchAssignment(props.uid,props.role)
-        }
+        props.fetchAssignment(props.uid,props.role)
     },[])
     
     return (

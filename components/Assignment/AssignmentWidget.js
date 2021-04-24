@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { connect } from "react-redux";
 import { withToastManager } from "react-toast-notifications";
 import { compose } from "redux";
@@ -12,6 +12,8 @@ import { Class, MoreVert } from "@material-ui/icons";
 import moment from "moment";
 import DoAssignment from './DoAssignment';
 import Insight from './insight';
+import { fetchHistory } from '../../redux/actions/historyAction';
+import { fetchAssignment } from '../../redux/actions/assignmentAction';
 
 const useStyle=makeStyles({
     root:{
@@ -28,15 +30,27 @@ const AssignmentWidget=(props)=>{
     const [openDialog,setOpenDialog]=useState(false);
 
     const styleClasses=useStyle();
-    const {assignment,role}=props;
+    const {assignment,role,history}=props;
     
     const handleClose=()=>{
+        props.fetchAssignment(props.uid, props.role)
         setOpenDialog(false)
     }
 
     const [thisAssignee,setThisAssignee]=useState(assignment.assignees.filter(item=>item.studentId==props.uid))
     const [isDone,setIsDone]=useState(thisAssignee[0]?.status==='done')
 
+    useEffect(()=>{
+        setThisAssignee(assignment.assignees.filter(item=>item.studentId==props.uid)[0])
+    },[assignment])
+
+    useEffect(()=>{
+        setIsDone(thisAssignee?.status==='done')
+        if(thisAssignee?.status==='in-progress'){
+            props.fetchHistory(props.uid,assignment._id,props.toastManager)
+        }
+    },[thisAssignee])
+    
     return(
         <>
             <Card className={styleClasses.root} variant={variant} onMouseEnter={()=>{setVariant("elevation")}} onMouseLeave={()=>{setVariant('outlined')}}>
@@ -83,7 +97,7 @@ const AssignmentWidget=(props)=>{
                         <>
                             <Button style={{marginLeft: 'auto', marginRight: 'auto'}} onClick={()=>setOpenDialog(true)}>start this assignment</Button>
                             <Popup fullScreen={true} open={openDialog} handleClose={handleClose} title={assignment.quizId.quizName}>
-                                <DoAssignment quizId={assignment.quizId._id} assignmentId={assignment._id} setOpenDialog={setOpenDialog}/>
+                                <DoAssignment quizId={assignment.quizId._id} assignmentId={assignment._id} questionId={assignment.quizId.questionId} setOpenDialog={setOpenDialog}/>
                             </Popup>
                         </>
                     }
@@ -92,7 +106,7 @@ const AssignmentWidget=(props)=>{
                         <>
                             <Button style={{marginLeft: 'auto', marginRight: 'auto'}} disabled>You've Done This Assignment</Button>
                             <div style={{width: '100%'}}></div>
-                            <Chip style={{marginLeft: 'auto', marginRight: 'auto'}} label={`ON ${moment(thisAssignee[0].lastUpdate).format('LLL')}`}/>
+                            <Chip style={{marginLeft: 'auto', marginRight: 'auto'}} label={`ON ${moment(thisAssignee.lastUpdate).format('LLL')}`}/>
                         </> 
                     }
                 </CardActions>
@@ -117,7 +131,9 @@ const AssignmentWidget=(props)=>{
 
 const mapDispatchToProps = dispatch => {
     return {
-        fetchClass: bindActionCreators(fetchClass, dispatch)
+        fetchClass: bindActionCreators(fetchClass, dispatch),
+        fetchHistory: bindActionCreators(fetchHistory, dispatch),
+        fetchAssignment: bindActionCreators(fetchAssignment, dispatch)
     }
 }
 
@@ -125,7 +141,8 @@ const mapStateToProps = state => {
     return {
         uid: state.authReducer.uid,
         role: state.authReducer.role,
-        classes: state.classReducer.classes
+        classes: state.classReducer.classes,
+        history: state.historyReducer.history
     }
 }
 

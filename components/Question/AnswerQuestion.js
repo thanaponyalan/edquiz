@@ -39,8 +39,8 @@ export default function AnswerQuestion(props) {
                     </Card>
                 </Grid>
                 <Grid container spacing={3}>
-                    {item.choices.filter(item=>item.choice!='').map((item, idx) => (
-                        <Grid item sm={6} xs={12}>
+                    {shuffle(item.choices).filter(item=>item.choice!='').map((item, idx) => (
+                        <Grid key={idx} item sm={6} xs={12}>
                             <Card variant="outlined">
                                 <CardActionArea onClick={()=>{handleChooseAnswer(item)}}>
                                     <CardHeader
@@ -68,4 +68,16 @@ export default function AnswerQuestion(props) {
             </Grid>
         </Container>
     )
+}
+
+const shuffle=(arr)=>{
+    var currentIndex=arr.length, tempValue, randIndex;
+    while(0!==currentIndex){
+        randIndex=Math.floor(Math.random()*currentIndex);
+        currentIndex-=1;
+        tempValue=arr[currentIndex];
+        arr[currentIndex]=arr[randIndex];
+        arr[randIndex]=tempValue
+    }
+    return arr
 }
