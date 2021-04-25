@@ -188,7 +188,7 @@ const TestWidget=(props)=>{
                 <MenuItem onClick={()=>{setAnchorEl(null); setDuplicateDialog(true);}}>Duplicate</MenuItem>
             </Menu>
             <Popup maxWidth="sm" fullWidth open={duplicateDialog} handleClose={()=>setDuplicateDialog(false)} title="Enter Quiz Name" popupAction={
-                <Button variant="contained" onClick={duplicateQuiz}>Duplicate</Button>
+                <Button variant="outlined" onClick={duplicateQuiz}>Duplicate</Button>
             }>
                 <Form>
                     <Controls.Input

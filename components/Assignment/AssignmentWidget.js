@@ -14,6 +14,7 @@ import DoAssignment from './DoAssignment';
 import Insight from './insight';
 import { fetchHistory } from '../../redux/actions/historyAction';
 import { fetchAssignment } from '../../redux/actions/assignmentAction';
+import { setQuestion } from '../../redux/actions/questionAction';
 
 const useStyle=makeStyles({
     root:{
@@ -35,8 +36,8 @@ const AssignmentWidget=(props)=>{
 
     const styleClasses=useStyle();
     const {assignment,role,history}=props;
-    
     const handleClose=()=>{
+        props.setQuestion({data:{payload: null}})
         props.fetchAssignment(props.uid, props.role)
         setOpenDialog(false)
     }
@@ -153,7 +154,8 @@ const mapDispatchToProps = dispatch => {
     return {
         fetchClass: bindActionCreators(fetchClass, dispatch),
         fetchHistory: bindActionCreators(fetchHistory, dispatch),
-        fetchAssignment: bindActionCreators(fetchAssignment, dispatch)
+        fetchAssignment: bindActionCreators(fetchAssignment, dispatch),
+        setQuestion: bindActionCreators(setQuestion, dispatch)
     }
 }
 

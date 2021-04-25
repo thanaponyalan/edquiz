@@ -15,7 +15,7 @@ const getAssignments=async(req,res)=>{
     return new Promise((resolve, reject)=>{
         const {isTeacher}=req.query;
         if(isTeacher){
-            dbModel.assignmentsModel.find({owner: req.headers.authorization}).populate('classId').populate('quizId').exec((err,assignments)=>{
+            dbModel.assignmentsModel.find({owner: req.headers.authorization}).populate('classId').populate('quizId').populate('assignees.studentId').populate('assignees.historyId').exec((err,assignments)=>{
                 if(!err){
                     // console.log(assignments);
                     response.data.payload=assignments;

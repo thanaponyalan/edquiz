@@ -104,7 +104,7 @@ const Tests=(props)=>{
                     }
                 </Grid>
                 <Popup maxWidth="sm" fullWidth open={openModal} handleClose={()=>setOpenModal(false)} title="Add Quiz" popupAction={
-                    <Button variant="contained" onClick={insertQuiz}>Add</Button>
+                    <Button variant="outlined" onClick={insertQuiz}>Add</Button>
                 }>
                     <Form>
                         <Controls.Input
