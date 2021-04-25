@@ -56,7 +56,7 @@ const turnIn=async(req,oAuth2Client)=>{
         const classroom=google.classroom({version: 'v1', auth: oAuth2Client});
         getCourseWorkId(assignmentDetail, classroom).then(async(submissionId)=>{
             const turnInStudentSubmit=await classroom.courses.courseWork.studentSubmissions.turnIn({
-                ...courseDetail,
+                ...assignmentDetail,
                 id: submissionId
             })
             response.data.payload=turnInStudentSubmit
@@ -73,23 +73,25 @@ const patchAndReturn=async(req,oAuth2Client)=>{
     //const assignmentDetail=JSON.parse(req.body)
     return new Promise(async(resolve,reject)=>{
         const classroom=google.classroom({version: 'v1', auth: oAuth2Client});
-        getCourseWorkId({courseId: '299060908498', courseWorkId: '326478127859', userId: 'thanaponyalan@gmail.com'}, classroom).then(async(submissionId)=>{
+        getCourseWorkId({courseId: '299060908498', courseWorkId: '326605858966', userId: 'thanaponyalan@gmail.com'}, classroom).then(async(submissionId)=>{
             const patch=await classroom.courses.courseWork.studentSubmissions.patch({
                 courseId: '299060908498',
-                courseWorkId: '326478127859',
+                courseWorkId: '326605858966',
                 id: submissionId,
                 updateMask: 'assignedGrade',
                 requestBody:{
-                    assignedGrade: 5,
+                    assignedGrade: 2,
                 }
             })
-            const ret=await classroom.courses.courseWork.studentSubmissions.return({
-                courseId: '299060908498',
-                courseWorkId: '326478127859',
-                id: submissionId,
-            })
-            response.data.payload=ret.data;
-            resolve(response)
+            if(patch.status==200){
+                const ret=await classroom.courses.courseWork.studentSubmissions.return({
+                    courseId: '299060908498',
+                    courseWorkId: '326605858966',
+                    id: submissionId,
+                })
+                response.data.payload=ret.data;
+                resolve(response)
+            }
         })
     })
 }

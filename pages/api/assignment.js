@@ -131,7 +131,9 @@ const updateAndTurnIn=(data)=>{
         dbModel.assignmentsModel.findOneAndUpdate({_id: data.assignmentId, 'assignees.studentId': data.studentId},{
             $set:{
                 'assignees.$.status': 'done',
-                'assignees.$.lastUpdate': moment().format()
+                'assignees.$.lastUpdate': moment().format(),
+                'assignees.$.score': data.score,
+                'assignees.$.totalScore': data.totalScore
             }
         },{new: true},(err,res)=>{
             if(err){
@@ -173,7 +175,7 @@ const handleRequest=(req,res)=>{
             case 'PUT': 
                 const data=JSON.parse(req.body)
                 if(data.state=='markAsDone'&&data.assignmentId){
-                    updateAndTurnIn({assignmentId: data.assignmentId, studentId: req.headers.authorization}).then(result=>{
+                    updateAndTurnIn({assignmentId: data.assignmentId, score: data.score, totalScore: data.totalScore, studentId: req.headers.authorization}).then(result=>{
                         res.status(result.statusCode).json(result)
                     }).catch(err=>{
                         res.status(err.statusCode).json(err)

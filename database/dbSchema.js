@@ -72,7 +72,9 @@ const assignmentsSchema=new mongoose.Schema({
         studentId: {type: Schema.Types.ObjectId, ref: 'users'},
         status: String,
         historyId: {type: Schema.Types.ObjectId, ref: 'histories'},
-        lastUpdate: Date
+        lastUpdate: Date,
+        score: Number,
+        totalScore: Number
     }],
     dueDate: Date,
     assignedDate: Date,

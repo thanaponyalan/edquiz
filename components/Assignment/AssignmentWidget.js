@@ -43,6 +43,9 @@ const AssignmentWidget=(props)=>{
     const [thisAssignee,setThisAssignee]=useState({})
     const [isDone,setIsDone]=useState(false)
     const [graded, setGraded]=useState(false)
+    const [inProgress,setInProgress]=useState(false)
+    const [score, setScore]=useState(0)
+    const [totalScore, setTotalScore]=useState(0)
 
     if(role=='student'){
         useEffect(()=>{
@@ -51,9 +54,14 @@ const AssignmentWidget=(props)=>{
 
         useEffect(()=>{
             setIsDone(thisAssignee?.status==='done')
-            setGraded(thisAssignee?.status==='graded')
             if(thisAssignee?.status==='in-progress'){
+                setInProgress(true)
                 props.fetchHistory(props.uid,assignment._id,props.toastManager)
+            }
+            if(thisAssignee?.status==='graded'){
+                setGraded(true)
+                setScore(thisAssignee.score)
+                setTotalScore(thisAssignee.totalScore)
             }
         },[thisAssignee])
     }
@@ -70,7 +78,7 @@ const AssignmentWidget=(props)=>{
                     }
                     action={
                         graded&&
-                        <Chip size="medium" style={{margin: 'auto'}} label={`5/10`}/>
+                        <Chip size="medium" style={{margin: 'auto'}} label={`${score}/${totalScore}`}/>
                     }
                     classes={{action: styleClasses.action}}
                     // action={
@@ -107,7 +115,7 @@ const AssignmentWidget=(props)=>{
                     {
                         role==='student'&&!isDone&&!graded&&
                         <>
-                            <Button style={{marginLeft: 'auto', marginRight: 'auto'}} onClick={()=>setOpenDialog(true)}>start this assignment</Button>
+                            <Button style={{marginLeft: 'auto', marginRight: 'auto'}} onClick={()=>setOpenDialog(true)}>{!inProgress?`start this assignment`:'continue this assignment'}</Button>
                             <Popup fullScreen={true} open={openDialog} handleClose={handleClose} title={assignment.quizId.quizName}>
                                 <DoAssignment quizId={assignment.quizId._id} assignmentId={assignment._id} questionId={assignment.quizId.questionId} setOpenDialog={setOpenDialog}/>
                             </Popup>

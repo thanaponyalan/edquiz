@@ -41,9 +41,11 @@ const DoAssignment=(props)=>{
     const markAsDone=async()=>{
         const data={
             state: 'markAsDone',
-            assignmentId: assignmentId
+            assignmentId: assignmentId,
+            score: answered.reduce((prev,cur)=>{return prev+cur.score},0),
+            totalScore: answered.length
         }
-        // props.toastManager.add("Loading...",{appearance: 'info', autoDismiss: true})
+        // props.toastManager.add("Processing...",{appearance: 'info', autoDismiss: true})
         try{
             const url=`${API}/assignment`
             const result=await fetch(url,{
@@ -55,6 +57,7 @@ const DoAssignment=(props)=>{
             })
             const res=await result.json();
             if(res.statusCode==200||res.statusCode==204){
+                props.fetchAssignment(uid)
                 // props.toastManager.add("Success",{appearance:'success', autoDismiss:true});
             }
         }catch(err){
@@ -108,14 +111,13 @@ const DoAssignment=(props)=>{
         }
     }
 
-    console.log(filteredQuestions, currentIndex, questions, answered);
-
     return (
         filteredQuestions&&filteredQuestions[currentIndex]?
             <AnswerQuestion key={currentIndex} item={filteredQuestions[currentIndex]} handleChooseAnswer={handleChooseAnswer}/>
             :
             questions&&questions.length>0&&answered.length===questions.length?
-                <div>{`Your Score is ${answered.reduce((prev,cur)=>{return prev+cur.score},0)}`}</div>
+                // <div>{`Your Score is ${answered.reduce((prev,cur)=>{return prev+cur.score},0)}`}</div>
+                <div>Done. please wait for Teacher to announce your score</div>
                 :
                 <div
                     style={{
