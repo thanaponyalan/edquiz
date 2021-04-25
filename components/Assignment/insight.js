@@ -1,5 +1,5 @@
-import { Avatar, Button, Card, CardActionArea, CardContent, CardHeader, Chip, Collapse, Grid, List, ListItem, ListItemAvatar, ListItemSecondaryAction, ListItemText } from '@material-ui/core';
-import React, { useEffect, useMemo, useState } from 'react'
+import { Avatar, Button, Card, CardActionArea, CardHeader, Chip, Grid, List, ListItem, ListItemAvatar, ListItemSecondaryAction, ListItemText } from '@material-ui/core';
+import React, { useEffect, useState } from 'react'
 import { connect } from 'react-redux'
 import { withToastManager } from 'react-toast-notifications';
 import { bindActionCreators, compose } from 'redux'
