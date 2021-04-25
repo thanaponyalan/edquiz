@@ -6,13 +6,14 @@ import { withRouter } from "next/router";
 import { Table } from 'reactstrap';
 import AssignmentWidget from "../components/Assignment/AssignmentWidget";
 import { bindActionCreators } from "redux";
-import { fetchAssignment } from "../redux/actions/assignmentAction";
+import { fetchAssignment, setAssignment } from "../redux/actions/assignmentAction";
 import { connect } from "react-redux";
 import { Grid } from "@material-ui/core";
 import Loader from "react-loader-spinner";
 
 const Assignment=(props)=>{
     useEffect(()=>{
+        props.setAssignment({data:{payload: null}})
         props.fetchAssignment(props.uid,props.role)
     },[])
     
@@ -52,7 +53,8 @@ const mapStateToProps=state=>{
 
 const mapDispatchToProps=dispatch=>{
     return{
-        fetchAssignment: bindActionCreators(fetchAssignment,dispatch)
+        fetchAssignment: bindActionCreators(fetchAssignment,dispatch),
+        setAssignment: bindActionCreators(setAssignment, dispatch)
     }
 }
 
