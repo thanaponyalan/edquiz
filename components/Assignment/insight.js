@@ -1,10 +1,14 @@
-import { Avatar, Card, CardActionArea, CardContent, CardHeader, Collapse, Grid, List, ListItem, ListItemAvatar, ListItemText } from '@material-ui/core';
+import { Avatar, Button, Card, CardActionArea, CardContent, CardHeader, Chip, Collapse, Grid, List, ListItem, ListItemAvatar, ListItemSecondaryAction, ListItemText } from '@material-ui/core';
 import React, { useEffect, useMemo, useState } from 'react'
 import { connect } from 'react-redux'
 import { withToastManager } from 'react-toast-notifications';
 import { bindActionCreators, compose } from 'redux'
 import { fetchQuestionByQuizId, setQuestion } from '../../redux/actions/questionAction';
 import { Bar } from 'react-chartjs-2'
+import Popup from '../MaterialUI/Popup';
+import { API } from '../../constant/ENV';
+import { _error_handler } from '../../utils/errorHandler';
+import { fetchAssignment } from '../../redux/actions/assignmentAction';
 
 const Insight = (props) => {
     const { assignment, quizId, uid, questions } = props;
@@ -38,6 +42,10 @@ const Insight = (props) => {
                         return `Correct: ${context.formattedValue} people.`
                     }
                 }
+            },
+            title: {
+                text: 'Catagorized by question',
+                display: true
             }
         },
         scales: {
@@ -56,12 +64,16 @@ const Insight = (props) => {
             legend: {
                 display: false
             },
-            tooltip:{
-                callbacks:{
-                    label: (context)=>{
+            tooltip: {
+                callbacks: {
+                    label: (context) => {
                         return `Correct: ${context.formattedValue}%`
                     }
                 }
+            },
+            title: {
+                text: `Catagorized by Bloom's Taxonomy`,
+                display: true
             }
         },
         scales: {
@@ -73,23 +85,30 @@ const Insight = (props) => {
             }
         }
     })
+    const [currentIndex, setCurrentIndex] = useState(-1)
 
 
     useEffect(() => {
         props.fetchQuestionByQuizId(quizId, uid)
-        setAssigneesState(states.map(state => ({
-            title: state === 'assigned' ? 'Assigned' : (state === 'done' ? 'Turned in' : (state === 'graded' ? 'Graded' : 'In progress')),
-            length: assignment.assignees.filter(assignee => assignee.status === state).length,
-            isExpand: false,
-            students: assignment.assignees.filter(assignee => assignee.status === state).map(assignee => ({
-                email: assignee.studentId.email,
-                familyName: assignee.studentId.familyName,
-                firstName: assignee.studentId.firstName,
-                photoUrl: assignee.studentId.photoUrl.substring(0, 2) == "//" ? "https:" + assignee.studentId.photoUrl : assignee.studentId.photoUrl
-            }))
-        }))
-        )
     }, []);
+
+    useEffect(()=>{
+        if(assignment){
+            setAssigneesState(states.map(state => ({
+                title: state === 'assigned' ? 'Assigned' : (state === 'done' ? 'Turned in' : (state === 'graded' ? 'Graded' : 'In progress')),
+                length: assignment.assignees.filter(assignee => assignee.status === state).length,
+                isExpand: false,
+                students: assignment.assignees.filter(assignee => assignee.status === state).map(assignee => ({
+                    _id: assignee.studentId._id,
+                    email: assignee.studentId.email,
+                    familyName: assignee.studentId.familyName,
+                    firstName: assignee.studentId.firstName,
+                    photoUrl: assignee.studentId.photoUrl.substring(0, 2) == "//" ? "https:" + assignee.studentId.photoUrl : assignee.studentId.photoUrl
+                }))
+            }))
+            )
+        }
+    }, [assignment])
 
     useEffect(() => {
         if (questions) {
@@ -150,8 +169,8 @@ const Insight = (props) => {
         }
     }, [studentsInDetail])
 
-    useEffect(()=>{
-        if(averageBloom){
+    useEffect(() => {
+        if (averageBloom) {
             const tempDataByBloom = {
                 labels: bloomLevel.map(bloom => bloom.title),
                 datasets: [
@@ -169,10 +188,10 @@ const Insight = (props) => {
             }
             setDataByBloom(tempDataByBloom)
         }
-    },[averageBloom])
+    }, [averageBloom])
 
-    useEffect(()=>{
-        if(sumQuestion){
+    useEffect(() => {
+        if (sumQuestion) {
             const tempDataByQuestion = {
                 labels: sumQuestion.map((question, idx) => `Q${idx + 1}`),
                 datasets: [
@@ -191,9 +210,10 @@ const Insight = (props) => {
             }
             setDataByQuestion(tempDataByQuestion)
         }
-    },[sumQuestion])
+    }, [sumQuestion])
 
     const handleChange = (idx) => {
+        setCurrentIndex(idx)
         if (idx == -1) {
             const tempDataByQuestion = {
                 labels: sumQuestion.map((question, idx) => `Q${idx + 1}`),
@@ -228,6 +248,10 @@ const Insight = (props) => {
                                 return `Correct: ${context.formattedValue} people.`
                             }
                         }
+                    },
+                    title: {
+                        text: 'Catagorized by question',
+                        display: true
                     }
                 },
             })
@@ -249,12 +273,13 @@ const Insight = (props) => {
             }
             setDataByBloom(tempDataByBloom)
         } else {
+            console.log(studentsInDetail[idx]);
             const questionDetails = studentsInDetail[idx].questionDetails
             const tempDataByQuestion = {
                 labels: questionDetails.map((quesion, idx) => `Q${idx + 1}`),
                 datasets: [
                     {
-                        data: questionDetails.map(question => 1),
+                        data: questionDetails.map(question => assigneesState[0].students.findIndex(student=>student.email==studentsInDetail[idx].email)<0? 1:0),
                         questions: questionDetails.map(question => question.title),
                         isCorrect: questionDetails.map(question => question.isTrue),
                         backgroundColor: questionDetails.map(question => question.isTrue ? 'rgba(75, 192, 192, 0.2)' : 'rgba(255, 99, 132, 0.2)'),
@@ -277,9 +302,13 @@ const Insight = (props) => {
                                 return context[0].dataset.questions[context[0].dataIndex]
                             },
                             label: (context) => {
-                                return context.dataset.isCorrect[context.dataIndex]?'Correct':'Incorrect'
+                                return context.dataset.isCorrect[context.dataIndex] ? 'Correct' : 'Incorrect'
                             }
                         }
+                    },
+                    title: {
+                        text: 'Catagorized by question',
+                        display: true
                     }
                 }
             })
@@ -304,6 +333,43 @@ const Insight = (props) => {
         }
     }
 
+    const handleExpand=(idx,assignee)=>{
+        const tempExpanded = assigneesState.map(assignee => ({ ...assignee, isExpand: false }))
+        tempExpanded[idx].isExpand = Boolean(assignee.length) && !assigneesState[idx].isExpand;
+        setAssigneesState(tempExpanded)
+    }
+
+    const annouceScore=async(userId)=>{
+        const payload={
+            assignmentId: assignment._id,
+            courseId: assignment.classId.gClassId,
+            courseWorkId: assignment.courseWorkId,
+            state: 'returnAndPatch',
+            userId
+        }
+        props.toastManager.add("Annoucing...",{appearance: 'info', autoDismiss: true})
+        try{
+            const url=`${API}/assignment`
+            const result=await fetch(url,{
+                method: 'PUT',
+                headers:{
+                    authorization: uid
+                },
+                body: JSON.stringify(payload)
+            })
+            const res=await result.json();
+            if(res.statusCode==200||res.statusCode==204){
+                props.setQuestion({data:{payload: null}})
+                props.fetchQuestionByQuizId(quizId, uid)
+                props.fetchAssignment(uid,props.role)
+                props.toastManager.add("Annouced",{appearance:'success', autoDismiss:true});
+            }
+        }catch(err){
+            _error_handler(null,err,null);
+            console.log(err);
+        }
+    }
+console.log(assigneesState);
     return (
         assigneesState && studentsInDetail && sumQuestion && averageBloom ?
             <>
@@ -311,11 +377,7 @@ const Insight = (props) => {
                     {assigneesState && assigneesState.map((assignee, idx) =>
                         <Grid item xs={12} sm={24 / assigneesState.length} md={12 / assigneesState.length} key={idx}>
                             <Card variant="outlined">
-                                <CardActionArea onClick={() => {
-                                    const tempExpanded = assigneesState.map(assignee => ({ ...assignee, isExpand: false }))
-                                    tempExpanded[idx].isExpand = Boolean(assignee.length) && !assigneesState[idx].isExpand;
-                                    setAssigneesState(tempExpanded)
-                                }}>
+                                <CardActionArea onClick={()=>handleExpand(idx,assignee)}>
                                     <CardHeader
                                         avatar={
                                             <Avatar>
@@ -325,23 +387,45 @@ const Insight = (props) => {
                                         title={assignee.title}
                                     />
                                 </CardActionArea>
-                                <Collapse in={assignee.isExpand} timeout="auto" unmountOnExit>
-                                    <CardContent>
+                                <Popup maxWidth="sm" fullWidth open={assignee.isExpand} handleClose={()=>handleExpand(idx,assignee)} title={assignee.title} popupAction={
+                                    assignee.title==='Turned in'&&
+                                    <Button variant="outlined" onClick={()=>{
+                                        handleExpand(idx,assignee);
+                                        annouceScore(assignee.students.map(student=>({
+                                            email: student.email, 
+                                            _id: student._id,
+                                            score: studentsInDetail[studentsInDetail.findIndex(thisStudent=>thisStudent.email==student.email)]?.questionDetails?.reduce((prev,curr)=>(prev+curr.isTrue),0)
+                                        })))
+                                    }}>
+                                        Annouce score
+                                    </Button>
+                                }>
                                         <List dense>
-                                            {assignee.students.map((student, idx) =>
-                                                <ListItem key={idx}>
-                                                    <ListItemAvatar>
-                                                        <Avatar alt={`${student.firstName} ${student.familyName}`} src={student.photoUrl} />
-                                                    </ListItemAvatar>
-                                                    <ListItemText
-                                                        primary={`${student.firstName} ${student.familyName}`}
-                                                    />
-                                                </ListItem>
+                                            {assignee.students.map((student, index) =>
+                                                {
+                                                    const questionDetails = studentsInDetail[studentsInDetail.findIndex(thisStudent=>thisStudent.email==student.email)]?.questionDetails;
+                                                    return( 
+                                                        <ListItem key={index} button onClick={()=>{handleExpand(idx,assignee);handleChange(studentsInDetail.findIndex(thisStudent=>thisStudent.email==student.email))}}>
+                                                            <ListItemAvatar>
+                                                                <Avatar alt={`${student.firstName} ${student.familyName}`} src={student.photoUrl} />
+                                                            </ListItemAvatar>
+                                                            <ListItemText
+                                                                primary={`${student.firstName} ${student.familyName}`}
+                                                            />
+                                                            <ListItemSecondaryAction>
+                                                                <Chip label={`${questionDetails?.reduce((prev,curr)=>(prev+curr.isTrue),0)}/${questionDetails?.length}`}/>
+                                                            </ListItemSecondaryAction>
+                                                        </ListItem>
+                                                    )
+                                                }    
                                             )
                                             }
                                         </List>
+                                </Popup>
+                                {/* <Collapse in={assignee.isExpand} timeout="auto" unmountOnExit>
+                                    <CardContent>
                                     </CardContent>
-                                </Collapse>
+                                </Collapse> */}
                             </Card>
                         </Grid>
                     )}
@@ -350,14 +434,14 @@ const Insight = (props) => {
                     <Grid container spacing={2}>
                         <Grid item xs={12} sm={3}>
                             <List dense>
-                                <ListItem button onClick={() => handleChange(-1)}>
+                                <ListItem button onClick={() => handleChange(-1)} style={{backgroundColor: currentIndex==-1?'grey':'', borderRadius: '25px', color: currentIndex==-1?'white':'black'}}>
                                     <ListItemAvatar>
                                         <Avatar>S</Avatar>
                                     </ListItemAvatar>
                                     <ListItemText primary="SUMMARY" />
                                 </ListItem>
                                 {studentsInDetail.map((student, idx) =>
-                                    <ListItem key={idx} button onClick={() => handleChange(idx)}>
+                                    <ListItem key={idx} button onClick={() => handleChange(idx)} style={{backgroundColor: currentIndex==idx?'grey':'', borderRadius: '25px', color: currentIndex==idx?'white':'black'}}>
                                         <ListItemAvatar>
                                             <Avatar alt={`${student.firstName} ${student.familyName}`} src={student.photoUrl} />
                                         </ListItemAvatar>
@@ -385,14 +469,16 @@ const Insight = (props) => {
 const mapStateToProps = state => {
     return {
         questions: state.questionReducer.questions,
-        uid: state.authReducer.uid
+        uid: state.authReducer.uid,
+        role: state.authReducer.role
     }
 }
 
 const mapDispatchToProps = dispatch => {
     return {
         fetchQuestionByQuizId: bindActionCreators(fetchQuestionByQuizId, dispatch),
-        setQuestion: bindActionCreators(setQuestion, dispatch)
+        setQuestion: bindActionCreators(setQuestion, dispatch),
+        fetchAssignment: bindActionCreators(fetchAssignment, dispatch)
     }
 }
 

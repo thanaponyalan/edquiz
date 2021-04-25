@@ -158,8 +158,46 @@ const updateAndTurnIn=(data)=>{
     })
 }
 
-const updateAssignment=()=>{
+const updateStatus=(data)=>{
+    return new Promise((resolve,reject)=>{
+        dbModel.assignmentsModel.findOneAndUpdate({_id: data.assignmentId, 'assignees.studentId': data.studentId},{
+            $set:{
+                'assignees.$.status': data.status,
+                'assignees.$.lastUpdate': moment().format(),
+            }
+        },{new: true},(err,res)=>{
+            if(err){
+                return reject(err)
+            }
+            return resolve(res)
+        })
+    })
+}
 
+const updateAndReturn=(data,uid)=>{
+    return new Promise((resolve,reject)=>{
+        Promise.all(
+            data.userId.map(user=>
+                updateStatus({assignmentId: data.assignmentId, studentId: user._id, status: 'graded'}).then(async(status)=>{
+                    const url=`${API}/googleCourseWork?isTeacher=1`
+                    const result=await fetch(url,{
+                        method: 'PUT',
+                        headers:{
+                            authorization: uid
+                        },
+                        body: JSON.stringify({courseId: data.courseId, courseWorkId: data.courseWorkId, userId: user.email, score: user.score})
+                    })
+                })
+            )
+        ).then(result=>{
+            response.data.payload='OK'
+            return resolve(response)
+        }).catch(err=>{
+            response.statusCode=400;
+            response.data.payload=err;
+            return reject(response)
+        })
+    })
 }
 
 const handleRequest=(req,res)=>{
@@ -180,7 +218,13 @@ const handleRequest=(req,res)=>{
                     }).catch(err=>{
                         res.status(err.statusCode).json(err)
                     })
-                }else{
+                }else if(data.state=='returnAndPatch'){
+                    updateAndReturn(data, req.headers.authorization).then(result=>{
+                        res.status(result.statusCode).json(result)
+                    }).catch(err=>{
+                        res.status(err.statusCode).json(err)
+                    })
+                }else {
                     res.status(200).json({err:'Method Not Allowed'});
                 }
                 break;

@@ -70,23 +70,23 @@ const turnIn=async(req,oAuth2Client)=>{
 }
 
 const patchAndReturn=async(req,oAuth2Client)=>{
-    //const assignmentDetail=JSON.parse(req.body)
+    const assignmentDetail=JSON.parse(req.body)
     return new Promise(async(resolve,reject)=>{
         const classroom=google.classroom({version: 'v1', auth: oAuth2Client});
-        getCourseWorkId({courseId: '299060908498', courseWorkId: '326605858966', userId: 'thanaponyalan@gmail.com'}, classroom).then(async(submissionId)=>{
+        getCourseWorkId(/*{courseId: '299060908498', courseWorkId: '326605858966', userId: 'thanaponyalan@gmail.com'}*/assignmentDetail, classroom).then(async(submissionId)=>{
             const patch=await classroom.courses.courseWork.studentSubmissions.patch({
-                courseId: '299060908498',
-                courseWorkId: '326605858966',
+                courseId: assignmentDetail.courseId,
+                courseWorkId: assignmentDetail.courseWorkId,
                 id: submissionId,
                 updateMask: 'assignedGrade',
                 requestBody:{
-                    assignedGrade: 2,
+                    assignedGrade: assignmentDetail.score,
                 }
             })
             if(patch.status==200){
                 const ret=await classroom.courses.courseWork.studentSubmissions.return({
-                    courseId: '299060908498',
-                    courseWorkId: '326605858966',
+                    courseId: assignmentDetail.courseId,
+                    courseWorkId: assignmentDetail.courseWorkId,
                     id: submissionId,
                 })
                 response.data.payload=ret.data;
@@ -103,11 +103,20 @@ const handleRequest=(req,res,oAuth2Client)=>{
                 res.status(data.statusCode).json(data)
             }); break;
             case 'PUT': 
-                turnIn(req, oAuth2Client).then(result=>{
-                    res.status(result.statusCode).json(result)
-                }).catch(err=>{
-                    res.status(err.statusCode).json(err)
-                })
+                const{isTeacher}=req.query;
+                if(isTeacher){
+                    patchAndReturn(req,oAuth2Client).then(result=>{
+                        res.status(result.statusCode).json(result)
+                    }).catch(err=>{
+                        res.status(err.statusCode).json(err)
+                    })
+                }else{
+                    turnIn(req, oAuth2Client).then(result=>{
+                        res.status(result.statusCode).json(result)
+                    }).catch(err=>{
+                        res.status(err.statusCode).json(err)
+                    })
+                }
                 break;
             default: res.status(200).json({err:'Method Not Allowed'}); break;
         }
