@@ -273,7 +273,6 @@ const Insight = (props) => {
             }
             setDataByBloom(tempDataByBloom)
         } else {
-            console.log(studentsInDetail[idx]);
             const questionDetails = studentsInDetail[idx].questionDetails
             const tempDataByQuestion = {
                 labels: questionDetails.map((quesion, idx) => `Q${idx + 1}`),
@@ -369,7 +368,7 @@ const Insight = (props) => {
             console.log(err);
         }
     }
-console.log(assigneesState);
+    
     return (
         assigneesState && studentsInDetail && sumQuestion && averageBloom ?
             <>
