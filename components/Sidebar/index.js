@@ -41,7 +41,7 @@ const Sidebar = (props) => {
                     <ul className="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
                         { !isTeacher&&
                         <>
-                        <li className="nav-item">
+                        {/* <li className="nav-item">
                             <Link href='/my-class'>
                                 <a href="#" className="nav-link">
                                     <i className="nav-icon fas fa-tachometer-alt" />
@@ -50,7 +50,7 @@ const Sidebar = (props) => {
                                     </p>
                                 </a>
                             </Link>
-                        </li>
+                        </li> */}
                         <li className="nav-header">GOOGLE CLASSROOM</li>
                         <li className="nav-item">
                             <Link href='/my-class'>
@@ -114,7 +114,7 @@ const Sidebar = (props) => {
                                 </a>
                             </Link>
                         </li> */}
-                        <li className="nav-item">
+                        {/* <li className="nav-item">
                             <Link href='/my-class'>
                                 <a href="#" className="nav-link">
                                     <i className="nav-icon fas fa-tachometer-alt" />
@@ -123,7 +123,7 @@ const Sidebar = (props) => {
                                     </p>
                                 </a>
                             </Link>
-                        </li>
+                        </li> */}
                         <li className="nav-header">Quiz Creating</li>
                         <li className="nav-item">
                             <Link href='/course'>

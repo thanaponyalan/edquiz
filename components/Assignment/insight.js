@@ -411,9 +411,11 @@ const Insight = (props) => {
                                                             <ListItemText
                                                                 primary={`${student.firstName} ${student.familyName}`}
                                                             />
-                                                            <ListItemSecondaryAction>
-                                                                <Chip label={`${questionDetails?.reduce((prev,curr)=>(prev+curr.isTrue),0)}/${questionDetails?.length}`}/>
-                                                            </ListItemSecondaryAction>
+                                                            {assignee.title!='Assigned'&&assignee.title!='In progress'&&
+                                                                <ListItemSecondaryAction>
+                                                                    <Chip label={`${questionDetails?.reduce((prev,curr)=>(prev+curr.isTrue),0)}/${questionDetails?.length}`}/>
+                                                                </ListItemSecondaryAction>
+                                                            }
                                                         </ListItem>
                                                     )
                                                 }    
