@@ -120,14 +120,14 @@ const Insight = (props) => {
                 questionDetails: questions.map(question => ({
                     id: question._id,
                     title: question.question.title,
-                    isTrue: assignee.historyId?.questions.filter(q => q.questionId == question._id)[0].score || 0
+                    isTrue: assignee.historyId?.questions.filter(q => q.questionId == question._id).length?assignee.historyId?.questions.filter(q => q.questionId == question._id)[0].score : 0
                 })),
                 bloomDetails: bloomLevel.map(bloom => ({
                     title: bloom.title,
                     questions: questions.filter(question => question.objectiveId.some(obj => obj.bloomLevel == bloom.level)).map(question => ({
                         id: question._id,
                         title: question.question.title,
-                        isTrue: assignee.historyId?.questions.filter(q => q.questionId == question._id)[0].score || 0
+                        isTrue: assignee.historyId?.questions.filter(q => q.questionId == question._id).length?assignee.historyId?.questions.filter(q => q.questionId == question._id)[0].score : 0
                     }))
                 }))
             }))
@@ -158,7 +158,7 @@ const Insight = (props) => {
             })
             setAverageBloom(sumBloom.map(sum => sum / allBloom.length))
 
-            const allQuestion = studentsInDetail.map(student => student.questionDetails.map(question => ({ isTrue: question.isTrue, title: question.title })));
+            const allQuestion = studentsInDetail.filter(student=>assigneesState[0].students.findIndex(thisStudent=>thisStudent.email==student.email)==-1&&assigneesState[1].students.findIndex(thisStudent=>thisStudent.email==student.email)==-1).map(student => student.questionDetails.map(question => ({ isTrue: question.isTrue, title: question.title })));
             const tempSumQuestion = []
             allQuestion.forEach(sub => {
                 sub.forEach((data, idx) => {
@@ -279,7 +279,7 @@ const Insight = (props) => {
                 labels: questionDetails.map((quesion, idx) => `Q${idx + 1}`),
                 datasets: [
                     {
-                        data: questionDetails.map(question => assigneesState[0].students.findIndex(student=>student.email==studentsInDetail[idx].email)<0? 1:0),
+                        data: questionDetails.map(question => assigneesState[0].students.findIndex(student=>student.email==studentsInDetail[idx].email)==-1&&assigneesState[1].students.findIndex(student=>student.email==studentsInDetail[idx].email)==-1? 1:0),
                         questions: questionDetails.map(question => question.title),
                         isCorrect: questionDetails.map(question => question.isTrue),
                         backgroundColor: questionDetails.map(question => question.isTrue ? 'rgba(75, 192, 192, 0.2)' : 'rgba(255, 99, 132, 0.2)'),
@@ -318,7 +318,7 @@ const Insight = (props) => {
                 labels: bloomLevel.map(bloom => bloom.title),
                 datasets: [
                     {
-                        data: bloomDetails.map(bloom => bloom.average),
+                        data: bloomDetails.map(bloom => assigneesState[0].students.findIndex(student=>student.email==studentsInDetail[idx].email)==-1&&assigneesState[1].students.findIndex(student=>student.email==studentsInDetail[idx].email)==-1?bloom.average:0),
                         backgroundColor: [
                             'rgba(75, 192, 192, 0.2)'
                         ],
