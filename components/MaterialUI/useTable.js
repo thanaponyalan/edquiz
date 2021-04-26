@@ -7,8 +7,8 @@ const useStyles = makeStyles(theme => ({
         marginTop: theme.spacing(3),
         '& thead th': {
             fontWeight: '600',
-            color: theme.palette.primary.main,
-            backgroundColor: '#a7b5ff'//theme.palette.primary.light
+            color: 'white',
+            backgroundColor: 'rgb(52, 58, 64)'
         },
         '& tbody td': {
             fontWeight: '300'

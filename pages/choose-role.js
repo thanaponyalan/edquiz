@@ -1,9 +1,9 @@
 import { Component } from "react";
 import MainLayout from "../containers/app/loginLayout";
-import { Button } from "reactstrap";
 import cookie from "js-cookie";
 import nextCookie from "next-cookies";
 import { Router } from "next/router";
+import { Button } from "@material-ui/core";
 
 class ChooseRole extends Component{
     constructor(props){

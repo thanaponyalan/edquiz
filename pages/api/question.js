@@ -180,7 +180,7 @@ const updateQuestion=async(req,res)=>{
                     })
                 })
             }else{
-                question.quizId=undefined
+                question.quizId=[]
                 dbModel.questionsModel.findByIdAndUpdate(id,question,{upsert: true, new: true},(err,questionRes)=>{
                     if(err){
                         response.statusCode=400;

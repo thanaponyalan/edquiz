@@ -6,23 +6,13 @@ const useStyles=makeStyles(theme=>({
         minWidth: 0,
         margin: theme.spacing(0.5)
     },
-    secondary:{
-        backgroundColor: '#f4b5cd',//theme.palette.secondary.light,
-        '&:hover':{
-            backgroundColor: '#ffd5e3'
-        },
-        '& .MuiButton-label':{
-            color: theme.palette.secondary.main
-        },
-        
-    },
     primary:{
-        backgroundColor: '#a7b5ff',//theme.palette.primary.light,
+        backgroundColor: 'rgb(52, 58, 64)',
         '&:hover':{
-            backgroundColor: '#e2e6ff'
+            backgroundColor: 'rgba(52, 58, 64, 0.6)'
         },
         '& .MuiButton-label':{
-            color: theme.palette.primary.main
+            color: 'white',
         },
     }
 }))

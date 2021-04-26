@@ -1,15 +1,10 @@
 import React,{useEffect, useState} from 'react'
-import { Paper, makeStyles, TableBody, TableRow, TableCell, Toolbar, InputAdornment } from "@material-ui/core";
-import CourseForm from '../Course/editCourse';
+import { makeStyles, TableBody, TableRow, TableCell, Toolbar, InputAdornment } from "@material-ui/core";
 import useTable from "../MaterialUI/useTable";
 import Controls from "../MaterialUI/controls/Controls";
-import { Search, Add as AddIcon, EditOutlined, Close as CloseIcon } from '@material-ui/icons';
-import Modal from "../ReactStrap/Modal";
-import Popup from "../MaterialUI/Popup"
+import { Search, EditOutlined } from '@material-ui/icons';
 import EditObjectiveForm from "../Objective/editObjective"
-import courseForm from '../Course/editCourse';
 import { compose, bindActionCreators } from 'redux';
-import { withAuthSync } from '../../utils/auth';
 import { withToastManager } from 'react-toast-notifications';
 import { connect } from 'react-redux';
 import { fetchCourse } from '../../redux/actions/courseAction';
@@ -48,7 +43,7 @@ function ObjectiveTable(props) {
     const classes=useStyles();
     const [records,setRecords]=useState(initRecord);
     const [filterFn,setFilterFn]=useState({fn:items=>{return items;}});
-    const [openModal,setOpenModal]=useState(false);
+    const [openDialog,setOpenDialog]=useState(false);
     const [recordForEdit,setRecordForEdit]=useState(null);
 
     const {
@@ -70,24 +65,20 @@ function ObjectiveTable(props) {
     }
 
     const updateObjective=async(objective)=>{
-        // update
-        // console.log("updateObjective");
-        // console.log(props);
-
         props.toastManager.add("Updating...",{appearance: 'info', autoDismiss: true})
         try{
             const url=`${API}/objective`
             const result=await fetch(url,{
                 method: 'PUT',
-                // headers:{
-                //     authorization: course.owner
-                // },
+                headers:{
+                    authorization: props.uid
+                },
                 body: JSON.stringify(objective)
             });
             const res=await result.json();
             if(res.statusCode==200||res.statusCode==204){
                 props.fetchCourse(props.uid)
-                props.toastManager.add("Updated",{appearance:'success', autoDismiss:true}, ()=>setOpenModal(false));
+                props.toastManager.add("Updated",{appearance:'success', autoDismiss:true}, ()=>setOpenDialog(false));
             }
         }catch(err){
             _error_handler(null,err,null);
@@ -96,9 +87,9 @@ function ObjectiveTable(props) {
 
     }
 
-    const openInModal=item=>{
+    const openInDialog=item=>{
         setRecordForEdit(item);
-        setOpenModal(true);
+        setOpenDialog(true);
     }
 
     useEffect(()=>{
@@ -119,12 +110,6 @@ function ObjectiveTable(props) {
                     }}
                     onChange={handleSearch}
                 />
-                {/* <Controls.Button
-                    text="Add New"
-                    variant="outlined"
-                    startIcon={<AddIcon/>}
-                    onClick={()=>setOpenPopup(true)}
-                /> */}
             </Toolbar>
             <TblContainer>
                 <TblHead/>
@@ -140,13 +125,9 @@ function ObjectiveTable(props) {
                                 <TableCell>
                                     <Controls.ActionButton
                                         color="primary"
-                                        onClick={()=>openInModal(item)}>
+                                        onClick={()=>openInDialog(item)}>
                                         <EditOutlined fontSize="small" />
                                     </Controls.ActionButton>
-                                    {/* <Controls.ActionButton
-                                    color="secondary">
-                                        <CloseIcon fontSize="small"/>
-                                    </Controls.ActionButton> */}
                                 </TableCell>
                             </TableRow>
                         )})
@@ -154,16 +135,14 @@ function ObjectiveTable(props) {
                 </TableBody>
             </TblContainer>
             <TblPagination/>
-            <Modal
-                openModal={openModal}
-                setOpenModal={setOpenModal}
-                title="Edit Objective">
-                <EditObjectiveForm
-                    courseId={courseId}
-                    recordForEdit={recordForEdit}
-                    updateOrInsertObj={updateObjective}
-                    toggle={()=>setOpenModal(false)}/>
-            </Modal>
+            <EditObjectiveForm
+                title="Edit Objective"
+                courseId={courseId}
+                recordForEdit={recordForEdit}
+                updateOrInsertObj={updateObjective}
+                toggle={()=>setOpenDialog(false)}
+                openDialog={openDialog}
+                setOpenDialog={setOpenDialog}/>
         </>
     )
 }
@@ -175,7 +154,6 @@ const mapDispatchToProps=dispatch=>{
 }
 
 const mapStateToProps=state=>{
-    // console.log(state);
     return{
         uid: state.authReducer.uid,
         courses: state.courseReducer.courses

@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react'
-import { Button, Modal, ModalBody, ModalFooter, ModalHeader, FormGroup, Input, Label, Row, Col } from "reactstrap";
-import { Grid, TextField,  } from "@material-ui/core";
+import { Button, Grid, TextField,  } from "@material-ui/core";
 import {useForm, Form} from "../MaterialUI/useForm";
 import Controls from "../MaterialUI/controls/Controls";
+import Popup from '../MaterialUI/Popup';
 
 const initialValues = {
     _id: '',
@@ -12,7 +12,7 @@ const initialValues = {
 
 
 export default function editObjectiveForm(props) {
-    const {updateOrInsertObj, recordForEdit, toggle, courseId}=props;
+    const {updateOrInsertObj, recordForEdit, toggle, courseId, openDialog, setOpenDialog, title}=props;
 
     const validate=(fieldValues=values)=>{
         let temp={...errors}
@@ -61,47 +61,34 @@ export default function editObjectiveForm(props) {
     ]
 
     return (
-        <Form onSubmit={handleSubmit}>
-            <Grid container>
-                <Grid item md={12}>
-                    {values.id!=''?
-                    <Controls.Input
-                        label="#"
-                        name="_id"
-                        value={values.id}
-                        onChange={handleInputChange}
-                        error={errors.id}
-                        disabled={true}
-                    />
-                    :""}
-                    <Controls.Input
-                        label="Objective"
-                        name="objective"
-                        value={values.objective}
-                        onChange={handleInputChange}
-                        error={errors.objective}
-                    />
-                    {/* <Controls.Input
-                        label="Bloom's Taxonomy"
-                        name="bloomLevel"
-                        value={values.bloomLevel}
-                        onChange={handleInputChange}
-                        error={errors.bloomLevel}
-                    /> */}
-                    <Controls.Select
-                        name="bloomLevel"
-                        label="Bloom's Taxonomy"
-                        value={values.bloomLevel}
-                        onChange={handleInputChange}
-                        options={bloom}
-                        error={errors.bloomLevel}
-                    />
+        <Popup maxWidth="sm" fullWidth title={title} open={openDialog} handleClose={()=>setOpenDialog(false)} popupAction={
+            <>
+                <Button type="submit" variant="outlined" onClick={handleSubmit} color="primary">Submit</Button>
+                {' '}
+                <Button onClick={toggle} variant="outlined" color="secondary">Cancel</Button>
+            </>
+        }>
+            <Form>
+                <Grid container>
+                    <Grid item xs={12}>
+                        <Controls.Input
+                            label="Objective"
+                            name="objective"
+                            value={values.objective}
+                            onChange={handleInputChange}
+                            error={errors.objective}
+                        />
+                        <Controls.Select
+                            name="bloomLevel"
+                            label="Bloom's Taxonomy"
+                            value={values.bloomLevel}
+                            onChange={handleInputChange}
+                            options={bloom}
+                            error={errors.bloomLevel}
+                        />
+                    </Grid>
                 </Grid>
-            </Grid>
-            <div>
-                <Controls.Button text="Submit" type="submit"/>
-                <Controls.Button text="Cancel" color="default" onClick={toggle}/>
-            </div>
-        </Form>
+            </Form>
+        </Popup>
     )
 }

@@ -1,9 +1,7 @@
 import MainLayout from "../containers/app/mainLayout";
-import React, { Component, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { compose } from "recompose";
 import { withAuthSync } from "../utils/auth";
-import { withRouter } from "next/router";
-import { Table } from 'reactstrap';
 import AssignmentWidget from "../components/Assignment/AssignmentWidget";
 import { bindActionCreators } from "redux";
 import { fetchAssignment, setAssignment } from "../redux/actions/assignmentAction";

@@ -4,7 +4,6 @@ import { withToastManager } from 'react-toast-notifications';
 import { bindActionCreators, compose } from 'redux'
 import { fetchQuestionByQuizId, setQuestion } from '../../redux/actions/questionAction';
 import AnswerQuestion from '../Question/AnswerQuestion';
-import AnswerMatching from '../Question/AnswerMatching';
 import { _error_handler } from '../../utils/errorHandler';
 import { API } from '../../constant/ENV';
 import { fetchAssignment } from '../../redux/actions/assignmentAction';

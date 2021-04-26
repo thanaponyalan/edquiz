@@ -115,7 +115,7 @@ const QuestionWidget = (props) => {
                 recordForEdit={{
                     id: question._id, 
                     question: question.question, 
-                    choices: question.question.type!=1?question.choices.map((item)=>({isTrue: item.isTrue, choice: item.choice, pict: item.pict})):question.choices.map((item)=>({answer: item.answer, choice: item.choice, pict: item.pict})), 
+                    choices: question.choices.map((item)=>({isTrue: item.isTrue, choice: item.choice, pict: item.pict})), 
                     quizzes: question.quizId?question.quizId.map(quiz=>({ id: quiz._id, title: quiz.quizName })):[], 
                     course: { id: question.courseId._id, title: question.courseId.courseName }, 
                     objectives: question.objectiveId.map((item) => ({ id: item._id, title: item.objective })),
@@ -132,7 +132,7 @@ const QuestionWidget = (props) => {
                 handleSave={duplicateQuestion}
                 recordForDuplicate={{
                     question: question.question, 
-                    choices: question.question.type!=1?question.choices.map((item)=>({isTrue: item.isTrue, choice: item.choice, pict: item.pict})):question.choices.map((item)=>({answer: item.answer, choice: item.choice, pict: item.pict})), 
+                    choices: question.choices.map((item)=>({isTrue: item.isTrue, choice: item.choice, pict: item.pict})), 
                     quizzes: chooseCourse.value==question.courseId._id&&question.quizId?question.quizId.map(quiz=>({ id: quiz._id, title: quiz.quizName })):[], 
                     course: {id: chooseCourse.value?chooseCourse.value:'', title: chooseCourse.value?props.courses.filter(course=>course._id==chooseCourse.value)[0].courseName:''}, 
                     objectives: chooseCourse.value==question.courseId._id?question.objectiveId.map((item) => ({ id: item._id, title: item.objective })):[],

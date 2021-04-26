@@ -71,7 +71,7 @@ const Class=(props)=>{
                         </IconButton>
                     }
                     style={{
-                        backgroundColor: 'black',
+                        backgroundColor: 'rgb(52, 58, 64)',
                         color: 'white'
                     }}
                 />

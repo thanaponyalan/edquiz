@@ -97,6 +97,8 @@ const AddQuestion = (props) => {
         if ('choices' in fieldValues){
             if(values.question.type==0){
                 temp.choices = fieldValues.choices.filter(choice => choice.choice == '').length < 3 && fieldValues.choices.filter(choice => { return choice.isTrue && choice.choice }).length > 0 ? "" : "At least two choices required";
+            }else{
+                temp.choices=fieldValues.choices.filter(choice=>choice.isTrue).length>0?'':'Answer is required'
             }
         }
         setErrors({

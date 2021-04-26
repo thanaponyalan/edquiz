@@ -1,10 +1,7 @@
 import ObjectiveTable from "../Objective/ObjectiveTable";
 import {useState} from "react"
 import CourseForm from '../Course/editCourse';
-import { CardHeader, CardTitle, CardBody, Col } from "reactstrap";
-import Modal from "../ReactStrap/Modal";
-import Card from "../ReactStrap/Card"
-import AddObjectiveForm from "../Objective/editObjective";
+import ObjectiveForm from "../Objective/editObjective";
 import { compose } from "recompose";
 import { withToastManager } from "react-toast-notifications";
 import { fetchCourse } from "../../redux/actions/courseAction";
@@ -12,14 +9,16 @@ import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import { _error_handler } from "../../utils/errorHandler";
 import { API } from "../../constant/ENV";
+import { Button, Card, CardActions, CardContent, CardHeader, Collapse, IconButton } from "@material-ui/core";
+import { Create, ExpandMore, PlaylistAdd } from "@material-ui/icons";
+import Popup from "../MaterialUI/Popup";
 
 const CourseWidget = (props) => {
-    // console.log("CourseWidget");
-    // console.log(props);
-
-    const [openModal,setOpenModal]=useState(false);
     const [recordForEdit,setRecordForEdit]=useState(null);
-    const [openAddModal,setOpenAddModal]=useState(false);
+    const {courseDetail, onClick}=props;
+    const {course,isExpand}=courseDetail
+    const [openEditCourse, setOpenEditCourse]=useState(false)
+    const [openAddObj, setOpenAddObj]=useState(false)
 
 
     const updateCourse=async(course)=>{
@@ -35,7 +34,7 @@ const CourseWidget = (props) => {
             });
             const res=await result.json();
             if(res.statusCode==200||res.statusCode==204){
-                props.toastManager.add("Updated",{appearance:'success', autoDismiss:true}, ()=>setOpenModal(false));
+                props.toastManager.add("Updated",{appearance:'success', autoDismiss:true}, ()=>setOpenEditCourse(false));
                 props.fetchCourse(res.data.payload.owner)
             }
         }catch(err){
@@ -44,14 +43,7 @@ const CourseWidget = (props) => {
         }
     }
 
-    const openInPopup=item=>{
-        setRecordForEdit(item);
-        setOpenModal(true);
-    }
-
     const insertObj=async(objective)=>{
-        // console.log(`InsertObj`);
-        // console.log(objective);
         delete objective._id;
         props.toastManager.add("Creating...",{appearance: 'info', autoDismiss: true})
         try{
@@ -62,7 +54,7 @@ const CourseWidget = (props) => {
             });
             const res=await result.json();
             if(res.statusCode==200||res.statusCode==204){
-                props.toastManager.add("Created",{appearance:'success', autoDismiss:true},()=>setOpenAddModal(false))
+                props.toastManager.add("Created",{appearance:'success', autoDismiss:true},()=>setOpenAddObj(false))
                 props.fetchCourse(props.uid)
             }
         }catch(err){
@@ -71,40 +63,55 @@ const CourseWidget = (props) => {
         }
     }
 
-    const addObjective=()=>{
-        setOpenAddModal(true);
-    }
-
     return (
         <>
-            <Card
-                isCollapse={props.isCollapse}
-                title={`${props.courseDetail.courseName} (${props.courseDetail.courseNo})`}
-                editable
-                editInModal={()=>openInPopup(props.courseDetail)}
-                addable
-                collapsable
-                addObjective={addObjective}>
-                <ObjectiveTable initRecord={props.courseDetail.objectives} courseId={props.courseDetail._id}/>
+            <Card>
+                <CardHeader
+                    title={`${course.courseName} (${course.courseNo})`}
+                    style={{
+                        backgroundColor: 'rgb(52, 58, 64)',
+                        color: 'white'
+                    }}
+                    action={
+                        <>
+                        <IconButton style={{color: 'white'}} onClick={()=>setOpenAddObj(true)}>
+                            <PlaylistAdd/>
+                        </IconButton>
+                        <IconButton style={{color: 'white'}} onClick={()=>{setRecordForEdit(course);setOpenEditCourse(true);}}>
+                            <Create/>
+                        </IconButton>
+                        </>
+                    }
+                />
+                <Collapse in={!isExpand}>
+                    <CardActions>
+                        <IconButton onClick={onClick} style={{marginLeft: 'auto', marginRight: 'auto'}}>
+                            <ExpandMore/>
+                        </IconButton>
+                    </CardActions>
+                </Collapse>
+                <Collapse in={isExpand}>
+                    <CardContent>
+                        <ObjectiveTable initRecord={course.objectives} courseId={course._id}/>
+                    </CardContent>
+                </Collapse>
             </Card>
-            <Modal
-                openModal={openModal}
-                setOpenModal={setOpenModal}
-                title="Edit Course">
-                <CourseForm
-                    recordForEdit={recordForEdit}
-                    updateOrInsertCourse={updateCourse}
-                    toggle={()=>setOpenModal(false)}/>
-            </Modal>
-            <Modal
-                openModal={openAddModal}
-                setOpenModal={setOpenAddModal}
-                title="Add Objective">
-                <AddObjectiveForm
-                    updateOrInsertObj={insertObj}
-                    toggle={()=>setOpenAddModal(false)}
-                    courseId={props.courseDetail._id}/>
-            </Modal>
+            <CourseForm
+                title="Edit Course"
+                recordForEdit={recordForEdit}
+                updateOrInsertCourse={updateCourse}
+                toggle={()=>setOpenEditCourse(false)}
+                openDialog={openEditCourse}
+                setOpenDialog={setOpenEditCourse}
+            />
+            <ObjectiveForm
+                title="Add Objective"
+                updateOrInsertObj={insertObj}
+                toggle={()=>setOpenAddObj(false)}
+                courseId={course._id}
+                openDialog={openAddObj}
+                setOpenDialog={setOpenAddObj}
+                />
         </>
     );
 }
