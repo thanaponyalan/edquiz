@@ -32,6 +32,7 @@ const TestWidget=(props)=>{
         setOpenDialog(false)
     }
     const handleSave=async(data)=>{
+        console.log(data);
         props.toastManager.add("Assigning...",{appearance: 'info', autoDismiss: true})
         try{
             const url=`${API}/assignment`
