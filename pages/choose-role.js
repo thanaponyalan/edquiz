@@ -42,10 +42,10 @@ class ChooseRole extends Component{
                     <div className="card-body login-card-body">
                         <h3 className="login-box-msg">Select Role</h3>
                         <div className="social-auth-links text-center mb-3">
-                            <Button onClick={()=>this.setRole('student')}>Student</Button>
+                            <Button onClick={()=>this.setRole('student')} variant="outlined">Student</Button>
                         </div>
                         <div className="social-auth-links text-center mb-3">
-                            <Button onClick={()=>this.setRole('teacher')}>Teacher</Button>
+                            <Button onClick={()=>this.setRole('teacher')} variant="outlined">Teacher</Button>
                         </div>
                     </div>
                     {/* /.login-card-body */}

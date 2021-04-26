@@ -117,7 +117,7 @@ const AssignmentWidget=(props)=>{
                         role==='student'&&!isDone&&!graded&&
                         <>
                             <Button style={{marginLeft: 'auto', marginRight: 'auto'}} onClick={()=>setOpenDialog(true)}>{!inProgress?`start this assignment`:'continue this assignment'}</Button>
-                            <Popup fullScreen={true} open={openDialog} handleClose={handleClose} title={assignment.quizId.quizName}>
+                            <Popup fullScreen={true} open={openDialog} title={assignment.quizId.quizName}>
                                 <DoAssignment quizId={assignment.quizId._id} assignmentId={assignment._id} questionId={assignment.quizId.questionId} setOpenDialog={setOpenDialog}/>
                             </Popup>
                         </>

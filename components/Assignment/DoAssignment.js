@@ -31,7 +31,7 @@ const DoAssignment=(props)=>{
 
     useEffect(()=>{
         if(questions){
-            if(answered.length===questions.length){
+            if(answered.length&&answered.length===questions.length){
                 markAsDone();
             }
         }
@@ -56,7 +56,10 @@ const DoAssignment=(props)=>{
             })
             const res=await result.json();
             if(res.statusCode==200||res.statusCode==204){
-                props.fetchAssignment(uid)
+                console.log(res);
+                await props.fetchAssignment(uid)
+                setAnswered([])
+                setOpenDialog(false)
                 // props.toastManager.add("Success",{appearance:'success', autoDismiss:true});
             }
         }catch(err){
@@ -83,7 +86,6 @@ const DoAssignment=(props)=>{
     const handleChooseAnswer=async(answer)=>{
         const isCorrect=answer.isTrue
         const question={questionId: filteredQuestions[currentIndex]._id, score: isCorrect?1:0}
-        setAnswered([...answered,question])
         const data={
             assignmentId: assignmentId,
             studentId: uid,
@@ -101,7 +103,7 @@ const DoAssignment=(props)=>{
             })
             const res=await result.json();
             if(res.statusCode==200||res.statusCode==204){
-                // props.toastManager.add("Loaded",{appearance:'success', autoDismiss:true});
+                setAnswered([...answered,question])
                 setCurrentIndex(currentIndex+1)
             }
         }catch(err){

@@ -36,9 +36,12 @@ export default function Popup(props) {
             {fullScreen?
             <AppBar className={classes.appBar}>
                 <Toolbar style={{backgroundColor: bgColor}}>
-                    <IconButton edge="start" color="inherit" onClick={handleClose} aria-label="close">
-                        <CloseIcon />
-                    </IconButton>
+                    {
+                        handleClose&&
+                        <IconButton edge="start" color="inherit" onClick={handleClose} aria-label="close">
+                            <CloseIcon />
+                        </IconButton>
+                    }
                     <Typography variant="h6" className={classes.title}>
                         {title}
                     </Typography>
