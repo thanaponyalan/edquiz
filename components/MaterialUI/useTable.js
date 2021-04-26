@@ -28,7 +28,6 @@ export default function useTable(records, headCells, filterFn) {
     const [rowsPerPage, setRowsPerPage] = useState(pages[page]);
     const [order, setOrder] = useState()
     const [orderBy, setOrderBy] = useState()
-
     const TblContainer = props => (
         <Table className={classes.table}>
             {props.children}

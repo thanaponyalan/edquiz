@@ -23,7 +23,7 @@ const useStyles=makeStyles(theme=>({
 }))
 
 const headCells=[
-    {id:'_id', label: '#'},
+    {id:'id', label: '#'},
     {id:'objective', label: 'objective'},
     {id:'bloomLevel', label: 'bloomLevel'},
     {id:'actions', label: 'Actions', disableSorting:true}
@@ -41,7 +41,7 @@ const bloom=[
 function ObjectiveTable(props) {
     const {initRecord, courseId}=props;
     const classes=useStyles();
-    const [records,setRecords]=useState(initRecord);
+    const [records,setRecords]=useState(initRecord.map((obj,idx)=>({...obj, id:idx+1})));
     const [filterFn,setFilterFn]=useState({fn:items=>{return items;}});
     const [openDialog,setOpenDialog]=useState(false);
     const [recordForEdit,setRecordForEdit]=useState(null);
@@ -52,8 +52,7 @@ function ObjectiveTable(props) {
         TblPagination,
         recordsAfterPaginatingAndSorting
     }=useTable(records,headCells,filterFn);
-
-
+    
     const handleSearch=e=>{
         let target=e.target;
         setFilterFn({
@@ -94,7 +93,7 @@ function ObjectiveTable(props) {
 
     useEffect(()=>{
         if(props.courses)
-            setRecords(props.courses.find(({_id})=>_id==props.courseId).objectives)
+            setRecords(props.courses.find(({_id})=>_id==props.courseId).objectives.map((obj,idx)=>({...obj, id: idx+1})))
     },[props.courses])
     
     return (
@@ -116,7 +115,6 @@ function ObjectiveTable(props) {
                 <TableBody>
                     {
                         recordsAfterPaginatingAndSorting().map((item,i)=>{
-                            item={...item,id: i+1}
                             return(
                             <TableRow key={item._id}>
                                 <TableCell>{item.id}</TableCell>

@@ -77,11 +77,18 @@ const Course=(props)=>{
                 <Grid container spacing={2}>
                     {
                         renderingCourse.length>0&&renderingCourse.map((item,i)=>(
-                            <Grid item xs={12}>
-                                <CourseWidget key={i} courseDetail={item} onClick={()=>handleClick(i)}/>
+                            <Grid key={i} item xs={12}>
+                                <CourseWidget courseDetail={item} onClick={()=>handleClick(i)}/>
                             </Grid>
                         ))
                     }
+                    <CourseForm
+                        title="Add Course"
+                        updateOrInsertCourse={insertCourse}
+                        toggle={()=>setOpenDialog(false)}
+                        openDialog={openDialog}
+                        setOpenDialog={setOpenDialog}
+                        />
                 </Grid>
                 :
                 <div
@@ -97,13 +104,6 @@ const Course=(props)=>{
                 </div>    
             }
             </MainLayout>
-            <CourseForm
-                title="Add Course"
-                updateOrInsertCourse={insertCourse}
-                toggle={()=>setOpenDialog(false)}
-                openDialog={openDialog}
-                setOpenDialog={setOpenDialog}
-                />
         </>
     )
 }
