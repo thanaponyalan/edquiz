@@ -147,7 +147,6 @@ const Insight = (props) => {
 
     useEffect(() => {
         if (studentsInDetail.length) {
-            console.log(studentsInDetail);
             const allBloom = studentsInDetail.filter(student=>assigneesState[0].students.findIndex(thisStudent=>thisStudent.email==student.email)==-1&&assigneesState[1].students.findIndex(thisStudent=>thisStudent.email==student.email)==-1).map(student => student.bloomDetails.map(bloom => bloom.average));
             const sumBloom = []
             allBloom.forEach(sub => {
