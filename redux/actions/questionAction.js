@@ -8,7 +8,7 @@ export const questionActionTypes={
 
 export const fetchQuestion=(uid,toast)=>async(dispatch)=>{
     try{
-        const url=`${API}/item`
+        const url=`${API}/question`
         const questionRes=await fetch(url,{
             method: 'GET',
             headers:{
@@ -31,7 +31,7 @@ export const fetchQuestion=(uid,toast)=>async(dispatch)=>{
 
 export const fetchQuestionByQuizId=(quizId,uid,toast)=>async(dispatch)=>{
     try{
-        const url=`${API}/item?quizId=${quizId}`
+        const url=`${API}/question?quizId=${quizId}`
         const questionRes=await fetch(url,{
             method: 'GET',
             headers:{

@@ -104,8 +104,6 @@ const insertAssignment=async(req,res)=>{
                             body: JSON.stringify({...assignment, quizName})
                         });
                         const assignResult=await assignToGClass.json();
-                        console.log(assignResult);
-                        console.log({...assignment,quizName});
                         const updateCourseWork=await updateAssignmentCourseWork({assignmentId: result._id, courseWorkId: assignResult.data.payload.id})
                         res.status(assignResult.statusCode).json({...assignResult,...updateCourseWork})
                     })

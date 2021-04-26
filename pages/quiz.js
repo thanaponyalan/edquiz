@@ -4,8 +4,8 @@ import { compose } from "recompose";
 import { withAuthSync } from "../utils/auth";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
-import { fetchTest } from "../redux/actions/testAction";
-import TestWidget from "../components/Test/TestWidget";
+import { fetchQuiz } from "../redux/actions/quizAction";
+import QuizWidget from "../components/Quiz/QuizWidget";
 import { Button, Grid } from "@material-ui/core";
 import Loader from "react-loader-spinner";
 import { fetchClass } from "../redux/actions/classAction";
@@ -19,7 +19,7 @@ import { withToastManager } from "react-toast-notifications";
 import { API } from "../constant/ENV";
 import { _error_handler } from "../utils/errorHandler";
 
-const Tests=(props)=>{
+const Quizzes=(props)=>{
     const [openModal, setOpenModal]=useState(false)
     const [quizName, setQuizName]=useState({value: '', error: ''})
     const [course, setCourse]=useState({id: '', error: ''})
@@ -48,7 +48,7 @@ const Tests=(props)=>{
             }
             props.toastManager.add("Adding...",{appearance: 'info', autoDismiss: true})
             try{
-                const url=`${API}/test`
+                const url=`${API}/quiz`
                 const result=await fetch(url,{
                     method: 'POST',
                     headers:{
@@ -59,7 +59,7 @@ const Tests=(props)=>{
                 const res=await result.json();
                 if(res.statusCode==200||res.statusCode==204){
                     props.toastManager.add("Added",{appearance: 'success', autoDismiss: true},()=>setOpenModal(false))
-                    props.fetchTest(props.uid,props.toastManager)
+                    props.fetchQuiz(props.uid,props.toastManager)
                     props.fetchQuestion(props.uid, props.toastManager)
                 }
             }catch(err){
@@ -70,8 +70,8 @@ const Tests=(props)=>{
     }
 
     useEffect(()=>{
-        if(!props.tests){
-            props.fetchTest(props.uid);
+        if(!props.quizzes){
+            props.fetchQuiz(props.uid);
         }
         if(!props.classes){
             props.fetchClass(props.uid,props.role)
@@ -85,15 +85,15 @@ const Tests=(props)=>{
     },[])
 
     return (
-        <MainLayout title="Tests" pageActions={addQuiz}>
-            { props.tests&&props.classes&&props.questions&&props.courses?
+        <MainLayout title="Quizzes" pageActions={addQuiz}>
+            { props.quizzes&&props.classes&&props.questions&&props.courses?
             <>
                 <Grid container spacing={3}>
                     {
-                        props.tests&&props.tests.map((item,idx)=>
+                        props.quizzes&&props.quizzes.map((item,idx)=>
                         <Grid key={idx} item xs={12} sm={6} md={4}>
-                            <TestWidget 
-                                test={item} 
+                            <QuizWidget 
+                                quiz={item} 
                                 availableQuestion={
                                     props.questions
                                         .filter(question=>question.courseId._id==item.courseId._id)
@@ -148,7 +148,7 @@ const Tests=(props)=>{
 
 const mapDispatchToProps=dispatch=>{
     return{
-        fetchTest: bindActionCreators(fetchTest, dispatch),
+        fetchQuiz: bindActionCreators(fetchQuiz, dispatch),
         fetchClass: bindActionCreators(fetchClass, dispatch),
         fetchQuestion: bindActionCreators(fetchQuestion, dispatch),
         fetchCourse: bindActionCreators(fetchCourse, dispatch)
@@ -157,7 +157,7 @@ const mapDispatchToProps=dispatch=>{
 
 const mapStateToProps=state=>{
     return{
-        tests: state.testReducer.tests,
+        quizzes: state.quizReducer.quizzes,
         classes: state.classReducer.classes,
         questions: state.questionReducer.questions,
         courses: state.courseReducer.courses
@@ -169,4 +169,4 @@ export default compose(
     connect(mapStateToProps,mapDispatchToProps),
     withAuthSync,
     withToastManager
-)(Tests);
+)(Quizzes);

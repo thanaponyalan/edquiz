@@ -61,12 +61,12 @@ const ManageClass=(props)=>{
 
     return (
         <>
-            <MainLayout title="Classes" pageActions={importClass}>
+            <MainLayout title="Manage Classes" pageActions={importClass}>
                 {props.classes&&props.courses?
-                <Grid container spacing={3}>
+                <Grid container spacing={2}>
                     {
                         props.classes.map((item,idx)=>
-                            <Grid key={idx} item xs={12} sm={4} md={3}>
+                            <Grid key={idx} item xs={12} sm={6} md={3}>
                                 <Class thisClass={item} key={idx}/>
                             </Grid>
                         )

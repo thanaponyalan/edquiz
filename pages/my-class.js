@@ -18,7 +18,7 @@ function MyClass(props) {
     },[])
 
     return (
-            <MainLayout title="My Class" >
+            <MainLayout title="My Classes" >
                 {props.classes?
                 <Grid container spacing={2}>
                     {

@@ -22,11 +22,14 @@ const Assignment=(props)=>{
             {props.assignments?
             <Grid container spacing={3}>
                 {
-                    props.assignments?.map((item,idx)=>
-                    <Grid key={idx} item xs={12} md={4}>
-                        <AssignmentWidget assignment={item} />
-                    </Grid>
-                    )
+                    props.assignments?.map((item,idx)=>{
+                        if(item.courseWorkId)
+                            return(
+                                <Grid key={idx} item xs={12} md={4}>
+                                    <AssignmentWidget assignment={item} />
+                                </Grid>
+                            )
+                    })
                 }
             </Grid>:
             <div

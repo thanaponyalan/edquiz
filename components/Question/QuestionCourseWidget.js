@@ -192,7 +192,7 @@ const QuestionCourseWidget=(props)=>{
                 </Grid>
             </Grid>
         </Popup>
-        <AddQuestion openDialog={openQuestionDialog} setOpenDialog={setOpenQuestionDialog} title="Add Item" currentCourse={course} courses={props.courses} quizzes={props.quizzes} handleSave={insertQuestion} />
+        <AddQuestion openDialog={openQuestionDialog} setOpenDialog={setOpenQuestionDialog} title="Add Question" currentCourse={course} courses={props.courses} quizzes={props.quizzes} handleSave={insertQuestion} />
     </>
     )
 }

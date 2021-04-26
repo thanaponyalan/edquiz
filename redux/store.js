@@ -8,7 +8,6 @@ import courseReducer from './reducers/courseReducer'
 import questionReducer from './reducers/questionReducer'
 import quizReducer from './reducers/quizReducer'
 import classReducer from "./reducers/classReducer";
-import testReducer from "./reducers/testReducer"
 import assignmentReducer from "./reducers/assignmentReducer"
 import historyReducer from "./reducers/historyReducer"
 
@@ -28,7 +27,6 @@ const combinedReducer = combineReducers({
   questionReducer,
   quizReducer,
   classReducer,
-  testReducer,
   assignmentReducer,
   historyReducer
 })

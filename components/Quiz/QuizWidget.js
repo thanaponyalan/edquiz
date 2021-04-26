@@ -13,17 +13,17 @@ import { API } from "../../constant/ENV";
 import AssignPopup from '../Assignment/assignPopup';
 import moment from "moment";
 import { fetchQuestion } from '../../redux/actions/questionAction';
-import { fetchTest } from '../../redux/actions/testAction';
+import { fetchQuiz } from '../../redux/actions/quizAction';
 import { Form } from '../MaterialUI/useForm';
 import Controls from '../MaterialUI/controls/Controls';
 
-const TestWidget=(props)=>{
+const QuizWidget=(props)=>{
     const [variant,setVariant]=useState("outlined")
     const [anchorEl,setAnchorEl]=useState(null);
     const [openDialog,setOpenDialog]=useState(false);
     const [openQuestionList,setOpenQuestionList]=useState(false)
-    const {test,classes, availableQuestion}=props;
-    const [questions, setQuestions]=useState(test.questionId)
+    const {quiz,classes, availableQuestion}=props;
+    const [questions, setQuestions]=useState(quiz.questionId)
     const [openAddQuestion, setOpenAddQuestion]=useState(false)
     const [selectedQuestion, setSelectedQuestion]=useState([])
     const [duplicateDialog, setDuplicateDialog]=useState(false)
@@ -59,7 +59,7 @@ const TestWidget=(props)=>{
     }
 
     const handleCancelChanged=()=>{
-        setQuestions(test.questionId)
+        setQuestions(quiz.questionId)
         setOpenQuestionList(false)
     }
 
@@ -91,13 +91,13 @@ const TestWidget=(props)=>{
         }
         const data={
             questionId: questions.map(question=>question._id),
-            _id: test._id,
-            diff: test.questionId.filter(question=>!questions.some(q=>q._id==question._id)).map(question=>question._id)
+            _id: quiz._id,
+            diff: quiz.questionId.filter(question=>!questions.some(q=>q._id==question._id)).map(question=>question._id)
         }
         
         props.toastManager.add("Updating...",{appearance: 'info', autoDismiss: true})
         try{
-            const url=`${API}/test`
+            const url=`${API}/quiz`
             const result=await fetch(url,{
                 method: 'PUT',
                 headers:{
@@ -108,7 +108,7 @@ const TestWidget=(props)=>{
             const res=await result.json();
             if(res.statusCode==200||res.statusCode==204){
                 props.toastManager.add("Updated",{appearance:'success', autoDismiss:true}, ()=>setOpenQuestionList(false));
-                props.fetchTest(props.uid,props.toastManager)
+                props.fetchQuiz(props.uid,props.toastManager)
                 props.fetchQuestion(props.uid, props.toastManager)
             }
         }catch(err){
@@ -119,14 +119,14 @@ const TestWidget=(props)=>{
 
     const duplicateQuiz=async()=>{
         const newQuiz={
-            courseId: test.courseId._id,
+            courseId: quiz.courseId._id,
             quizName: quizName,
-            questionId: test.questionId.map(question=>question._id),
-            owner: test.owner
+            questionId: quiz.questionId.map(question=>question._id),
+            owner: quiz.owner
         }
         props.toastManager.add("Duplicating...",{appearance: 'info', autoDismiss: true})
         try{
-            const url=`${API}/test`
+            const url=`${API}/quiz`
             const result=await fetch(url,{
                 method: 'POST',
                 headers:{
@@ -137,7 +137,7 @@ const TestWidget=(props)=>{
             const res=await result.json();
             if(res.statusCode==200||res.statusCode==204){
                 props.toastManager.add("Duplicated",{appearance: 'success', autoDismiss: true})
-                props.fetchTest(props.uid,props.toastManager)
+                props.fetchQuiz(props.uid,props.toastManager)
                 props.fetchQuestion(props.uid, props.toastManager)
             }
         }catch(err){
@@ -150,14 +150,14 @@ const TestWidget=(props)=>{
         <>
             <Card variant={variant} onMouseEnter={()=>{setVariant("elevation")}} onMouseLeave={()=>{setVariant('outlined')}} style={{cursor: "pointer"}}>
                 <CardHeader
-                    title={test.quizName}
+                    title={quiz.quizName}
                     subheader={
                         <Chip size="small" avatar={<Avatar><Class/></Avatar>}
-                            label={test.courseId.courseName}
+                            label={quiz.courseId.courseName}
                         />
                     }
                     action={
-                        <IconButton aria-controls="testMenus" onClick={(e)=>setAnchorEl(e.currentTarget)} aria-label="actions">
+                        <IconButton aria-controls="quizMenus" onClick={(e)=>setAnchorEl(e.currentTarget)} aria-label="actions">
                             <MoreVert style={{color: 'white'}}/>
                         </IconButton>
                     }
@@ -168,7 +168,7 @@ const TestWidget=(props)=>{
                 />
                 <CardContent>
                     <Typography gutterBottom variant="body2">
-                        <label>Items Amount :</label>
+                        <label>Question Amount :</label>
                         {` ${questions.length}`}
                     </Typography>
                 </CardContent>
@@ -178,7 +178,7 @@ const TestWidget=(props)=>{
                 </CardActions>
             </Card>
             <Menu
-                id="testMenus"
+                id="quizMenus"
                 anchorEl={anchorEl}
                 keepMounted
                 open={Boolean(anchorEl)}
@@ -202,9 +202,9 @@ const TestWidget=(props)=>{
                     />
                 </Form>
             </Popup>
-            <Popup maxWidth="sm" fullWidth={true} open={openDialog} handleClose={handleClose} title="Assign Test">
+            <Popup maxWidth="sm" fullWidth={true} open={openDialog} handleClose={handleClose} title="Assign Quiz">
                 {
-                    <AssignPopup setOpenDialog={setOpenDialog} recordForEdit={{quizName: test.quizName, quizId: test._id, classId: '', scheduled: moment().format(), dueDate: moment(moment()).add(1,'days').format(), maxPoints: questions.length}} classes={classes.filter(item=>item.courseId._id==test.courseId._id).map((item)=>({id: item._id, title: item.className}))} handleClose={handleClose} handleSave={handleSave} />
+                    <AssignPopup setOpenDialog={setOpenDialog} recordForEdit={{quizName: quiz.quizName, quizId: quiz._id, classId: '', scheduled: moment().format(), dueDate: moment(moment()).add(1,'days').format(), maxPoints: questions.length}} classes={classes.filter(item=>item.courseId._id==quiz.courseId._id).map((item)=>({id: item._id, title: item.className}))} handleClose={handleClose} handleSave={handleSave} />
                 }
             </Popup>
             <Popup maxWidth="sm" fullWidth={true} open={openQuestionList} handleClose={handleCancelChanged} title="Questions" scroll="paper" popupAction={
@@ -276,7 +276,7 @@ const mapDispatchToProps = dispatch => {
     return {
         fetchClass: bindActionCreators(fetchClass, dispatch),
         fetchQuestion: bindActionCreators(fetchQuestion, dispatch),
-        fetchTest: bindActionCreators(fetchTest, dispatch)
+        fetchQuiz: bindActionCreators(fetchQuiz, dispatch)
     }
 }
 
@@ -292,4 +292,4 @@ const mapStateToProps = state => {
 export default compose(
     connect(mapStateToProps,mapDispatchToProps),
     withToastManager
-)(TestWidget)
+)(QuizWidget)

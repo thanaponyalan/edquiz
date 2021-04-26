@@ -8,7 +8,7 @@ export const quizActionTypes={
 
 export const fetchQuiz=(uid,toast)=>async(dispatch)=>{
     try{
-        const url=`${API}/test`
+        const url=`${API}/quiz`
         const quizRes=await fetch(url,{
             method: 'GET',
             headers:{

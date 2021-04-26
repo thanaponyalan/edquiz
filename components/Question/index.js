@@ -35,7 +35,7 @@ const QuestionWidget = (props) => {
         }
         props.toastManager.add("Updating...",{appearance: 'info', autoDismiss: true})
         try{
-            const url=`${API}/item`
+            const url=`${API}/question`
             const result=await fetch(url,{
                 method: 'PUT',
                 headers:{
@@ -66,7 +66,7 @@ const QuestionWidget = (props) => {
         }
         props.toastManager.add("Duplicating...", { appearance: 'info', autoDismiss: true })
         try {
-            const url = `${API}/item`
+            const url = `${API}/question`
             const result = await fetch(url, {
                 method: 'POST',
                 headers: {
@@ -107,7 +107,7 @@ const QuestionWidget = (props) => {
                 openDialog={openDialog} 
                 setOpenDialog={setOpenDialog} 
                 {...props} 
-                title={previewMode?'Preview Item':'Edit Item'} 
+                title={previewMode?'Preview Question':'Edit Question'} 
                 previewMode={previewMode}
                 setPreviewMode={setPreviewMode}
                 setAnchorEl={setAnchorEl}

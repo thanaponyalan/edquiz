@@ -4,7 +4,6 @@ import { Form, useForm } from "../MaterialUI/useForm";
 import Popup from "../MaterialUI/Popup";
 import QuestionParameters from './QuestionParameters';
 import MultipleChoice from './MultipleChoice';
-import Match from './Matching';
 import TrueOrFalse from './TrueOrFalse';
 
 const questionType = [
@@ -354,30 +353,16 @@ const AddQuestion = (props) => {
     }
 
     const checkAnswer=()=>{
-        if(values.question.type!=1){
-            const trueIdx=choices.findIndex((choice)=>choice.isTrue);
-            const selectedIdx=selectedChoices.findIndex((choice)=>choice.isTrue);
-            if(selectedIdx==-1){
-                alert(`A choice must be selected!`);
-                return;
-            }
-            if(trueIdx===selectedIdx){
-                alert('Correct')
-            }else{
-                console.log(`Correct Answer is Choice ${trueIdx+1}`);
-            }
+        const trueIdx=choices.findIndex((choice)=>choice.isTrue);
+        const selectedIdx=selectedChoices.findIndex((choice)=>choice.isTrue);
+        if(selectedIdx==-1){
+            alert(`A choice must be selected!`);
+            return;
+        }
+        if(trueIdx===selectedIdx){
+            alert('Correct')
         }else{
-            const matchingChoices=choices.filter(item=>item!=null).map(item=>({title: item.answer.title}))
-            const matchedChoices=answeredChoices.filter(item=>item!=null).map(item=>({title: item.title}))
-            if(!matchedChoices.length){
-                alert(`At least one answer must be provided`)
-                return;
-            }
-            let score=0;
-            matchingChoices.forEach((value,idx)=>{
-                score+=matchedChoices.findIndex(choice=>choice.title===value.title)===idx?1:0;
-            })
-            alert(`${score} of ${matchingChoices.length} correct`);
+            console.log(`Correct Answer is Choice ${trueIdx+1}`);
         }
     }
 

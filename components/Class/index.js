@@ -14,7 +14,7 @@ const Class = (props) => {
     const [variant,setVariant]=useState('outlined')
     const classes=useStyle();
     return (
-        <Grid item md={3} xs={12}>
+        <Grid item md={3} xs={12} sm={6}>
             <Card variant={variant} onClick={()=>{props.router.push('/assignment')}} onMouseEnter={()=>{setVariant("elevation")}} onMouseLeave={()=>{setVariant('outlined')}} style={{cursor: "pointer"}}>
                 <CardHeader
                     title={props.className}
@@ -28,11 +28,11 @@ const Class = (props) => {
                         color: 'white'
                     }}
                 />
-                <CardContent>
+                {/* <CardContent>
                     <Typography gutterBottom variant="body2" style={{marginLeft: 'auto', marginRight: 'auto'}}>
                         ASSIGNMENTS
                     </Typography>
-                </CardContent>
+                </CardContent> */}
             </Card>
         </Grid>
     );

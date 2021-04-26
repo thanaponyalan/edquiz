@@ -2,7 +2,6 @@ import MainLayout from "../containers/app/mainLayout";
 import { useEffect, useState } from 'react';
 import { compose } from "recompose";
 import { withAuthSync } from "../utils/auth";
-import Question from "../components/Question";
 import { connect } from "react-redux";
 import { fetchQuestion } from "../redux/actions/questionAction";
 import { bindActionCreators } from "redux";
@@ -30,7 +29,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const Item = (props) => {
+const Question = (props) => {
     const [openDialog, setOpenDialog] = useState(false);
     const [distinctCourses, setDistinctCourses]=useState([])
     const insertQuestion = async (question) => {
@@ -44,7 +43,7 @@ const Item = (props) => {
         }
         props.toastManager.add("Creating...", { appearance: 'info', autoDismiss: true })
         try {
-            const url = `${API}/item`
+            const url = `${API}/question`
             const result = await fetch(url, {
                 method: 'POST',
                 headers: {
@@ -175,4 +174,4 @@ export default compose(
     connect(mapStateToProps, mapDispatchToProps),
     withAuthSync,
     withToastManager
-)(Item);
+)(Question);

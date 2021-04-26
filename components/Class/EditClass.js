@@ -12,9 +12,9 @@ import { MoreVert } from "@material-ui/icons";
 import { API } from "../../constant/ENV";
 
 const useStyle=makeStyles({
-    root:{
-        maxWidth: 345
-    },
+    // root:{
+    //     maxWidth: 345
+    // },
     media:{
         height: 140
     }
