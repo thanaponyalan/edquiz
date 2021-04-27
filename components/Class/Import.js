@@ -6,7 +6,7 @@ import Popup from '../MaterialUI/Popup';
 import Controls from '../MaterialUI/controls/Controls'
 import { Form, useForm } from '../MaterialUI/useForm';
 import Loader from 'react-loader-spinner'
-import { Checkbox, Grid, Hidden } from '@material-ui/core';
+import { Button, Checkbox, Grid, Hidden } from '@material-ui/core';
 import { fetchCourse } from '../../redux/actions/courseAction';
 import { withToastManager } from 'react-toast-notifications';
 import { _error_handler } from '../../utils/errorHandler';
@@ -42,7 +42,13 @@ const Import=(props)=>{
         }
     }, [googleClasses])
     return (
-        <Popup maxWidth="md" fullWidth={true} open={openDialog} handleClose={handleClose} handleSave={handleSave} title={title} disabledSave={disabledSave}>
+        <Popup maxWidth="md" fullWidth={true} open={openDialog} handleClose={handleClose} handleSave={handleSave} title={title} disabledSave={disabledSave} popupAction={
+            <>
+                <Button disabled={disabledSave} variant="outlined" onClick={handleSave} color="primary">Submit</Button>
+                {' '}
+                <Button onClick={handleClose} variant="outlined" color="secondary">Cancel</Button>
+            </>
+        }>
                 {
                     classes.length>0&&courses&&classes.map((item,idx)=>
                         <Form key={idx}><ClassInput key={idx} courses={courses} recordForEdit={item} idx={idx} setClasses={setClasses} classes={classes} setDisabledSave={setDisabledSave} /></Form>
