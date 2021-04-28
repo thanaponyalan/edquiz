@@ -2,11 +2,10 @@ import ObjectiveTable from "../Objective/ObjectiveTable";
 import {useState} from "react"
 import CourseForm from '../Course/editCourse';
 import ObjectiveForm from "../Objective/editObjective";
-import { compose } from "recompose";
 import { withToastManager } from "react-toast-notifications";
 import { fetchCourse } from "../../redux/actions/courseAction";
 import { connect } from "react-redux";
-import { bindActionCreators } from "redux";
+import { bindActionCreators, compose } from "redux";
 import { _error_handler } from "../../utils/errorHandler";
 import { API } from "../../constant/ENV";
 import { Button, Card, CardActions, CardContent, CardHeader, Collapse, IconButton } from "@material-ui/core";

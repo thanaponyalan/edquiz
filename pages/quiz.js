@@ -1,9 +1,8 @@
 import MainLayout from "../containers/app/mainLayout";
 import React, { useEffect, useState } from 'react'
-import { compose } from "recompose";
 import { withAuthSync } from "../utils/auth";
 import { connect } from "react-redux";
-import { bindActionCreators } from "redux";
+import { bindActionCreators, compose } from "redux";
 import { fetchQuiz } from "../redux/actions/quizAction";
 import QuizWidget from "../components/Quiz/QuizWidget";
 import { Button, Grid } from "@material-ui/core";

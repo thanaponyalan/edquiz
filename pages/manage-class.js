@@ -1,10 +1,9 @@
 import MainLayout from "../containers/app/mainLayout";
-import { Component, useState, useEffect } from 'react';
-import { compose } from "recompose";
+import { useState, useEffect } from 'react';
 import { withAuthSync } from "../utils/auth";
 import { fetchClass } from "../redux/actions/classAction";
 import { connect } from "react-redux";
-import { bindActionCreators } from "redux";
+import { bindActionCreators, compose } from "redux";
 import { Paper, makeStyles, TableBody, TableRow, TableCell, Toolbar, InputAdornment, Card, CardMedia, CardContent, Typography, CardActions, Grid, Button, IconButton, CardActionArea, CardHeader, Menu, MenuItem, Chip, Avatar } from "@material-ui/core";
 import { EditOutlined, Add, ExpandMore, MoreVert, Label } from "@material-ui/icons";
 import Controls from "../components/MaterialUI/controls/Controls";

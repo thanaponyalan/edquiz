@@ -1,8 +1,7 @@
 import { useState } from "react";
 import { connect } from "react-redux";
 import { withToastManager } from "react-toast-notifications";
-import { compose } from "recompose";
-import { bindActionCreators } from "redux";
+import { bindActionCreators, compose } from "redux";
 import { API } from "../../constant/ENV";
 import { fetchQuestion } from "../../redux/actions/questionAction";
 import { fetchQuiz } from "../../redux/actions/quizAction";

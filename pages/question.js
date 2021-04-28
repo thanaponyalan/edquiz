@@ -1,10 +1,9 @@
 import MainLayout from "../containers/app/mainLayout";
 import { useEffect, useState } from 'react';
-import { compose } from "recompose";
 import { withAuthSync } from "../utils/auth";
 import { connect } from "react-redux";
 import { fetchQuestion } from "../redux/actions/questionAction";
-import { bindActionCreators } from "redux";
+import { bindActionCreators, compose } from "redux";
 import Controls from "../components/MaterialUI/controls/Controls";
 import { Add } from "@material-ui/icons";
 import AddQuestion from "../components/Question/AddQuestion";

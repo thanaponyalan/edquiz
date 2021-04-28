@@ -2,14 +2,13 @@ import React, { useState, useEffect } from 'react'
 import MainLayout from '../containers/app/mainLayout'
 import { withRouter } from 'next/router';
 import { withAuthSync } from '../utils/auth';
-import { compose } from 'recompose';
 import CourseWidget from '../components/Course';
 import Controls from "../components/MaterialUI/controls/Controls";
 import { Add } from '@material-ui/icons';
 import CourseForm from "../components/Course/editCourse";
 import { fetchCourse } from '../redux/actions/courseAction';
 import { connect } from 'react-redux';
-import { bindActionCreators } from "redux";
+import { bindActionCreators, compose } from "redux";
 import { withToastManager } from 'react-toast-notifications';
 import { _error_handler } from '../utils/errorHandler';
 import {API} from '../constant/ENV'

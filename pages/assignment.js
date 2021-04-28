@@ -1,9 +1,8 @@
 import MainLayout from "../containers/app/mainLayout";
 import React, { useEffect } from 'react';
-import { compose } from "recompose";
 import { withAuthSync } from "../utils/auth";
 import AssignmentWidget from "../components/Assignment/AssignmentWidget";
-import { bindActionCreators } from "redux";
+import { bindActionCreators, compose } from "redux";
 import { fetchAssignment, setAssignment } from "../redux/actions/assignmentAction";
 import { connect } from "react-redux";
 import { Grid } from "@material-ui/core";

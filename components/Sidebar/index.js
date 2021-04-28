@@ -1,10 +1,8 @@
 import { withRouter } from "next/router";
-import { compose } from "recompose";
 import { logout } from "../../redux/actions/authAction"
 import {connect} from "react-redux"
 import Link from "next/link";
-import { roleSelected, withAuthSync } from "../../utils/auth";
-import { useEffect } from "react";
+import { compose } from "redux";
 
 const Sidebar = (props) => {
     // console.log(`Sidebar`);

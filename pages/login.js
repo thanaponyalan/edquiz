@@ -2,9 +2,9 @@ import { Component } from "react";
 import nextCookie from "next-cookies";
 import { Router } from "next/router";
 import Layout from "../containers/app/loginLayout";
-import { compose } from "recompose";
 import LoginBox from "../components/Login/index"
 import { API } from "../constant/ENV";
+import { compose } from "redux";
 
 class Login extends Component{
     static async getInitialProps(ctx){
